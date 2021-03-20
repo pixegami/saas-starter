@@ -46,23 +46,24 @@ def test_can_confirm_account():
     assert response.status == 200
 
 
-def test_can_confirm_via_email():
+# Add this test once we have proper email validation.
+# def test_can_confirm_via_email():
 
-    user = generate_random_email("auth.pixegami.com")
-    password = generate_random_password()
-    sign_up_response = sign_up(user, password, 200)
+#     user = generate_random_email("auth.pixegami.com")
+#     password = generate_random_password()
+#     sign_up_response = sign_up(user, password, 200)
 
-    # This will cause a confirmation email to be sent.
-    token = sign_up_response["payload"]["token"]
-    token_payload = jwt.decode(token, options={"verify_signature": False})
-    account_key = token_payload["account_key"]
-    request_account_confirmation(account_key, 200)
+#     # This will cause a confirmation email to be sent.
+#     token = sign_up_response["payload"]["token"]
+#     token_payload = jwt.decode(token, options={"verify_signature": False})
+#     account_key = token_payload["account_key"]
+#     request_account_confirmation(account_key, 200)
 
-    # Wait for the email receiver to resolve.
-    time.sleep(5)
-    sign_in_response = sign_in(user, password, 200)
-    token_payload = token_payload_from_response(sign_in_response)
-    assert token_payload["confirmed"]
+#     # Wait for the email receiver to resolve.
+#     time.sleep(5)
+#     sign_in_response = sign_in(user, password, 200)
+#     token_payload = token_payload_from_response(sign_in_response)
+#     assert token_payload["confirmed"]
 
 
 def test_can_create_test_user():
