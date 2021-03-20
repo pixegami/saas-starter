@@ -17,20 +17,14 @@ test("Test Auth Positive Login", async () => {
   const user: string = `tst-user-${randomUUID()}@pixegami.com`;
   const password: string = `password-${randomUUID()}`;
 
-  // const responseStatus = await AuthApi.makeRequest();
+  // Sign Up.
   const signUpResponse = await AuthApi.signUp(user, password);
   expect(signUpResponse.status).toBe(200);
 
   // Sign In.
   const signInResponse = await AuthApi.signIn(user, password);
   expect(signInResponse.status).toBe(200);
-
-  // // Registration.
-  // const user: string = `tst-user-${randomUUID()}@pixegami.com`;
-  // const password: string = `password-${randomUUID()}`;
-  // const response = await AuthApi.register(user, password);
-  // expect(response.token).not.toBeUndefined();
-  // expect(response.status).toBe(200);
+  expect(signInResponse.payload.token).not.toBeUndefined();
 
   // Validation should succeed.
   const validationResponse = await AuthApi.validate();

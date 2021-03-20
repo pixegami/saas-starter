@@ -19,6 +19,20 @@ class BaseApi {
     return this.genericRequest("POST", operation, payload, token);
   }
 
+  protected static withSideEffect(
+    promise: Promise<ApiResponse>,
+    sideEffect: (x: ApiResponse) => void
+  ) {
+    return new Promise<ApiResponse>((resolve, reject) => {
+      promise
+        .then((r) => {
+          sideEffect(r);
+          resolve(r);
+        })
+        .catch(reject);
+    });
+  }
+
   private static genericRequest(
     method: Method,
     operation: string,
@@ -55,19 +69,26 @@ class BaseApi {
     };
 
     // Bearer Token if any...
+    if (request.token) {
+      requestConfig.headers = {
+        Authorization: `Bearer ${request.token}`,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      };
+    }
 
     // If a payload exists, add it to the request.
-    if (request.payload) {
-      const payload = {
-        ...request.payload,
-        operation: request.operation,
-        flags: ["TMP"],
-      };
-      if (request.method === "GET") {
-        requestConfig.params = payload;
-      } else {
-        requestConfig.data = payload;
-      }
+    const payload = {
+      operation: request.operation,
+      flags: ["TMP"],
+      ...request.payload,
+    };
+
+    // Add payload to appropriate request field.
+    if (request.method === "GET") {
+      requestConfig.params = payload;
+    } else {
+      requestConfig.data = payload;
     }
 
     return requestConfig;

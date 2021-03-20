@@ -4,8 +4,8 @@ interface ApiRequest {
   endpoint: string;
   method: Method;
   operation: string;
+  payload: any;
   token?: string;
-  payload?: any;
 }
 
 export default ApiRequest;

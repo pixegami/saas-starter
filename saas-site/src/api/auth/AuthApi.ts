@@ -16,6 +16,7 @@ class AuthApi extends BaseApi {
   private static ENDPOINT: string = "https://api.ss.pixegami.com/auth";
   private static session: AuthSession | null = null;
   private static attemptedToLoadSession: boolean = false;
+  private static token: string = "blah";
 
   protected static getEndpoint(): string {
     return this.ENDPOINT;
@@ -23,7 +24,13 @@ class AuthApi extends BaseApi {
 
   public static signIn(email: string, password: string): Promise<ApiResponse> {
     console.log("Signing in!");
-    return this.getRequest("sign_in", { user: email, password: password });
+    return this.withSideEffect(
+      this.getRequest("sign_in", { user: email, password: password }),
+      (x) => {
+        this.token = x.payload.token;
+        console.log(`Executing Side Effect: ${x.payload.token}`);
+      }
+    );
   }
 
   public static signUp(email: string, password: string): Promise<ApiResponse> {
@@ -33,7 +40,7 @@ class AuthApi extends BaseApi {
 
   public static validate(): Promise<ApiResponse> {
     console.log(`Validating With Token: ...`);
-    return this.getRequest("validate_token", { user: "blah" }, "blah");
+    return this.getRequest("validate_token", {}, this.token);
   }
 
   private static setSession = (session: AuthSession) => {
