@@ -1,4 +1,5 @@
 import { stat } from "fs";
+import BaseApi from "../BaseApi";
 import AuthResponse from "./AuthResponse";
 import AuthSession from "./AuthSession";
 
@@ -8,10 +9,8 @@ interface RequestObject {
   body?: string;
 }
 
-class AuthApi {
-  public static ENDPOINT: string =
-    "https://hg7dm2etu5.execute-api.us-east-1.amazonaws.com/prod/auth";
-
+class AuthApi extends BaseApi {
+  public static ENDPOINT: string = "https://api.ss.pixegami.com/auth";
   private static session: AuthSession | null = null;
   private static attemptedToLoadSession: boolean = false;
 
@@ -108,7 +107,12 @@ class AuthApi {
     return request;
   };
 
-  public static signIn = (
+  public static signIn() {
+    console.log("Signing in!");
+    return 200;
+  }
+
+  public static signIn2 = (
     email: string,
     password: string
   ): Promise<AuthResponse> => {

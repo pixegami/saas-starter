@@ -1,8 +1,8 @@
 import { Link } from "gatsby";
 import * as React from "react";
-import Auth from "../api/Auth";
-import AuthApi from "../api/AuthApi";
-import AuthResponse from "../api/AuthResponse";
+import Auth from "../../api/auth/Auth";
+import AuthApi from "../../api/auth/AuthApi";
+import AuthResponse from "../../api/auth/AuthResponse";
 
 interface AuthRegisterProps {
   path: string;

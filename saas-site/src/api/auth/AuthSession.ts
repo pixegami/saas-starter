@@ -1,5 +1,3 @@
-import Auth from "./Auth";
-
 class AuthSession {
   public email?: string;
   public token: string;
