@@ -14,9 +14,16 @@ test("Test Auth Positive Login", async () => {
   // User can register, login, and validate their session.
   jest.setTimeout(30000);
 
-  const responseStatus = await AuthApi.makeRequest();
-  const signInResponse = AuthApi.signIn();
-  expect(responseStatus).toBe(200);
+  const user: string = `tst-user-${randomUUID()}@pixegami.com`;
+  const password: string = `password-${randomUUID()}`;
+
+  // const responseStatus = await AuthApi.makeRequest();
+  const signUpResponse = await AuthApi.signUp(user, password);
+  expect(signUpResponse.status).toBe(200);
+
+  // Sign In.
+  const signInResponse = await AuthApi.signIn(user, password);
+  expect(signInResponse.status).toBe(200);
 
   // // Registration.
   // const user: string = `tst-user-${randomUUID()}@pixegami.com`;
@@ -25,20 +32,16 @@ test("Test Auth Positive Login", async () => {
   // expect(response.token).not.toBeUndefined();
   // expect(response.status).toBe(200);
 
-  // // Sign In.
-  // const signInResponse = await AuthApi.signIn(user, password);
-  // expect(signInResponse.status).toBe(200);
-
-  // // Validation should succeed.
-  // const validationResponse = await AuthApi.validate();
-  // expect(validationResponse.status).toBe(200);
+  // Validation should succeed.
+  const validationResponse = await AuthApi.validate();
+  expect(validationResponse.status).toBe(200);
 });
 
-test("Validate with empty Session fails", async () => {
-  // // Validation should fail without a session.
-  // const validationResponse = await AuthApi.validate();
-  // expect(validationResponse.status).not.toBe(200);
-});
+// test("Validate with empty Session fails", async () => {
+//   // // Validation should fail without a session.
+//   // const validationResponse = await AuthApi.validate();
+//   // expect(validationResponse.status).not.toBe(200);
+// });
 
 const randomUUID = () => {
   return uuidv4().replaceAll("-", "").substr(0, 12);

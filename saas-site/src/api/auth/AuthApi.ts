@@ -1,4 +1,7 @@
+import { AxiosResponse } from "axios";
 import { stat } from "fs";
+import ApiRequest from "../ApiRequest";
+import ApiResponse from "../ApiResponse";
 import BaseApi from "../BaseApi";
 import AuthResponse from "./AuthResponse";
 import AuthSession from "./AuthSession";
@@ -10,9 +13,28 @@ interface RequestObject {
 }
 
 class AuthApi extends BaseApi {
-  public static ENDPOINT: string = "https://api.ss.pixegami.com/auth";
+  private static ENDPOINT: string = "https://api.ss.pixegami.com/auth";
   private static session: AuthSession | null = null;
   private static attemptedToLoadSession: boolean = false;
+
+  protected static getEndpoint(): string {
+    return this.ENDPOINT;
+  }
+
+  public static signIn(email: string, password: string): Promise<ApiResponse> {
+    console.log("Signing in!");
+    return this.getRequest("sign_in", { user: email, password: password });
+  }
+
+  public static signUp(email: string, password: string): Promise<ApiResponse> {
+    console.log(`Registering: ${email} : ${password}`);
+    return this.postRequest("sign_up", { user: email, password: password });
+  }
+
+  public static validate(): Promise<ApiResponse> {
+    console.log(`Validating With Token: ...`);
+    return this.getRequest("validate_token", { user: "blah" }, "blah");
+  }
 
   private static setSession = (session: AuthSession) => {
     AuthApi.session = session;
@@ -46,40 +68,6 @@ class AuthApi extends BaseApi {
     return false;
   };
 
-  private static invokePostApi = (
-    operation: string,
-    payload: object,
-    onResponseReceived: (status: number, x: any) => void,
-    onError: (x: any) => void
-  ) => {
-    console.log("Getting from API: " + AuthApi.ENDPOINT);
-    const request = AuthApi.createRequest("POST", operation, payload);
-    fetch(AuthApi.ENDPOINT, request)
-      .then(async (rawResponse) =>
-        onResponseReceived(rawResponse.status, await rawResponse.json())
-      )
-      .catch((error) => onError(error));
-  };
-
-  private static invokeGetApi = (
-    operation: string,
-    payload: object,
-    onResponseReceived: (status: number, x: any) => void,
-    onError: (x: any) => void
-  ) => {
-    console.log("Getting from API: " + AuthApi.ENDPOINT);
-    const endpointWithParams: string =
-      AuthApi.ENDPOINT +
-      "?" +
-      new URLSearchParams({ operation: operation, ...payload });
-    const request = AuthApi.createRequest("GET", operation, payload);
-    fetch(endpointWithParams, request)
-      .then(async (rawResponse) =>
-        onResponseReceived(rawResponse.status, await rawResponse.json())
-      )
-      .catch((error) => onError(error));
-  };
-
   private static createRequest = (
     methodName: string,
     operation: string,
@@ -107,99 +95,27 @@ class AuthApi extends BaseApi {
     return request;
   };
 
-  public static signIn() {
-    console.log("Signing in!");
-    return 200;
-  }
+  // public static validate = (): Promise<AuthResponse> => {
+  //   console.log(`Validating...With Session ${AuthApi.getSession()}`);
+  //   var promise = new Promise<AuthResponse>((resolve, reject) => {
+  //     const response: AuthResponse = {
+  //       success: false,
+  //       token: undefined,
+  //       status: 400,
+  //     };
 
-  public static signIn2 = (
-    email: string,
-    password: string
-  ): Promise<AuthResponse> => {
-    console.log(`Signing In: ${email} : ${password}`);
+  //     const onResolve = (status: number, x: any) => {
+  //       response.success = true;
+  //       response.status = status;
+  //       resolve(response);
+  //       console.log(x.message);
+  //     };
 
-    console.log(`Sign In: ${email} : ${password}`);
-    const signInPayload = { user: email, password: password };
+  //     AuthApi.invokeGetApi("validate_token", {}, onResolve, reject);
+  //   });
 
-    var promise = new Promise<AuthResponse>((resolve, reject) => {
-      const response: AuthResponse = {
-        success: false,
-        token: undefined,
-        status: 400,
-      };
-
-      const onResolve = (status: number, x: any) => {
-        response.token = x.token;
-        response.success = status === 200;
-        response.status = status;
-
-        if (response.success) {
-          const session = new AuthSession();
-          session.token = x.token;
-          session.email = "blah";
-          console.log("Setting Token in Session...");
-          AuthApi.setSession(session);
-          resolve(response);
-        } else {
-          reject(`Got an error ${response.status}: ${x.message}`);
-          console.log(x);
-        }
-      };
-
-      AuthApi.invokePostApi("sign_in", signInPayload, onResolve, reject);
-    });
-
-    return promise;
-  };
-
-  public static register = (
-    email: string,
-    password: string
-  ): Promise<AuthResponse> => {
-    console.log(`Registering: ${email} : ${password}`);
-    const signUpPayload = { user: email, password: password };
-
-    var promise = new Promise<AuthResponse>((resolve, reject) => {
-      const response: AuthResponse = {
-        success: false,
-        token: undefined,
-        status: 400,
-      };
-
-      const onResolve = (status: number, x: any) => {
-        response.token = x.token;
-        response.success = true;
-        response.status = status;
-        resolve(response);
-      };
-
-      AuthApi.invokePostApi("sign_up", signUpPayload, onResolve, reject);
-    });
-
-    return promise;
-  };
-
-  public static validate = (): Promise<AuthResponse> => {
-    console.log(`Validating...With Session ${AuthApi.getSession()}`);
-    var promise = new Promise<AuthResponse>((resolve, reject) => {
-      const response: AuthResponse = {
-        success: false,
-        token: undefined,
-        status: 400,
-      };
-
-      const onResolve = (status: number, x: any) => {
-        response.success = true;
-        response.status = status;
-        resolve(response);
-        console.log(x.message);
-      };
-
-      AuthApi.invokeGetApi("validate_token", {}, onResolve, reject);
-    });
-
-    return promise;
-  };
+  //   return promise;
+  // };
 
   public static signOut = (): Promise<string> => {
     const token: string = AuthApi.getSession().token;

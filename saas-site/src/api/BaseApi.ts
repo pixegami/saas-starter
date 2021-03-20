@@ -1,21 +1,100 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
+import ApiRequest from "./ApiRequest";
+import ApiResponse from "./ApiResponse";
 
 class BaseApi {
-  public static async makeRequest() {
+  protected static getEndpoint(): string {
+    throw new Error("getEndpoint() is not implemented!");
+  }
+
+  protected static getRequest(operation: string, payload: any, token?: string) {
+    return this.genericRequest("GET", operation, payload, token);
+  }
+
+  protected static postRequest(
+    operation: string,
+    payload: any,
+    token?: string
+  ) {
+    return this.genericRequest("POST", operation, payload, token);
+  }
+
+  private static genericRequest(
+    method: Method,
+    operation: string,
+    payload: any,
+    token?: string
+  ) {
+    const request: ApiRequest = {
+      endpoint: this.getEndpoint(),
+      method: method,
+      operation: operation,
+      payload: payload,
+      token: token,
+    };
+    return this.sendRequest(request);
+  }
+
+  private static async sendRequest(request: ApiRequest) {
+    const requestConfig = this.convertToAxiosRequestConfig(request);
+    return new Promise<ApiResponse>((resolve, reject) => {
+      axios
+        .request(requestConfig)
+        .then((r) => this.handleResponse(r, resolve))
+        .catch((e) => this.handleError(e, reject));
+    });
+  }
+
+  private static convertToAxiosRequestConfig(
+    request: ApiRequest
+  ): AxiosRequestConfig {
+    // Start config.
     const requestConfig: AxiosRequestConfig = {
-      url: "http://google.com",
-      method: "GET",
+      url: request.endpoint,
+      method: request.method,
     };
 
-    try {
-      const response = await axios.request(requestConfig);
-      console.log("Response Received");
-      console.log(response.status);
-      return response.status;
-    } catch (error: any) {
-      console.log("Error Received");
-      console.log(error);
-      return "500";
+    // Bearer Token if any...
+
+    // If a payload exists, add it to the request.
+    if (request.payload) {
+      const payload = {
+        ...request.payload,
+        operation: request.operation,
+        flags: ["TMP"],
+      };
+      if (request.method === "GET") {
+        requestConfig.params = payload;
+      } else {
+        requestConfig.data = payload;
+      }
+    }
+
+    return requestConfig;
+  }
+
+  private static handleResponse(response: AxiosResponse, resolve: any) {
+    const apiResponse: ApiResponse = {
+      status: response.status,
+      message: response.data.message,
+      payload: response.data.payload,
+    };
+    resolve(apiResponse);
+  }
+
+  private static handleError(error: any, reject: any) {
+    if (error.response) {
+      reject({
+        status: error.response.status,
+        message: error.response.data.message,
+        payload: {},
+      });
+    } else {
+      reject({
+        status: 400,
+        message: `Unknown Error: ${error}`,
+        payload: { error: error },
+      });
     }
   }
 }
