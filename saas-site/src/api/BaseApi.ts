@@ -19,20 +19,6 @@ class BaseApi {
     return this.genericRequest("POST", operation, payload, token);
   }
 
-  protected static withSideEffect(
-    promise: Promise<ApiResponse>,
-    sideEffect: (x: ApiResponse) => void
-  ) {
-    return new Promise<ApiResponse>((resolve, reject) => {
-      promise
-        .then((r) => {
-          sideEffect(r);
-          resolve(r);
-        })
-        .catch(reject);
-    });
-  }
-
   private static genericRequest(
     method: Method,
     operation: string,
@@ -49,13 +35,27 @@ class BaseApi {
     return this.sendRequest(request);
   }
 
-  private static async sendRequest(request: ApiRequest) {
+  private static sendRequest(request: ApiRequest): Promise<ApiResponse> {
     const requestConfig = this.convertToAxiosRequestConfig(request);
     return new Promise<ApiResponse>((resolve, reject) => {
       axios
         .request(requestConfig)
         .then((r) => this.handleResponse(r, resolve))
         .catch((e) => this.handleError(e, resolve));
+    });
+  }
+
+  protected static withSideEffect(
+    promise: Promise<ApiResponse>,
+    executor: (x: ApiResponse) => void
+  ): Promise<ApiResponse> {
+    return new Promise<ApiResponse>((resolve, reject) => {
+      promise
+        .then((r) => {
+          executor(r);
+          resolve(r);
+        })
+        .catch(reject);
     });
   }
 

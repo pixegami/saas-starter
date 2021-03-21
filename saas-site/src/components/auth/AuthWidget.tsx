@@ -1,7 +1,7 @@
 import { navigate } from "gatsby";
 import { Link } from "gatsby";
 import * as React from "react";
-import AuthApi from "../api/AuthApi";
+import AuthApi from "../../api/auth/AuthApi";
 
 interface AuthWidgetProps {
   path: string;
@@ -10,10 +10,7 @@ interface AuthWidgetProps {
 const AuthWidget: React.FC<AuthWidgetProps> = (props) => {
   const onSignOut = () => {
     console.log("Sign out...");
-    AuthApi.signOut().then(onSignOutResponse).catch(console.log);
-  };
-
-  const onSignOutResponse = () => {
+    AuthApi.signOut();
     navigate("/app/dashboard");
   };
 
@@ -21,7 +18,7 @@ const AuthWidget: React.FC<AuthWidgetProps> = (props) => {
 
   return (
     <div>
-      <div>Logged in with: {AuthApi.getSession().token}</div>
+      <div>Logged in with: {AuthApi.getSessionToken()}</div>
       <button className={buttonStyle} type="button" onClick={onSignOut}>
         Sign Out
       </button>

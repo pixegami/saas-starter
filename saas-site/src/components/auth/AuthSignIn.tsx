@@ -1,6 +1,5 @@
 import { Link, navigate } from "gatsby";
 import * as React from "react";
-import Auth from "../../api/auth/Auth";
 import AuthApi from "../../api/auth/AuthApi";
 import AuthResponse from "../../api/auth/AuthResponse";
 

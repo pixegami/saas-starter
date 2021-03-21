@@ -24,7 +24,7 @@ test("Test Auth Positive Login", async () => {
   // Sign In.
   const signInResponse = await AuthApi.signIn(user, password);
   expect(signInResponse.status).toBe(200);
-  expect(signInResponse.payload.token).not.toBeUndefined();
+  expect(signInResponse.token).not.toBeUndefined();
 
   // Validation should succeed.
   const validationResponse = await AuthApi.validate();

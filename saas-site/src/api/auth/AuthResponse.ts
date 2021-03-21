@@ -1,7 +1,6 @@
-interface AuthResponse {
-  success: boolean;
-  status: number;
-  errorDetails?: string;
+import ApiResponse from "../ApiResponse";
+
+interface AuthResponse extends ApiResponse {
   token?: string;
 }
 

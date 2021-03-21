@@ -1,5 +1,6 @@
 import ApiResponse from "../ApiResponse";
 import BaseApi from "../BaseApi";
+import AuthResponse from "./AuthResponse";
 import AuthSession from "./AuthSession";
 
 class AuthApi extends BaseApi {
@@ -13,20 +14,29 @@ class AuthApi extends BaseApi {
     return this.ENDPOINT;
   }
 
-  public static signIn(email: string, password: string): Promise<ApiResponse> {
+  public static signIn(email: string, password: string): Promise<AuthResponse> {
     console.log("Signing in!");
-    return this.withSideEffect(
-      this.getRequest("sign_in", { user: email, password: password }),
-      (x) => {
-        this.getSession().token = x.payload.token;
-        console.log(`Executing Side Effect: ${x.payload.token}`);
-      }
-    );
+
+    const signInPromise = this.getRequest("sign_in", {
+      user: email,
+      password: password,
+    });
+
+    const sideEffectPromise = this.withSideEffect(signInPromise, (x) => {
+      this.getSession().token = x.payload.token;
+      console.log(`Executing Side Effect: ${x.payload.token}`);
+    });
+
+    return this.withResponseTransformer(sideEffectPromise);
   }
 
   public static signUp(email: string, password: string): Promise<ApiResponse> {
     console.log(`Registering: ${email} : ${password}`);
     return this.postRequest("sign_up", { user: email, password: password });
+  }
+
+  public static signOut(): void {
+    this.clearSession();
   }
 
   public static validate(): Promise<ApiResponse> {
@@ -41,19 +51,34 @@ class AuthApi extends BaseApi {
     return this.SESSION;
   }
 
+  private static withResponseTransformer(
+    promise: Promise<ApiResponse>
+  ): Promise<AuthResponse> {
+    return new Promise<AuthResponse>((resolve, reject) => {
+      promise
+        .then((apiResponse) => {
+          const authResponse = {
+            ...apiResponse,
+            token: apiResponse.payload.token,
+          };
+          resolve(authResponse);
+        })
+        .catch(reject);
+    });
+  }
+
   public static clearSession() {
     AuthSession.clear();
     this.SESSION = new AuthSession();
   }
 
-  public static isSignedIn = (): boolean => {
-    if (AuthApi.getSession()) {
-      if (AuthApi.getSession().token) {
-        return true;
-      }
-    }
-    return false;
-  };
+  public static getSessionToken(): string | undefined {
+    return this.getSession().token;
+  }
+
+  public static hasSessionToken(): boolean {
+    return this.getSessionToken() ? true : false;
+  }
 }
 
 export default AuthApi;

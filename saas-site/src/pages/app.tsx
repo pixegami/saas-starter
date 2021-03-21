@@ -4,7 +4,7 @@ import Layout from "../components/Layout";
 import Dashboard from "../app/dashboard";
 import Landing from "../app/landing";
 import NotFound from "../app/notFound";
-import AuthRoute from "../app/authRoute";
+import AuthRoute from "../app/util/AuthRoute";
 import AuthLanding from "../auth/components/AuthWidget";
 import AuthRegister from "../auth/components/AuthRegister";
 import AuthSignIn from "../auth/components/AuthSignIn";
