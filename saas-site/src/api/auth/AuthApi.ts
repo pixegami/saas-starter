@@ -22,17 +22,20 @@ class AuthApi extends BaseApi {
       password: password,
     });
 
-    const sideEffectPromise = this.withSideEffect(signInPromise, (x) => {
-      this.getSession().token = x.payload.token;
-      console.log(`Executing Side Effect: ${x.payload.token}`);
-    });
+    const sideEffectPromise = this.withSideEffect(signInPromise, (x) =>
+      this.getSession().setToken(x.payload.token).save()
+    );
 
     return this.withResponseTransformer(sideEffectPromise);
   }
 
-  public static signUp(email: string, password: string): Promise<ApiResponse> {
-    console.log(`Registering: ${email} : ${password}`);
-    return this.postRequest("sign_up", { user: email, password: password });
+  public static signUp(email: string, password: string): Promise<AuthResponse> {
+    const signUpPromise = this.postRequest("sign_up", {
+      user: email,
+      password: password,
+    });
+
+    return this.withResponseTransformer(signUpPromise);
   }
 
   public static signOut(): void {
@@ -73,7 +76,7 @@ class AuthApi extends BaseApi {
   }
 
   public static getSessionToken(): string | undefined {
-    return this.getSession().token;
+    return this.getSession().getToken();
   }
 
   public static hasSessionToken(): boolean {

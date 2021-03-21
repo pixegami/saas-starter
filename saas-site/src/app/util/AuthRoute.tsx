@@ -1,6 +1,7 @@
 import React from "react";
 import { navigate } from "gatsby";
 import AuthApi from "../../api/auth/AuthApi";
+import AuthWidget from "../../components/auth/AuthWidget";
 
 const AuthRoute = ({ component: Component, path, ...rest }) => {
   console.log("In Auth Route: " + path);

@@ -5,18 +5,20 @@ import Dashboard from "../app/dashboard";
 import Landing from "../app/landing";
 import NotFound from "../app/notFound";
 import AuthRoute from "../app/util/AuthRoute";
-import AuthLanding from "../auth/components/AuthWidget";
-import AuthRegister from "../auth/components/AuthRegister";
-import AuthSignIn from "../auth/components/AuthSignIn";
+import AuthSignIn from "../components/auth/AuthSignIn";
+import AuthRegister from "../components/auth/AuthRegister";
 
 const App = () => (
   <Layout>
     This is the app master page.
     <Router>
-      <AuthRoute component={Dashboard} path="/app/dashboard" />
-      <Landing path="/app/landing" />
+      <Landing path="/app" />
+
       <AuthSignIn path="/app/signIn" />
       <AuthRegister path="/app/register" />
+
+      <AuthRoute component={Dashboard} path="/app/dashboard" />
+
       <NotFound default />
     </Router>
   </Layout>

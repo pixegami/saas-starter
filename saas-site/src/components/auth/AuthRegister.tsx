@@ -1,6 +1,5 @@
 import { Link } from "gatsby";
 import * as React from "react";
-import Auth from "../../api/auth/Auth";
 import AuthApi from "../../api/auth/AuthApi";
 import AuthResponse from "../../api/auth/AuthResponse";
 
@@ -28,7 +27,7 @@ const AuthRegister: React.FC<AuthRegisterProps> = (props) => {
   const onRegister = () => {
     console.log("Register with ", email, password);
     setIsBusy(true);
-    AuthApi.register(email, password)
+    AuthApi.signUp(email, password)
       .then(onRegisterSuccess)
       .catch(onRegisterError);
   };

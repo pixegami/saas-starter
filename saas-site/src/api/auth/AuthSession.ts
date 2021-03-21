@@ -1,15 +1,25 @@
 class AuthSession {
   private static SESSION_STORAGE_NAME: string = "ss_pixegami_auth_session";
 
-  public token: string | undefined;
+  private token: string | undefined;
 
-  public save(): void {
+  public save(): AuthSession {
     // Save session to local storage.
     window.localStorage.setItem(
       AuthSession.SESSION_STORAGE_NAME,
       this.serialize()
     );
     console.log(`Saved Session: ${this.serialize()}`);
+    return this;
+  }
+
+  public setToken(token: string): AuthSession {
+    this.token = token;
+    return this;
+  }
+
+  public getToken(): string {
+    return this.token;
   }
 
   public static restoreOrNew(): AuthSession {
