@@ -12,7 +12,7 @@ beforeEach(async () => {
 
 test("Test Auth Positive Login", async () => {
   // User can register, login, and validate their session.
-  jest.setTimeout(30000);
+  jest.setTimeout(45000);
 
   const user: string = `tst-user-${randomUUID()}@pixegami.com`;
   const password: string = `password-${randomUUID()}`;
@@ -31,11 +31,11 @@ test("Test Auth Positive Login", async () => {
   expect(validationResponse.status).toBe(200);
 });
 
-// test("Validate with empty Session fails", async () => {
-//   // // Validation should fail without a session.
-//   // const validationResponse = await AuthApi.validate();
-//   // expect(validationResponse.status).not.toBe(200);
-// });
+test("Validate with empty Session fails", async () => {
+  // // Validation should fail without a session.
+  const validationResponse = await AuthApi.validate();
+  expect(validationResponse.status).toBe(400);
+});
 
 const randomUUID = () => {
   return uuidv4().replaceAll("-", "").substr(0, 12);

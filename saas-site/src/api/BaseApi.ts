@@ -55,7 +55,7 @@ class BaseApi {
       axios
         .request(requestConfig)
         .then((r) => this.handleResponse(r, resolve))
-        .catch((e) => this.handleError(e, reject));
+        .catch((e) => this.handleError(e, resolve));
     });
   }
 
@@ -103,15 +103,15 @@ class BaseApi {
     resolve(apiResponse);
   }
 
-  private static handleError(error: any, reject: any) {
+  private static handleError(error: any, resolve: any) {
     if (error.response) {
-      reject({
+      resolve({
         status: error.response.status,
         message: error.response.data.message,
-        payload: {},
+        payload: error.response.data,
       });
     } else {
-      reject({
+      resolve({
         status: 400,
         message: `Unknown Error: ${error}`,
         payload: { error: error },
