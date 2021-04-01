@@ -2,6 +2,7 @@ import { Link } from "gatsby";
 import * as React from "react";
 import AuthApi from "../../api/auth/AuthApi";
 import AuthResponse from "../../api/auth/AuthResponse";
+import { newDefaultAuthState } from "./AuthState";
 
 interface AuthRegisterProps {
   path: string;
@@ -10,29 +11,27 @@ interface AuthRegisterProps {
 const AuthRegister: React.FC<AuthRegisterProps> = (props) => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [isBusy, setIsBusy] = React.useState(false);
+  const [authState, setAuthState] = React.useState(newDefaultAuthState());
 
   const onRegisterSuccess = (response: AuthResponse) => {
-    setIsBusy(false);
+    setAuthState({ ...authState, isBusy: false });
     console.log("Register success!");
     console.log("Token: ", response.token);
   };
 
   const onRegisterError = (x: any) => {
-    setIsBusy(false);
+    setAuthState({ ...authState, isBusy: false });
     console.log("Failed to register");
     console.log(x);
   };
 
   const onRegister = () => {
     console.log("Register with ", email, password);
-    setIsBusy(true);
-    AuthApi.signUp(email, password)
-      .then(onRegisterSuccess)
-      .catch(onRegisterError);
+    setAuthState({ ...authState, isBusy: true });
+    AuthApi.delayedSuccess().then(onRegisterSuccess).catch(onRegisterError);
   };
 
-  const busyElement = isBusy ? <div>Loading...</div> : null;
+  const busyElement = authState.isBusy ? <div>Loading...</div> : null;
 
   return (
     <div className="text-lg">
@@ -54,7 +53,7 @@ const AuthRegister: React.FC<AuthRegisterProps> = (props) => {
         className="border m-1 p-1 border-black"
         type="button"
         onClick={onRegister}
-        disabled={isBusy}
+        disabled={authState.isBusy}
       >
         Register
       </button>

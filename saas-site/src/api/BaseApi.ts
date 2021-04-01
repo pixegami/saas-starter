@@ -3,6 +3,42 @@ import ApiRequest from "./ApiRequest";
 import ApiResponse from "./ApiResponse";
 
 class BaseApi {
+  public static delayedSuccess(): Promise<ApiResponse> {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Fake operation succeeded!",
+      payload: {},
+    };
+    return this.genericFakePromise((resolve, _reject) => resolve(response));
+  }
+
+  public static delayedError(): Promise<ApiResponse> {
+    const response: ApiResponse = {
+      status: 400,
+      message: "Fake operation error!",
+      payload: {},
+    };
+    return this.genericFakePromise((resolve, _reject) => resolve(response));
+  }
+
+  public static delayedFault(): Promise<ApiResponse> {
+    return this.genericFakePromise((_resolve, reject) =>
+      reject("Some unknown fault!")
+    );
+  }
+
+  private static genericFakePromise(
+    executor: (
+      resolve: (value: ApiResponse | PromiseLike<ApiResponse>) => void,
+      reject: (reason?: any) => void
+    ) => void
+  ): Promise<ApiResponse> {
+    const promise = new Promise<ApiResponse>((resolve, reject) => {
+      setInterval(() => executor(resolve, reject), 1000);
+    });
+    return promise;
+  }
+
   protected static getEndpoint(): string {
     throw new Error("getEndpoint() is not implemented!");
   }
