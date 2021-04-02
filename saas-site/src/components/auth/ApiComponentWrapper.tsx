@@ -1,12 +1,13 @@
 import React, { Component, FunctionComponent } from "react";
 import ApiResponse from "../../api/ApiResponse";
-import { ApiState, newApiState } from "./ApiState";
+import { ApiState, ApiStateOverride, newApiState } from "./ApiState";
 
 export interface SubComponentBaseProps {
-  v1: number;
-  setVar(x: number): void;
-  authState: ApiState;
-  setAuthState(x: ApiState): void;
+  apiState: ApiState;
+  setApiOverride(x: ApiStateOverride): void;
+  onApiRequest(): void;
+  onApiResponse(x: ApiResponse): void;
+  onApiFault(x: any): void;
 }
 
 const ApiComponentWrapper = ({
@@ -14,14 +15,39 @@ const ApiComponentWrapper = ({
   path: string,
   ...rest
 }) => {
-  const [x, setX] = React.useState(0);
-  const [authState, setAuthState] = React.useState(newApiState());
+  const [apiState, setApiState] = React.useState(newApiState());
+  const setApiOverride = (override: ApiStateOverride) => {
+    setApiState(newApiState(override));
+  };
+
+  const onApiRequest = () => {
+    setApiOverride({ isBusy: true });
+  };
+
+  const onApiResponse = (response: ApiResponse) => {
+    if (response.status == 200) {
+      setApiOverride({ isBusy: false });
+    } else {
+      setApiOverride({
+        hasError: true,
+        errorMessage: response.message,
+      });
+    }
+  };
+
+  const onApiFault = (x: any) => {
+    setApiOverride({
+      hasError: true,
+      errorMessage: `Something unexpected happened! [${x}]`,
+    });
+  };
 
   const subProps: SubComponentBaseProps = {
-    v1: x,
-    setVar: setX,
-    authState,
-    setAuthState,
+    apiState,
+    setApiOverride,
+    onApiRequest,
+    onApiResponse,
+    onApiFault,
   };
 
   return (
@@ -30,37 +56,6 @@ const ApiComponentWrapper = ({
       <FunctionComponent<SubComponentBaseProps> {...rest} {...subProps} />
     </>
   );
-
-  // const [authState, setAuthState] = React.useState(newDefaultAuthState());
-  // const setAuthStateWithOverride = (override: AuthStateOverride) => {
-  //   setAuthState(newAuthState(override));
-  // };
-
-  // // on Success Response.
-  // // on ApiRequest function.
-
-  // const onApiResponse = (response: ApiResponse) => {
-  //   if (response.status == 200) {
-  //     setAuthStateWithOverride({ isBusy: false });
-  //   } else {
-  //     setAuthStateWithOverride({
-  //       hasError: true,
-  //       errorMessage: response.message,
-  //     });
-  //   }
-  // };
-
-  // const onApiFault = (x: any) => {
-  //   setAuthStateWithOverride({
-  //     hasError: true,
-  //     errorMessage: `Something unexpected happened! [${x}]`,
-  //   });
-  // };
-
-  // const onApiRequest = () => {
-  //   setAuthStateWithOverride({ isBusy: true });
-  //   // AuthApi.delayedFault().then(onApiResponse).catch(onApiFault);
-  // };
 };
 
 export const withApiWrapper = (

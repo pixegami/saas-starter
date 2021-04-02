@@ -12,7 +12,7 @@ export interface ApiStateOverride {
 }
 
 export const newApiState = (overrides?: ApiStateOverride): ApiState => {
-  const usedOverrides = overrides ? overrides : {};
+  const usedOverrides: ApiStateOverride = overrides ? overrides : {};
   return {
     isBusy: false,
     hasError: false,

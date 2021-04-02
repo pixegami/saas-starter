@@ -2,51 +2,26 @@ import { Link } from "gatsby";
 import * as React from "react";
 import AuthApi from "../../api/auth/AuthApi";
 import AuthResponse from "../../api/auth/AuthResponse";
-import { ApiStateOverride, newApiState } from "./ApiState";
+import { SubComponentBaseProps, withApiWrapper } from "./ApiComponentWrapper";
 
-interface AuthRegisterProps {
-  path: string;
-}
-
-const AuthRegister: React.FC<AuthRegisterProps> = (props) => {
+const AuthRegister: React.FC<SubComponentBaseProps> = (props) => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
 
-  const [authState, setAuthState] = React.useState(newApiState());
-  const setAuthStateWithOverride = (override: ApiStateOverride) => {
-    setAuthState(newApiState(override));
-  };
-
-  const onApiResponse = (response: AuthResponse) => {
-    console.log("Register response received!");
-    console.log("Response: ", response);
-
-    if (response.status == 200) {
-      setAuthStateWithOverride({ isBusy: false });
-    } else {
-      setAuthStateWithOverride({
-        hasError: true,
-        errorMessage: response.message,
-      });
-    }
-  };
-
-  const onApiFault = (x: any) => {
-    setAuthStateWithOverride({
-      hasError: true,
-      errorMessage: `Something unexpected happened! [${x}]`,
-    });
+  const onCustomFault = (x: any) => {
+    console.log("Custom Fault Detected!");
+    props.onApiFault(x);
   };
 
   const onRegister = () => {
     console.log("Register with ", email, password);
-    setAuthStateWithOverride({ isBusy: true });
-    AuthApi.delayedFault().then(onApiResponse).catch(onApiFault);
+    props.onApiRequest();
+    AuthApi.delayedError().then(props.onApiResponse).catch(onCustomFault);
   };
 
-  const busyElement = authState.isBusy ? <div>Loading...</div> : null;
-  const errorElement = authState.hasError ? (
-    <div className="text-red-500">Error: {authState.errorMessage}</div>
+  const busyElement = props.apiState.isBusy ? <div>Loading...</div> : null;
+  const errorElement = props.apiState.hasError ? (
+    <div className="text-red-500">Error: {props.apiState.errorMessage}</div>
   ) : null;
 
   return (
@@ -58,20 +33,20 @@ const AuthRegister: React.FC<AuthRegisterProps> = (props) => {
         type="text"
         defaultValue={email}
         onChange={(e) => setEmail(e.currentTarget.value)}
-        disabled={authState.isBusy}
+        disabled={props.apiState.isBusy}
       />
       <input
         className="border m-1 p-1 border-black"
         type="password"
         defaultValue={password}
         onChange={(e) => setPassword(e.currentTarget.value)}
-        disabled={authState.isBusy}
+        disabled={props.apiState.isBusy}
       />
       <button
         className="border m-1 p-1 border-black"
         type="button"
         onClick={onRegister}
-        disabled={authState.isBusy}
+        disabled={props.apiState.isBusy}
       >
         Register
       </button>
@@ -84,4 +59,4 @@ const AuthRegister: React.FC<AuthRegisterProps> = (props) => {
   );
 };
 
-export default AuthRegister;
+export const WrappedAuthRegister = withApiWrapper(AuthRegister);

@@ -6,7 +6,7 @@ import Landing from "../app/landing";
 import NotFound from "../app/notFound";
 import AuthRoute from "../app/util/AuthRoute";
 import AuthSignIn from "../components/auth/AuthSignIn";
-import AuthRegister from "../components/auth/AuthRegister";
+import { WrappedAuthRegister } from "../components/auth/AuthRegister";
 import ApiComponentWrapper from "../components/auth/ApiComponentWrapper";
 import { WrappedApiSubComponent } from "../components/auth/ApiSubComponent";
 
@@ -17,9 +17,8 @@ const App = () => (
       <Landing path="/app" />
 
       <WrappedApiSubComponent path="/app/sc" />
+      <WrappedAuthRegister path="/app/register" />
       <AuthSignIn path="/app/signIn" />
-      <AuthRegister path="/app/register" />
-
       <AuthRoute component={Dashboard} path="/app/dashboard" />
 
       <NotFound default />

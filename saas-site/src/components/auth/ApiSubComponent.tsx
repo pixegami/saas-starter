@@ -4,17 +4,16 @@ import { newApiState } from "./ApiState";
 
 const ApiSubComponent: React.FC<SubComponentBaseProps> = (props) => {
   const onClick = () => {
-    props.setVar(props.v1 + 1);
-    props.setAuthState(newApiState({ isBusy: true }));
+    props.setApiOverride({ isBusy: true });
   };
 
-  console.log(props.authState);
+  console.log(props.apiState);
 
   return (
     <div>
-      I'm an Api Subcomponent! My key is: {props.v1}
+      I'm an Api Subcomponent! My key is: {1}
       <button onClick={onClick}>Click me</button>
-      Is busy: {props.authState.isBusy.toString()}
+      Is busy: {props.apiState.isBusy.toString()}
     </div>
   );
 };
