@@ -7,6 +7,8 @@ import NotFound from "../app/notFound";
 import AuthRoute from "../app/util/AuthRoute";
 import AuthSignIn from "../components/auth/AuthSignIn";
 import AuthRegister from "../components/auth/AuthRegister";
+import ApiComponentWrapper from "../components/auth/ApiComponentWrapper";
+import { WrappedApiSubComponent } from "../components/auth/ApiSubComponent";
 
 const App = () => (
   <Layout>
@@ -14,6 +16,7 @@ const App = () => (
     <Router>
       <Landing path="/app" />
 
+      <WrappedApiSubComponent path="/app/sc" />
       <AuthSignIn path="/app/signIn" />
       <AuthRegister path="/app/register" />
 

@@ -2,7 +2,7 @@ import { Link } from "gatsby";
 import * as React from "react";
 import AuthApi from "../../api/auth/AuthApi";
 import AuthResponse from "../../api/auth/AuthResponse";
-import { newDefaultAuthState } from "./AuthState";
+import { ApiStateOverride, newApiState } from "./ApiState";
 
 interface AuthRegisterProps {
   path: string;
@@ -11,27 +11,43 @@ interface AuthRegisterProps {
 const AuthRegister: React.FC<AuthRegisterProps> = (props) => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [authState, setAuthState] = React.useState(newDefaultAuthState());
 
-  const onRegisterSuccess = (response: AuthResponse) => {
-    setAuthState({ ...authState, isBusy: false });
-    console.log("Register success!");
-    console.log("Token: ", response.token);
+  const [authState, setAuthState] = React.useState(newApiState());
+  const setAuthStateWithOverride = (override: ApiStateOverride) => {
+    setAuthState(newApiState(override));
   };
 
-  const onRegisterError = (x: any) => {
-    setAuthState({ ...authState, isBusy: false });
-    console.log("Failed to register");
-    console.log(x);
+  const onApiResponse = (response: AuthResponse) => {
+    console.log("Register response received!");
+    console.log("Response: ", response);
+
+    if (response.status == 200) {
+      setAuthStateWithOverride({ isBusy: false });
+    } else {
+      setAuthStateWithOverride({
+        hasError: true,
+        errorMessage: response.message,
+      });
+    }
+  };
+
+  const onApiFault = (x: any) => {
+    setAuthStateWithOverride({
+      hasError: true,
+      errorMessage: `Something unexpected happened! [${x}]`,
+    });
   };
 
   const onRegister = () => {
     console.log("Register with ", email, password);
-    setAuthState({ ...authState, isBusy: true });
-    AuthApi.delayedSuccess().then(onRegisterSuccess).catch(onRegisterError);
+    setAuthStateWithOverride({ isBusy: true });
+    AuthApi.delayedFault().then(onApiResponse).catch(onApiFault);
   };
 
   const busyElement = authState.isBusy ? <div>Loading...</div> : null;
+  const errorElement = authState.hasError ? (
+    <div className="text-red-500">Error: {authState.errorMessage}</div>
+  ) : null;
 
   return (
     <div className="text-lg">
@@ -42,12 +58,14 @@ const AuthRegister: React.FC<AuthRegisterProps> = (props) => {
         type="text"
         defaultValue={email}
         onChange={(e) => setEmail(e.currentTarget.value)}
+        disabled={authState.isBusy}
       />
       <input
         className="border m-1 p-1 border-black"
         type="password"
         defaultValue={password}
         onChange={(e) => setPassword(e.currentTarget.value)}
+        disabled={authState.isBusy}
       />
       <button
         className="border m-1 p-1 border-black"
@@ -59,6 +77,7 @@ const AuthRegister: React.FC<AuthRegisterProps> = (props) => {
       </button>
 
       {busyElement}
+      {errorElement}
 
       <Link to="/app/landing">Back</Link>
     </div>
