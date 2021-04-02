@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  font-family: Ubuntu;
+}
+
+html {
+  @apply bg-gray-100;
+}

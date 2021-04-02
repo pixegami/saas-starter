@@ -5,62 +5,58 @@ import AuthApi from "../../api/auth/AuthApi";
 import AuthResponse from "../../api/auth/AuthResponse";
 import { SubComponentBaseProps, withApiWrapper } from "./ApiComponentWrapper";
 import { ApiState } from "./ApiState";
-
-const createInputField = (
-  defaultValue: string,
-  setValue: (x: string) => void,
-  isDisabled: boolean
-) => {
-  return (
-    <input
-      className="border m-1 p-1 border-black"
-      type="text"
-      defaultValue={defaultValue}
-      onChange={(e) => setValue(e.currentTarget.value)}
-      disabled={isDisabled}
-    />
-  );
-};
+import AuthCommonComponent from "./AuthCommonComponent";
 
 const createButton = (label: string, onClick: any, isDisabled: boolean) => {
   return (
-    <button
-      className="border m-1 p-1 border-black"
-      type="button"
-      onClick={onClick}
-      disabled={isDisabled}
-    >
-      {label}
-    </button>
+    <div className="w-full mt-4 flex">
+      <button
+        className="p-3 bg-blue-600 text-white font-semibold rounded-md w-full m-auto"
+        type="button"
+        onClick={onClick}
+        disabled={isDisabled}
+      >
+        {label}
+      </button>
+    </div>
   );
 };
 
-// Split the common form logic.
+class StringField {
+  public label: string;
+  public value: string;
+  public setValue: React.Dispatch<React.SetStateAction<string>>;
 
-// Split out the styling.
+  public static fromHook(
+    label: string,
+    stateHook: [string, React.Dispatch<React.SetStateAction<string>>]
+  ) {
+    const field = new StringField();
+    field.label = label;
+    field.value = stateHook[0];
+    field.setValue = stateHook[1];
+    return field;
+  }
 
-const AuthCommonComponent: React.FC<{ apiState: ApiState }> = (props) => {
-  const busyElement = props.apiState.isBusy ? <div>Loading...</div> : null;
-  const errorElement = props.apiState.hasError ? (
-    <div className="text-red-500">Error: {props.apiState.errorMessage}</div>
-  ) : null;
-
-  return (
-    <>
-      <div className="text-lg">
-        <h1>This is the Auth Register Page.</h1>
-        {props.children}
-        {busyElement}
-        {errorElement}
-        <Link to="/app/landing">Back</Link>
+  public asComponent(isDisabled: boolean) {
+    return (
+      <div className="w-full">
+        <div className="text-sm font-bold mb-1 text-gray-600">{this.label}</div>
+        <input
+          className="border mb-5 p-2 border-gray-300 rounded-md w-full text-gray-700"
+          type="text"
+          defaultValue={this.value.toString()}
+          onChange={(e) => this.setValue(e.currentTarget.value)}
+          disabled={isDisabled}
+        />
       </div>
-    </>
-  );
-};
+    );
+  }
+}
 
 const AuthRegister: React.FC<SubComponentBaseProps> = (props) => {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const emailField = StringField.fromHook("Email", React.useState(""));
+  const passwordField = StringField.fromHook("Password", React.useState(""));
 
   const onCustomFault = (x: any) => {
     console.log("Custom Fault Detected!");
@@ -68,16 +64,18 @@ const AuthRegister: React.FC<SubComponentBaseProps> = (props) => {
   };
 
   const onRegister = () => {
-    console.log("Register with ", email, password);
+    console.log("Register with ", emailField.value, passwordField.value);
     props.onApiRequest();
     AuthApi.delayedError().then(props.onApiResponse).catch(onCustomFault);
   };
 
+  const isDisabled: boolean = props.apiState.isBusy;
+
   return (
     <AuthCommonComponent apiState={props.apiState}>
-      {createInputField(email, setEmail, props.apiState.isBusy)}
-      {createInputField(password, setPassword, props.apiState.isBusy)}
-      {createButton("Register", onRegister, props.apiState.isBusy)}
+      {emailField.asComponent(isDisabled)}
+      {passwordField.asComponent(isDisabled)}
+      {createButton("Register", onRegister, isDisabled)}
     </AuthCommonComponent>
   );
 };
