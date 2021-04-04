@@ -1,71 +1,15 @@
-import { Link } from "gatsby";
 import * as React from "react";
-import { ReactNode } from "react";
 import AuthApi from "../../api/auth/AuthApi";
-import AuthResponse from "../../api/auth/AuthResponse";
 import { SubComponentBaseProps, withApiWrapper } from "./ApiComponentWrapper";
-import { ApiState } from "./ApiState";
 import "../../styles/loader.css";
 import AuthCommonComponent from "./AuthCommonComponent";
-
-const createButton = (label: string, onClick: any, isDisabled: boolean) => {
-  return (
-    <div className="w-full mt-4 flex">
-      <button
-        className="p-3 bg-blue-600 text-white font-semibold rounded-md w-full m-auto 
-        disabled:opacity-50"
-        type="button"
-        onClick={onClick}
-        disabled={isDisabled}
-      >
-        <div className="flex">
-          <div className="w-7 h-7 flex absolute">
-            <div className="loader" />
-          </div>
-          <div className="h-7 w-full flex">
-            <div className="m-auto">{label}</div>
-          </div>
-        </div>
-      </button>
-    </div>
-  );
-};
-
-class StringField {
-  public label: string;
-  public value: string;
-  public setValue: React.Dispatch<React.SetStateAction<string>>;
-
-  public static fromHook(
-    label: string,
-    stateHook: [string, React.Dispatch<React.SetStateAction<string>>]
-  ) {
-    const field = new StringField();
-    field.label = label;
-    field.value = stateHook[0];
-    field.setValue = stateHook[1];
-    return field;
-  }
-
-  public asComponent(isDisabled: boolean) {
-    return (
-      <div className="w-full">
-        <div className="text-sm font-bold mb-1 text-gray-600">{this.label}</div>
-        <input
-          className="border mb-5 p-2 border-gray-300 rounded-md w-full text-gray-700"
-          type="text"
-          defaultValue={this.value.toString()}
-          onChange={(e) => this.setValue(e.currentTarget.value)}
-          disabled={isDisabled}
-        />
-      </div>
-    );
-  }
-}
+import ApiButton from "./ApiButton";
+import { Link } from "gatsby";
+import ApiStringField from "./ApiStringField";
 
 const AuthRegister: React.FC<SubComponentBaseProps> = (props) => {
-  const emailField = StringField.fromHook("Email", React.useState(""));
-  const passwordField = StringField.fromHook("Password", React.useState(""));
+  const emailField = ApiStringField.fromHook("Email", React.useState(""));
+  const passwordField = ApiStringField.fromHook("Password", React.useState(""));
 
   const onCustomFault = (x: any) => {
     console.log("Custom Fault Detected!");
@@ -78,13 +22,28 @@ const AuthRegister: React.FC<SubComponentBaseProps> = (props) => {
     AuthApi.delayedError().then(props.onApiResponse).catch(onCustomFault);
   };
 
+  const createAccountLink = (
+    <div className="mt-2 text-gray-600 text-center">
+      Already registered?
+      <Link to="/app/signIn" className="ml-1 text-blue-600 hover:underline">
+        Sign in
+      </Link>
+    </div>
+  );
+
   const isDisabled: boolean = props.apiState.isBusy;
 
   return (
     <AuthCommonComponent apiState={props.apiState}>
       {emailField.asComponent(isDisabled)}
       {passwordField.asComponent(isDisabled)}
-      {createButton("Register", onRegister, isDisabled)}
+      <ApiButton
+        label="Register"
+        onClick={onRegister}
+        isDisabled={isDisabled}
+        isLoading={isDisabled}
+      />
+      {createAccountLink}
     </AuthCommonComponent>
   );
 };
