@@ -23,7 +23,7 @@ const AuthRegister: React.FC<SubComponentBaseProps> = (props) => {
   };
 
   const createAccountLink = (
-    <div className="mt-2 text-gray-600 text-center">
+    <div className="mt-2 text-gray-600 text-center text-sm">
       Already registered?
       <Link to="/app/signIn" className="ml-1 text-blue-600 hover:underline">
         Sign in
