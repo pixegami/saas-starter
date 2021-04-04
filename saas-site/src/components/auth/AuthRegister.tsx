@@ -5,18 +5,27 @@ import AuthApi from "../../api/auth/AuthApi";
 import AuthResponse from "../../api/auth/AuthResponse";
 import { SubComponentBaseProps, withApiWrapper } from "./ApiComponentWrapper";
 import { ApiState } from "./ApiState";
+import "../../styles/loader.css";
 import AuthCommonComponent from "./AuthCommonComponent";
 
 const createButton = (label: string, onClick: any, isDisabled: boolean) => {
   return (
     <div className="w-full mt-4 flex">
       <button
-        className="p-3 bg-blue-600 text-white font-semibold rounded-md w-full m-auto"
+        className="p-3 bg-blue-600 text-white font-semibold rounded-md w-full m-auto 
+        disabled:opacity-50"
         type="button"
         onClick={onClick}
         disabled={isDisabled}
       >
-        {label}
+        <div className="flex">
+          <div className="w-7 h-7 flex absolute">
+            <div className="loader" />
+          </div>
+          <div className="h-7 w-full flex">
+            <div className="m-auto">{label}</div>
+          </div>
+        </div>
       </button>
     </div>
   );
