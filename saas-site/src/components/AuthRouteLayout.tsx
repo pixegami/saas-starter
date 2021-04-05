@@ -5,7 +5,9 @@ const AuthRouteLayout = ({ children }) => {
   return (
     <>
       <NavBar />
-      <div className="m-auto p-2 md:p-4 max-w-6xl">{children}</div>
+      <div className="p-2 md:p-4">
+        <div className="max-w-6xl m-auto">{children}</div>
+      </div>
     </>
   );
 };
