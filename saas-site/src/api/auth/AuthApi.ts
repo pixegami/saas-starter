@@ -29,6 +29,29 @@ class AuthApi extends BaseApi {
     return this.withResponseTransformer(sideEffectPromise);
   }
 
+  public static fakeSignIn(
+    email: string,
+    password: string
+  ): Promise<AuthResponse> {
+    console.log("Signing in!");
+
+    const response: ApiResponse = {
+      status: 200,
+      message: "Fake operation succeeded!",
+      payload: { token: "some_cool_token", email: email },
+    };
+
+    const fakePromise = this.genericFakePromise((resolve, _reject) =>
+      resolve(response)
+    );
+
+    const sideEffectPromise = this.withSideEffect(fakePromise, (x) =>
+      this.getSession().setToken(x.payload.token).save()
+    );
+
+    return this.withResponseTransformer(sideEffectPromise);
+  }
+
   public static signUp(email: string, password: string): Promise<AuthResponse> {
     const signUpPromise = this.postRequest("sign_up", {
       user: email,

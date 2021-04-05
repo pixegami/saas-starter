@@ -27,7 +27,7 @@ class BaseApi {
     );
   }
 
-  private static genericFakePromise(
+  protected static genericFakePromise(
     executor: (
       resolve: (value: ApiResponse | PromiseLike<ApiResponse>) => void,
       reject: (reason?: any) => void

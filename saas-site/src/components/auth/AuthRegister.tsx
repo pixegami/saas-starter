@@ -30,7 +30,10 @@ const AuthRegister: React.FC<SubComponentBaseProps> = (props) => {
   const isDisabled: boolean = props.apiState.isBusy;
 
   return (
-    <AuthCommonComponent apiState={props.apiState}>
+    <AuthCommonComponent
+      header="Create a new account."
+      apiState={props.apiState}
+    >
       {emailField.asComponent(isDisabled)}
       {passwordField.asComponent(isDisabled)}
       <ApiButton

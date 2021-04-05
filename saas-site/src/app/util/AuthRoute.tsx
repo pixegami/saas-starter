@@ -1,20 +1,32 @@
-import React from "react";
+import React, { Component } from "react";
 import { navigate } from "gatsby";
 import AuthApi from "../../api/auth/AuthApi";
 import AuthWidget from "../../components/auth/AuthWidget";
+import AuthRouteLayout from "../../components/AuthRouteLayout";
 
-const AuthRoute = ({ component: Component, path, ...rest }) => {
-  console.log("In Auth Route: " + path);
-  if (!AuthApi.hasSessionToken() && path !== `/app/signIn`) {
-    console.log("AUTH GUARD: DEFLECTED");
-    navigate("/app/signIn");
-    return null;
+interface AuthRouteProps {
+  component: any;
+  path: string;
+  bypassAuth?: boolean;
+}
+
+const AuthRoute: React.FC<AuthRouteProps> = (props) => {
+  console.log("In Auth Route: " + props.path);
+
+  if (!props.bypassAuth) {
+    if (!AuthApi.hasSessionToken() && props.path !== `/app/signIn`) {
+      console.log("AUTH GUARD: DEFLECTED");
+      navigate("/app/signIn");
+      return null;
+    }
   }
   console.log("AUTH GUARD: PASSED");
   return (
     <div>
-      <Component {...rest} />
-      <AuthWidget path={path} />
+      <AuthRouteLayout>
+        <props.component {...props} />
+        <AuthWidget path={props.path} />
+      </AuthRouteLayout>
     </div>
   );
 };

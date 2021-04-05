@@ -52,7 +52,6 @@ const ApiComponentWrapper = ({
 
   return (
     <>
-      I'm a wrapper for:
       <FunctionComponent<SubComponentBaseProps> {...rest} {...subProps} />
     </>
   );

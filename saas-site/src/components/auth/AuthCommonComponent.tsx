@@ -12,18 +12,16 @@ const createErrorElement = (message: string) => {
 
 const AuthCommonComponent: React.FC<{
   apiState: ApiState;
+  header: string;
 }> = (props) => {
   const errorElement = props.apiState.hasError
     ? createErrorElement(props.apiState.errorMessage)
     : null;
 
   return (
-    <div className="bg-white md:p-8 p-4 border border-gray-300 rounded-md max-w-md">
-      <h1 className="text-2xl font-light mb-6 text-gray-700">
-        Create a new account.
-      </h1>
+    <div className="bg-white md:p-8 p-4 border border-gray-300 rounded-md max-w-xl  m-2 md:m-auto mt-4 md:mt-8">
+      <h1 className="text-2xl font-light mb-6 text-gray-700">{props.header}</h1>
       {errorElement}
-
       {props.children}
     </div>
   );

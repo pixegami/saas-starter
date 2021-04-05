@@ -1,78 +1,70 @@
-import { Link, navigate } from "gatsby";
+import { navigate } from "gatsby";
 import * as React from "react";
 import AuthApi from "../../api/auth/AuthApi";
 import AuthResponse from "../../api/auth/AuthResponse";
+import ApiButton from "./ApiButton";
+import { SubComponentBaseProps, withApiWrapper } from "./ApiComponentWrapper";
+import ApiStringField from "./ApiStringField";
+import ApiTextLink from "./ApiTextLink";
+import AuthCommonComponent from "./AuthCommonComponent";
 
-interface AuthSignInProps {
-  path: string;
-}
+const AuthSignIn: React.FC<SubComponentBaseProps> = (props) => {
+  const emailField = ApiStringField.fromHook("Email", React.useState(""));
+  const passwordField = ApiStringField.fromHook("Password", React.useState(""));
+  // navigate("/app/dashboard");
 
-const AuthSignIn: React.FC<AuthSignInProps> = (props) => {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [isBusy, setIsBusy] = React.useState(false);
-  const [sessionState, setSessionState] = React.useState("");
-
-  const onSignInResponse = (response: AuthResponse) => {
-    setIsBusy(false);
-    setSessionState(`Successfully signed in with token: ${response.token}`);
-    console.log("Sign In Response Received!");
-    console.log("Token: ", response.token);
+  const onSignInSuccess = (result: AuthResponse) => {
+    props.onApiResponse(result);
+    console.log("Sign In succeeded");
     navigate("/app/dashboard");
   };
 
-  const onRegisterError = (x: any) => {
-    setIsBusy(false);
-    setSessionState(x.toString());
-    console.log("Failed to sign in.");
-    console.log(x);
+  const onSignIn = () => {
+    console.log("Sign in with ", emailField.value, passwordField.value);
+    props.onApiRequest();
+    AuthApi.fakeSignIn(emailField.value, passwordField.value)
+      .then(onSignInSuccess)
+      .catch(props.onApiFault);
   };
 
-  const onSignInSubmit = () => {
-    setIsBusy(true);
-    setSessionState("");
-    console.log("Sign in with ", email, password);
-    AuthApi.signIn(email, password)
-      .then(onSignInResponse)
-      .catch(onRegisterError);
-  };
+  const isDisabled: boolean = props.apiState.isBusy;
 
-  const buttonStyle: string = "border m-1 p-1 border-black";
-  const busyElement = isBusy ? <div>Loading</div> : null;
-  const stateElement =
-    sessionState.length > 0 ? <div>{sessionState}</div> : null;
+  const linkToRegister = (
+    <div className="mt-2">
+      <ApiTextLink
+        isDisabled={isDisabled}
+        preLinkText="Need an account?"
+        linkText="Register"
+        linkPath="/app/register"
+      />
+    </div>
+  );
+
+  const linkToRecoverPassword = (
+    <div className="-mt-4 mb-8">
+      <ApiTextLink
+        isDisabled={isDisabled}
+        justifyStyle="justify-end"
+        linkText="Forgot password?"
+        linkPath="/app/recoverPassword"
+      />
+    </div>
+  );
 
   return (
-    <div className="text-lg">
-      <h1>This is the Auth Sign-in Page.</h1>
-
-      <input
-        className={buttonStyle}
-        type="text"
-        defaultValue={email}
-        onChange={(e) => setEmail(e.currentTarget.value)}
+    <AuthCommonComponent header="Sign in." apiState={props.apiState}>
+      {emailField.asComponent(isDisabled)}
+      {passwordField.asComponent(isDisabled)}
+      {linkToRecoverPassword}
+      <ApiButton
+        label="Sign In"
+        onClick={onSignIn}
+        isDisabled={isDisabled}
+        isLoading={isDisabled}
       />
-      <input
-        className={buttonStyle}
-        type="password"
-        defaultValue={password}
-        onChange={(e) => setPassword(e.currentTarget.value)}
-      />
-      <button className={buttonStyle} type="button" onClick={onSignInSubmit}>
-        Sign In
-      </button>
-
-      <Link to="/app/register" className={buttonStyle}>
-        Register
-      </Link>
-      <Link to="/app/landing" className={buttonStyle}>
-        Back
-      </Link>
-
-      {busyElement}
-      {stateElement}
-    </div>
+      {linkToRegister}
+    </AuthCommonComponent>
   );
 };
 
-export default AuthSignIn;
+export const WrappedAuthSignIn = withApiWrapper(AuthSignIn);
