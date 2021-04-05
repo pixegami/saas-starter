@@ -4,30 +4,26 @@ import { SubComponentBaseProps, withApiWrapper } from "./ApiComponentWrapper";
 import "../../styles/loader.css";
 import AuthCommonComponent from "./AuthCommonComponent";
 import ApiButton from "./ApiButton";
-import { Link } from "gatsby";
 import ApiStringField from "./ApiStringField";
+import ApiTextLink from "./ApiTextLink";
 
 const AuthRegister: React.FC<SubComponentBaseProps> = (props) => {
   const emailField = ApiStringField.fromHook("Email", React.useState(""));
   const passwordField = ApiStringField.fromHook("Password", React.useState(""));
 
-  const onCustomFault = (x: any) => {
-    console.log("Custom Fault Detected!");
-    props.onApiFault(x);
-  };
-
   const onRegister = () => {
     console.log("Register with ", emailField.value, passwordField.value);
     props.onApiRequest();
-    AuthApi.delayedError().then(props.onApiResponse).catch(onCustomFault);
+    AuthApi.delayedError().then(props.onApiResponse).catch(props.onApiFault);
   };
 
-  const createAccountLink = (
-    <div className="mt-2 text-gray-600 text-center text-sm">
-      Already registered?
-      <Link to="/app/signIn" className="ml-1 text-blue-600 hover:underline">
-        Sign in
-      </Link>
+  const linkToSignIn = (
+    <div className="mt-2">
+      <ApiTextLink
+        preLinkText="Already registered?"
+        linkText="Sign in"
+        linkPath="/app/signIn"
+      />
     </div>
   );
 
@@ -43,7 +39,7 @@ const AuthRegister: React.FC<SubComponentBaseProps> = (props) => {
         isDisabled={isDisabled}
         isLoading={isDisabled}
       />
-      {createAccountLink}
+      {linkToSignIn}
     </AuthCommonComponent>
   );
 };
