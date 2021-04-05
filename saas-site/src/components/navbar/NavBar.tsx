@@ -1,3 +1,5 @@
+import { navigate } from "gatsby";
+import { Link } from "gatsby";
 import React, { useRef } from "react";
 import AuthApi from "../../api/auth/AuthApi";
 
@@ -8,6 +10,7 @@ interface NavMenuCommonProps {
   isShowing?: boolean;
   setIsShowing?: (x: boolean) => void;
   wrapperRef?: any;
+  items: NavMenuItem[];
 }
 
 const NavMobileMenu: React.FC<NavMenuCommonProps> = (props) => {
@@ -15,30 +18,27 @@ const NavMobileMenu: React.FC<NavMenuCommonProps> = (props) => {
     return null;
   }
 
+  const items = [];
+  for (let i = 0; i < props.items.length; i++) {
+    const item = props.items[i];
+    const element = (
+      <div
+        key={`navMenuItem${i}`}
+        className="first:border-t-0 border-t border-gray-200"
+      >
+        <button
+          onClick={item.action}
+          className="block py-3 text-gray-700 hover:bg-gray-100 w-full text-left"
+        >
+          {item.label}
+        </button>
+      </div>
+    );
+    items.push(element);
+  }
+
   return (
-    <div>
-      <a
-        href="#"
-        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-        role="menuitem"
-      >
-        Your Profile
-      </a>
-      <a
-        href="#"
-        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-        role="menuitem"
-      >
-        Your Profile
-      </a>
-      <a
-        href="#"
-        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-        role="menuitem"
-      >
-        Your Profile
-      </a>
-    </div>
+    <div className="bg-gray-50 px-4 py-2 border-t border-gray-100">{items}</div>
   );
 };
 
@@ -52,7 +52,7 @@ const NavBarPopupMenu: React.FC<NavMenuCommonProps> = (props) => {
     <div className="relative">
       <button
         type="button"
-        className="w-8 h-8 bg-yellow-300 rounded-full"
+        className="w-8 h-8 bg-blue-700 rounded-full"
         onClick={onClick}
       ></button>
     </div>
@@ -60,10 +60,6 @@ const NavBarPopupMenu: React.FC<NavMenuCommonProps> = (props) => {
 };
 
 const DropDownMenu: React.FC<NavMenuCommonProps> = (props) => {
-  if (!props.isShowing || props.isMobile) {
-    return null;
-  }
-
   React.useEffect(() => {
     function handleClickOutside(event: any) {
       if (
@@ -71,6 +67,7 @@ const DropDownMenu: React.FC<NavMenuCommonProps> = (props) => {
         !props.wrapperRef.current.contains(event.target) &&
         !props.isMobile
       ) {
+        console.log("handle bg click");
         props.setIsShowing(false);
       }
     }
@@ -79,33 +76,31 @@ const DropDownMenu: React.FC<NavMenuCommonProps> = (props) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [props.wrapperRef]);
+  }, [props.wrapperRef, props.isMobile]);
+
+  if (!props.isShowing || props.isMobile) {
+    return null;
+  }
+
+  const items = [];
+  for (let i = 0; i < props.items.length; i++) {
+    const item = props.items[i];
+    const element = (
+      <div key={`navMenuItem${i}`}>
+        <button
+          onClick={item.action}
+          className="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left"
+        >
+          {item.label}
+        </button>
+      </div>
+    );
+    items.push(element);
+  }
 
   return (
-    <div className="origin-top-right absolute right-0 top-12 w-60 p-2 rounded-md bg-white border border-black border-opacity-10 focus:outline-none">
-      <a
-        href="#"
-        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-        role="menuitem"
-      >
-        Your Profile
-      </a>
-
-      <a
-        href="#"
-        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-        role="menuitem"
-      >
-        Settings
-      </a>
-
-      <a
-        href="#"
-        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-        role="menuitem"
-      >
-        Sign out
-      </a>
+    <div className="origin-top-right absolute right-0 top-16 w-72 p-2 rounded-md bg-white border border-black border-opacity-10 focus:outline-none">
+      {items}
     </div>
   );
 };
@@ -135,6 +130,11 @@ function useWindowDimensions() {
   return windowDimensions;
 }
 
+interface NavMenuItem {
+  label: string;
+  action: any;
+}
+
 const NavBar: React.FC<NavBarProps> = (props) => {
   const siteTitle = <div className="my-auto">Saas Starter</div>;
   const profile = <div className="my-auto">Profile</div>;
@@ -150,12 +150,24 @@ const NavBar: React.FC<NavBarProps> = (props) => {
     setIsShowing,
     wrapperRef,
     isMobile: isMobileSize,
+    items: [
+      { label: "Profile", action: console.log },
+      { label: "Settings", action: console.log },
+      {
+        label: "Sign Out",
+        action: () => {
+          console.log("sign out click");
+          AuthApi.signOut();
+          navigate("/app/dashboard");
+        },
+      },
+    ],
   };
 
   return (
-    <div className="bg-gray-400 p-2 pt-4 pb-4 md:p-4 mb-2 flex">
-      <div className="m-auto w-full max-w-6xl">
-        <div className="flex border border-red-500 justify-between">
+    <div className="mb-2 border-b border-gray-300">
+      <div className="bg-white p-4 pt-4 pb-4 md:p-4 flex w-full">
+        <div className="flex justify-between m-auto w-full max-w-6xl">
           {siteTitle}
           {profile}
           {token}
@@ -164,8 +176,8 @@ const NavBar: React.FC<NavBarProps> = (props) => {
             <DropDownMenu {...navCommonProps} />
           </div>
         </div>
-        <NavMobileMenu {...navCommonProps} />
       </div>
+      <NavMobileMenu {...navCommonProps} />
     </div>
   );
 };

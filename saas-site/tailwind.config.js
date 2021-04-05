@@ -8,6 +8,7 @@ module.exports = {
     extend: {
       opacity: ["disabled"],
       backgroundColor: ["disabled"],
+      borderWidth: ["first"],
     },
   },
   plugins: [],
