@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { navigate } from "gatsby";
 import AuthApi from "../../api/auth/AuthApi";
-import AuthWidget from "../../components/auth/AuthWidget";
 import AuthRouteLayout from "../../components/AuthRouteLayout";
 
 interface AuthRouteProps {
@@ -25,7 +24,6 @@ const AuthRoute: React.FC<AuthRouteProps> = (props) => {
     <div>
       <AuthRouteLayout>
         <props.component {...props} />
-        <AuthWidget path={props.path} />
       </AuthRouteLayout>
     </div>
   );
