@@ -30,7 +30,7 @@ const AuthSignIn: React.FC<SubComponentBaseProps> = (props) => {
   const isDisabled: boolean = props.apiState.isBusy;
 
   const linkToRegister = (
-    <div className="mt-2">
+    <div className="mt-4">
       <ApiTextLink
         isDisabled={isDisabled}
         preLinkText="Need an account?"

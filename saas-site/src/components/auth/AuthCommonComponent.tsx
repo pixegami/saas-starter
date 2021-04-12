@@ -19,7 +19,7 @@ const AuthCommonComponent: React.FC<{
     : null;
 
   return (
-    <div className="bg-white md:p-8 p-4 border border-gray-300 rounded-md max-w-xl  m-2 md:m-auto mt-4 md:mt-8">
+    <div className="bg-white md:p-8 px-4 py-6 border border-gray-300 rounded-md max-w-lg  m-2 md:m-auto mt-4 md:mt-8">
       <h1 className="text-2xl font-light mb-6 text-gray-700">{props.header}</h1>
       {errorElement}
       {props.children}

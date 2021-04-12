@@ -8,6 +8,7 @@ import AuthRoute from "../app/util/AuthRoute";
 import { WrappedAuthRegister } from "../components/auth/AuthRegister";
 import { WrappedAuthSignIn } from "../components/auth/AuthSignIn";
 import { WrappedApiSubComponent } from "../components/auth/ApiSubComponent";
+import { WrappedAuthForgotPassword } from "../components/auth/AuthForgotPassword";
 
 const App = () => (
   <Router>
@@ -16,6 +17,7 @@ const App = () => (
     <WrappedApiSubComponent path="/app/sc" />
     <WrappedAuthRegister path="/app/register" />
     <WrappedAuthSignIn path="/app/signIn" />
+    <WrappedAuthForgotPassword path="/app/recoverPassword" />
     <NotFound default />
   </Router>
 );

@@ -18,7 +18,7 @@ const AuthRegister: React.FC<SubComponentBaseProps> = (props) => {
   };
 
   const linkToSignIn = (
-    <div className="mt-2">
+    <div className="mt-4">
       <ApiTextLink
         preLinkText="Already registered?"
         linkText="Sign in"
