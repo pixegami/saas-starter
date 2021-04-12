@@ -25,12 +25,11 @@ const AuthForgotPassword: React.FC<SubComponentBaseProps> = (props) => {
   const isDisabled: boolean = props.apiState.isBusy || recoveryEmailSent;
   const instructions: string =
     "Enter your email and we'll send you instructions to recover your account.";
-
   let interactionElement = null;
 
   if (recoveryEmailSent) {
     interactionElement = (
-      <div className="bg-green-50 border-green-300 border text-green-600 p-4 rounded-md">
+      <div className="bg-green-50 border-green-300 border text-green-600 p-4 py-6 rounded-md">
         <div className="font-bold">Success!</div>{" "}
         <div className="text-sm">
           Please check your email for further instructions.
@@ -58,7 +57,7 @@ const AuthForgotPassword: React.FC<SubComponentBaseProps> = (props) => {
       {interactionElement}
 
       <div className="mt-4">
-        <ApiTextLink linkPath="/app/signIn" linkText="Back" />
+        <ApiTextLink linkPath="/app/signIn" linkText="Back to Sign In" />
       </div>
     </AuthCommonComponent>
   );

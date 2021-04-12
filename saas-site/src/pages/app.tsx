@@ -9,6 +9,7 @@ import { WrappedAuthRegister } from "../components/auth/AuthRegister";
 import { WrappedAuthSignIn } from "../components/auth/AuthSignIn";
 import { WrappedApiSubComponent } from "../components/auth/ApiSubComponent";
 import { WrappedAuthForgotPassword } from "../components/auth/AuthForgotPassword";
+import { WrappedAuthResetPassword } from "../components/auth/AuthResetPassword";
 
 const App = () => (
   <Router>
@@ -18,6 +19,7 @@ const App = () => (
     <WrappedAuthRegister path="/app/register" />
     <WrappedAuthSignIn path="/app/signIn" />
     <WrappedAuthForgotPassword path="/app/recoverPassword" />
+    <WrappedAuthResetPassword path="/app/resetPassword" />
     <NotFound default />
   </Router>
 );
