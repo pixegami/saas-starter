@@ -67,7 +67,7 @@ class AuthApi extends BaseApi {
 
   public static validate(): Promise<ApiResponse> {
     console.log(`Validating With Token: ...`);
-    return this.getRequest("validate_token", {}, this.getSession().token);
+    return this.getRequest("validate_token", {}, this.getSession().getToken());
   }
 
   private static getSession() {
