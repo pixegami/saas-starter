@@ -11,6 +11,7 @@ import { WrappedApiSubComponent } from "../components/auth/ApiSubComponent";
 import { WrappedAuthForgotPassword } from "../components/auth/AuthForgotPassword";
 import { WrappedAuthResetPassword } from "../components/auth/AuthResetPassword";
 import { WrappedAuthVerifyAccount } from "../components/auth/AuthVerifyAccount";
+import { WrappedAuthVerifyAccountSuccess } from "../components/auth/AuthVerifyAccountSuccess";
 
 const App = () => (
   <Router>
@@ -20,11 +21,13 @@ const App = () => (
       component={WrappedAuthVerifyAccount}
       path="/app/verify_account"
     />
+
     <WrappedApiSubComponent path="/app/sc" />
     <WrappedAuthRegister path="/app/register" />
     <WrappedAuthSignIn path="/app/signIn" />
     <WrappedAuthForgotPassword path="/app/recoverPassword" />
     <WrappedAuthResetPassword path="/app/resetPassword" />
+    <WrappedAuthVerifyAccountSuccess path="/app/verify_account_success" />
     <NotFound default />
   </Router>
 );

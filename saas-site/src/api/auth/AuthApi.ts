@@ -105,6 +105,14 @@ class AuthApi extends BaseApi {
   public static hasSessionToken(): boolean {
     return this.getSessionToken() ? true : false;
   }
+
+  public static isSignedIn(): boolean {
+    return this.hasSessionToken();
+  }
+
+  public static isAccountVerified(): boolean {
+    return false;
+  }
 }
 
 export default AuthApi;
