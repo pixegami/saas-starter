@@ -1,13 +1,14 @@
 import * as React from "react";
-import AuthApi from "../../api/auth/AuthApi";
-import { SubComponentBaseProps, withApiWrapper } from "./ApiComponentWrapper";
-import "../../styles/loader.css";
+import AuthApi from "../../../api/auth/AuthApi";
 import AuthCommonComponent from "./AuthCommonComponent";
-import ApiButton from "./ApiButton";
-import ApiStringField from "./ApiStringField";
-import ApiTextLink from "./ApiTextLink";
-import ApiResponse from "../../api/ApiResponse";
-import { navigate } from "gatsby";
+import * as AuthURL from "../route/AuthURL";
+import {
+  ApiButton,
+  ApiTextLink,
+  withApiWrapper,
+  SubComponentBaseProps,
+} from "../../api/ApiComponents";
+import ApiResponse from "../../../api/base/ApiResponse";
 
 const AuthVerifyAccount: React.FC<SubComponentBaseProps> = (props) => {
   const [verificationEmailSent, setVerificationEmailSent] = React.useState(
@@ -22,10 +23,6 @@ const AuthVerifyAccount: React.FC<SubComponentBaseProps> = (props) => {
   const onClick = () => {
     props.onApiRequest();
     AuthApi.delayedSuccess().then(onSuccess).catch(props.onApiFault);
-  };
-
-  const goToSignIn = () => {
-    navigate("/app/signIn");
   };
 
   const resendInstructions: string = "Didn't receive it?";
@@ -74,10 +71,10 @@ const AuthVerifyAccount: React.FC<SubComponentBaseProps> = (props) => {
       </div>
       {interactiveElement}
       <div className="mt-4">
-        <ApiTextLink linkPath="/app/signIn" linkText="Back to Sign In" />
+        <ApiTextLink linkPath={AuthURL.SIGN_IN} linkText="Back to Sign In" />
       </div>
     </AuthCommonComponent>
   );
 };
 
-export const WrappedAuthVerifyAccount = withApiWrapper(AuthVerifyAccount);
+export default withApiWrapper(AuthVerifyAccount);

@@ -1,33 +1,26 @@
 import React from "react";
 import { Router } from "@reach/router";
-import AuthRouteLayout from "../components/AuthRouteLayout";
 import Dashboard from "../app/dashboard";
 import Landing from "../app/landing";
 import NotFound from "../app/notFound";
-import AuthRoute from "../app/util/AuthRoute";
-import { WrappedAuthRegister } from "../components/auth/AuthRegister";
-import { WrappedAuthSignIn } from "../components/auth/AuthSignIn";
-import { WrappedApiSubComponent } from "../components/auth/ApiSubComponent";
-import { WrappedAuthForgotPassword } from "../components/auth/AuthForgotPassword";
-import { WrappedAuthResetPassword } from "../components/auth/AuthResetPassword";
-import { WrappedAuthVerifyAccount } from "../components/auth/AuthVerifyAccount";
-import { WrappedAuthVerifyAccountSuccess } from "../components/auth/AuthVerifyAccountSuccess";
+import AuthRoute from "../components/auth/route/AuthRoute";
+import * as AuthViews from "../components/auth/views/AuthViews";
+import * as AuthURL from "../components/auth/route/AuthURL";
 
 const App = () => (
   <Router>
     <AuthRoute component={Landing} path="/app" bypassAuth />
     <AuthRoute component={Dashboard} path="/app/dashboard" />
     <AuthRoute
-      component={WrappedAuthVerifyAccount}
-      path="/app/verify_account"
+      component={AuthViews.AuthVerifyAccount}
+      path={AuthURL.VERIFY_ACCOUNT}
     />
 
-    <WrappedApiSubComponent path="/app/sc" />
-    <WrappedAuthRegister path="/app/register" />
-    <WrappedAuthSignIn path="/app/signIn" />
-    <WrappedAuthForgotPassword path="/app/recoverPassword" />
-    <WrappedAuthResetPassword path="/app/resetPassword" />
-    <WrappedAuthVerifyAccountSuccess path="/app/verify_account_success" />
+    <AuthViews.AuthRegister path={AuthURL.REGISTER} />
+    <AuthViews.AuthSignIn path={AuthURL.SIGN_IN} />
+    <AuthViews.AuthForgotPassword path={AuthURL.FORGOT_PASSWORD} />
+    <AuthViews.AuthResetPassword path={AuthURL.RESET_PASSWORD} />
+    <AuthViews.AuthVerifyAccountSuccess path={AuthURL.VERIFY_ACCOUNT_SUCCESS} />
     <NotFound default />
   </Router>
 );

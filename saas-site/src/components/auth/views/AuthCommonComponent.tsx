@@ -1,6 +1,5 @@
-import { Link } from "gatsby";
-import React, { ReactNode } from "react";
-import { ApiState } from "./ApiState";
+import React from "react";
+import { ApiState } from "../../api/ApiState";
 
 const createErrorElement = (message: string) => {
   return (

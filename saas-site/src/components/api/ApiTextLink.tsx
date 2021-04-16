@@ -1,7 +1,7 @@
 import { Link } from "gatsby";
 import React from "react";
 
-interface ApiTextLinkProps {
+export interface ApiTextLinkProps {
   preLinkText?: string;
   justifyStyle?: string; // "[justify-center, justify-start...] https://tailwindcss.com/docs/justify-content"
   linkPath: string;
@@ -9,7 +9,7 @@ interface ApiTextLinkProps {
   isDisabled?: boolean;
 }
 
-const ApiTextLink: React.FC<ApiTextLinkProps> = (props) => {
+export const ApiTextLink: React.FC<ApiTextLinkProps> = (props) => {
   const preTextElement = props.preLinkText ? (
     <div>{props.preLinkText}</div>
   ) : null;
@@ -33,5 +33,3 @@ const ApiTextLink: React.FC<ApiTextLinkProps> = (props) => {
     </div>
   );
 };
-
-export default ApiTextLink;

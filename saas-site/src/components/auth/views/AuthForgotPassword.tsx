@@ -1,12 +1,15 @@
 import * as React from "react";
-import AuthApi from "../../api/auth/AuthApi";
-import { SubComponentBaseProps, withApiWrapper } from "./ApiComponentWrapper";
-import "../../styles/loader.css";
+import AuthApi from "../../../api/auth/AuthApi";
+import ApiResponse from "../../../api/base/ApiResponse";
+import * as AuthURL from "../route/AuthURL";
+import {
+  ApiButton,
+  ApiStringField,
+  ApiTextLink,
+  SubComponentBaseProps,
+  withApiWrapper,
+} from "../../api/ApiComponents";
 import AuthCommonComponent from "./AuthCommonComponent";
-import ApiButton from "./ApiButton";
-import ApiStringField from "./ApiStringField";
-import ApiTextLink from "./ApiTextLink";
-import ApiResponse from "../../api/ApiResponse";
 
 const AuthForgotPassword: React.FC<SubComponentBaseProps> = (props) => {
   const emailField = ApiStringField.fromHook("Email", React.useState(""));
@@ -57,10 +60,10 @@ const AuthForgotPassword: React.FC<SubComponentBaseProps> = (props) => {
       {interactionElement}
 
       <div className="mt-4">
-        <ApiTextLink linkPath="/app/signIn" linkText="Back to Sign In" />
+        <ApiTextLink linkPath={AuthURL.SIGN_IN} linkText="Back to Sign In" />
       </div>
     </AuthCommonComponent>
   );
 };
 
-export const WrappedAuthForgotPassword = withApiWrapper(AuthForgotPassword);
+export default withApiWrapper(AuthForgotPassword);

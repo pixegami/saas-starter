@@ -1,6 +1,5 @@
 import React from "react";
 import { SubComponentBaseProps, withApiWrapper } from "./ApiComponentWrapper";
-import { newApiState } from "./ApiState";
 
 const ApiSubComponent: React.FC<SubComponentBaseProps> = (props) => {
   const onClick = () => {

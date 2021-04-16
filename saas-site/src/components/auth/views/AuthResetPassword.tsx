@@ -1,13 +1,16 @@
 import * as React from "react";
-import AuthApi from "../../api/auth/AuthApi";
-import { SubComponentBaseProps, withApiWrapper } from "./ApiComponentWrapper";
-import "../../styles/loader.css";
+import AuthApi from "../../../api/auth/AuthApi";
 import AuthCommonComponent from "./AuthCommonComponent";
-import ApiButton from "./ApiButton";
-import ApiStringField from "./ApiStringField";
-import ApiTextLink from "./ApiTextLink";
-import ApiResponse from "../../api/ApiResponse";
+import * as AuthURL from "../route/AuthURL";
+import {
+  ApiButton,
+  ApiStringField,
+  ApiTextLink,
+  withApiWrapper,
+  SubComponentBaseProps,
+} from "../../api/ApiComponents";
 import { navigate } from "gatsby";
+import ApiResponse from "../../../api/base/ApiResponse";
 
 const AuthResetPassword: React.FC<SubComponentBaseProps> = (props) => {
   const passwordField = ApiStringField.fromHook(
@@ -30,7 +33,7 @@ const AuthResetPassword: React.FC<SubComponentBaseProps> = (props) => {
   };
 
   const goToSignIn = () => {
-    navigate("/app/signIn");
+    navigate(AuthURL.SIGN_IN);
   };
 
   const passwordResetInstructions: string =
@@ -52,7 +55,7 @@ const AuthResetPassword: React.FC<SubComponentBaseProps> = (props) => {
       <div>
         {resetPasswordButton}
         <div className="mt-4">
-          <ApiTextLink linkPath="/app/signIn" linkText="Back to Sign In" />
+          <ApiTextLink linkPath={AuthURL.SIGN_IN} linkText="Back to Sign In" />
         </div>
       </div>
     );
@@ -95,4 +98,4 @@ const AuthResetPassword: React.FC<SubComponentBaseProps> = (props) => {
   );
 };
 
-export const WrappedAuthResetPassword = withApiWrapper(AuthResetPassword);
+export default withApiWrapper(AuthResetPassword);

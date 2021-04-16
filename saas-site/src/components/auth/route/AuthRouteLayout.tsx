@@ -1,5 +1,5 @@
 import * as React from "react";
-import NavBar from "./navbar/NavBar";
+import NavBar from "../../navbar/NavBar";
 
 const AuthRouteLayout = ({ children }) => {
   return (

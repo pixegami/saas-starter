@@ -1,6 +1,6 @@
 import React from "react";
 
-class ApiStringField {
+export class ApiStringField {
   public label: string;
   public value: string;
   public setValue: React.Dispatch<React.SetStateAction<string>>;
@@ -32,5 +32,3 @@ class ApiStringField {
     );
   }
 }
-
-export default ApiStringField;

@@ -1,17 +1,20 @@
-import { navigate } from "gatsby";
 import * as React from "react";
-import AuthApi from "../../api/auth/AuthApi";
-import AuthResponse from "../../api/auth/AuthResponse";
-import ApiButton from "./ApiButton";
-import { SubComponentBaseProps, withApiWrapper } from "./ApiComponentWrapper";
-import ApiStringField from "./ApiStringField";
-import ApiTextLink from "./ApiTextLink";
+import AuthApi from "../../../api/auth/AuthApi";
 import AuthCommonComponent from "./AuthCommonComponent";
+import {
+  ApiButton,
+  ApiStringField,
+  ApiTextLink,
+  withApiWrapper,
+  SubComponentBaseProps,
+} from "../../api/ApiComponents";
+import AuthResponse from "../../../api/auth/AuthResponse";
+import { navigate } from "gatsby";
+import * as AuthURL from "../route/AuthURL";
 
 const AuthSignIn: React.FC<SubComponentBaseProps> = (props) => {
   const emailField = ApiStringField.fromHook("Email", React.useState(""));
   const passwordField = ApiStringField.fromHook("Password", React.useState(""));
-  // navigate("/app/dashboard");
 
   const onSignInSuccess = (result: AuthResponse) => {
     props.onApiResponse(result);
@@ -35,7 +38,7 @@ const AuthSignIn: React.FC<SubComponentBaseProps> = (props) => {
         isDisabled={isDisabled}
         preLinkText="Need an account?"
         linkText="Register"
-        linkPath="/app/register"
+        linkPath={AuthURL.REGISTER}
       />
     </div>
   );
@@ -46,7 +49,7 @@ const AuthSignIn: React.FC<SubComponentBaseProps> = (props) => {
         isDisabled={isDisabled}
         justifyStyle="justify-end"
         linkText="Forgot password?"
-        linkPath="/app/recoverPassword"
+        linkPath={AuthURL.FORGOT_PASSWORD}
       />
     </div>
   );
@@ -67,4 +70,4 @@ const AuthSignIn: React.FC<SubComponentBaseProps> = (props) => {
   );
 };
 
-export const WrappedAuthSignIn = withApiWrapper(AuthSignIn);
+export default withApiWrapper(AuthSignIn);

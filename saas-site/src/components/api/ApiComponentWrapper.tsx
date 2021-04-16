@@ -1,5 +1,5 @@
-import React, { Component, FunctionComponent } from "react";
-import ApiResponse from "../../api/ApiResponse";
+import React, { FunctionComponent } from "react";
+import ApiResponse from "../../api/base/ApiResponse";
 import { ApiState, ApiStateOverride, newApiState } from "./ApiState";
 
 export interface SubComponentBaseProps {

@@ -1,13 +1,13 @@
 import React from "react";
 
-interface ApiButtonProps {
+export interface ApiButtonProps {
   label: string;
   onClick: any;
   isDisabled?: boolean;
   isLoading?: boolean;
 }
 
-const ApiButton: React.FC<ApiButtonProps> = (props) => {
+export const ApiButton: React.FC<ApiButtonProps> = (props) => {
   const loaderElement = props.isLoading ? (
     <div className="w-7 h-7 flex absolute ">
       <div className="loader" />
@@ -33,5 +33,3 @@ const ApiButton: React.FC<ApiButtonProps> = (props) => {
     </div>
   );
 };
-
-export default ApiButton;

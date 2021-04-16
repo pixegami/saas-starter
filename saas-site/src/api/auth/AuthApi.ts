@@ -1,5 +1,5 @@
-import ApiResponse from "../ApiResponse";
-import BaseApi from "../BaseApi";
+import ApiResponse from "../base/ApiResponse";
+import BaseApi from "../base/BaseApi";
 import AuthResponse from "./AuthResponse";
 import AuthSession from "./AuthSession";
 

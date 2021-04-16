@@ -1,11 +1,14 @@
 import * as React from "react";
-import AuthApi from "../../api/auth/AuthApi";
-import { SubComponentBaseProps, withApiWrapper } from "./ApiComponentWrapper";
-import "../../styles/loader.css";
+import AuthApi from "../../../api/auth/AuthApi";
 import AuthCommonComponent from "./AuthCommonComponent";
-import ApiButton from "./ApiButton";
-import ApiStringField from "./ApiStringField";
-import ApiTextLink from "./ApiTextLink";
+import * as AuthURL from "../route/AuthURL";
+import {
+  ApiButton,
+  ApiStringField,
+  ApiTextLink,
+  withApiWrapper,
+  SubComponentBaseProps,
+} from "../../api/ApiComponents";
 
 const AuthRegister: React.FC<SubComponentBaseProps> = (props) => {
   const emailField = ApiStringField.fromHook("Email", React.useState(""));
@@ -22,7 +25,7 @@ const AuthRegister: React.FC<SubComponentBaseProps> = (props) => {
       <ApiTextLink
         preLinkText="Already registered?"
         linkText="Sign in"
-        linkPath="/app/signIn"
+        linkPath={AuthURL.SIGN_IN}
       />
     </div>
   );
@@ -47,4 +50,4 @@ const AuthRegister: React.FC<SubComponentBaseProps> = (props) => {
   );
 };
 
-export const WrappedAuthRegister = withApiWrapper(AuthRegister);
+export default withApiWrapper(AuthRegister);

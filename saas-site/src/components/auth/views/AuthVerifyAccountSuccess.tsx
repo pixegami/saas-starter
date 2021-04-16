@@ -1,17 +1,16 @@
 import * as React from "react";
-import AuthApi from "../../api/auth/AuthApi";
-import { SubComponentBaseProps, withApiWrapper } from "./ApiComponentWrapper";
-import "../../styles/loader.css";
 import AuthCommonComponent from "./AuthCommonComponent";
-import ApiButton from "./ApiButton";
-import ApiStringField from "./ApiStringField";
-import ApiTextLink from "./ApiTextLink";
-import ApiResponse from "../../api/ApiResponse";
+import {
+  ApiButton,
+  withApiWrapper,
+  SubComponentBaseProps,
+} from "../../api/ApiComponents";
+import * as AuthURL from "../route/AuthURL";
 import { navigate } from "gatsby";
 
 const AuthVerifyAccountSuccess: React.FC<SubComponentBaseProps> = (props) => {
   const actionButton = (
-    <ApiButton label="Sign In" onClick={() => navigate("/app/signIn")} />
+    <ApiButton label="Sign In" onClick={() => navigate(AuthURL.SIGN_IN)} />
   );
 
   return (
@@ -29,6 +28,4 @@ const AuthVerifyAccountSuccess: React.FC<SubComponentBaseProps> = (props) => {
   );
 };
 
-export const WrappedAuthVerifyAccountSuccess = withApiWrapper(
-  AuthVerifyAccountSuccess
-);
+export default withApiWrapper(AuthVerifyAccountSuccess);
