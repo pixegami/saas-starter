@@ -1,6 +1,7 @@
 module.exports = {
   siteMetadata: {
-    title: "Cyclone CMS",
+    title: "Saas Starter",
+    siteUrl: "https://ss.pixegami.com",
   },
   plugins: [
     "gatsby-plugin-postcss",

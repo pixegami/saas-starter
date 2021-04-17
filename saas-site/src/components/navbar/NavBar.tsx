@@ -9,7 +9,10 @@ import NavMobileMenu from "./NavMobileMenu";
 interface NavBarProps {}
 
 function getWindowDimensions() {
-  const { innerWidth: width, innerHeight: height } = window;
+  const { innerWidth: width, innerHeight: height } =
+    typeof window !== "undefined"
+      ? window
+      : { innerWidth: 100, innerHeight: 100 };
   return {
     windowWidth: width,
     windowHeight: height,

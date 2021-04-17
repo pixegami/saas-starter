@@ -5,6 +5,7 @@ class AuthSession {
   private static TOKEN_VERIFIED_PROPERTY: string = "confirmed";
   private static TOKEN_USER_PROPERTY: string = "user";
   private static TOKEN_ACCOUNT_KEY_PROPERTY: string = "account_key";
+  private static IS_BROWSER = typeof window !== "undefined";
 
   private token: string | undefined;
   private verified: boolean = false;
@@ -70,9 +71,10 @@ class AuthSession {
 
   public static restoreOrNew(): AuthSession {
     // Try loading it from storage.
-    const sessionString = window.localStorage.getItem(
-      AuthSession.SESSION_STORAGE_NAME
-    );
+    const sessionString = this.IS_BROWSER
+      ? window.localStorage.getItem(AuthSession.SESSION_STORAGE_NAME)
+      : null;
+
     if (sessionString !== null && sessionString.length > 0) {
       // Parse the session.
       console.log(`Loading Session from Memory: ${sessionString}`);
@@ -85,16 +87,20 @@ class AuthSession {
   }
 
   public static clear(): void {
-    window.localStorage.removeItem(this.SESSION_STORAGE_NAME);
+    if (this.IS_BROWSER) {
+      window.localStorage.removeItem(this.SESSION_STORAGE_NAME);
+    }
   }
 
   public save(): AuthSession {
     // Save session to local storage.
-    window.localStorage.setItem(
-      AuthSession.SESSION_STORAGE_NAME,
-      this.serialize()
-    );
-    console.log(`Saved Session: ${this.serialize()}`);
+    if (AuthSession.IS_BROWSER) {
+      window.localStorage.setItem(
+        AuthSession.SESSION_STORAGE_NAME,
+        this.serialize()
+      );
+      console.log(`Saved Session: ${this.serialize()}`);
+    }
     return this;
   }
 

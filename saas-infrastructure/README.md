@@ -23,3 +23,22 @@ SaasInfrastructureStack.MainSiteCertificateDFF4DA01 = arn:aws:acm:us-east-1:5357
 SaasInfrastructureStack.MainSiteDBB6B256 = https://ss.pixegami.com
 SaasInfrastructureStack.MainSiteDistributionId2F6DCE80 = E4LY2JIIF7FSC
 ```
+## S3 Bucket Redirect Rules
+
+We need to add re-direct rules for client-only paths.
+
+```json
+[
+    {
+        "Condition": {
+            "KeyPrefixEquals": "app"
+        },
+        "Redirect": {
+            "HostName": "ss.pixegami.com",
+            "HttpRedirectCode": "302",
+            "Protocol": "https",
+            "ReplaceKeyWith": "app/index.html"
+        }
+    }
+]
+```
