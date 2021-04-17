@@ -4,3 +4,4 @@ export { default as AuthResetPassword } from "./AuthResetPassword";
 export { default as AuthRegister } from "./AuthRegister";
 export { default as AuthVerifyAccount } from "./AuthVerifyAccount";
 export { default as AuthVerifyAccountSuccess } from "./AuthVerifyAccountSuccess";
+export { default as AuthVerifyAccountResult } from "./AuthVerifyAccountResult";

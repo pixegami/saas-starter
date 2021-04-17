@@ -46,7 +46,7 @@ test("validate with empty session fails", async () => {
   expect(validationResponse.status).toBe(400);
 });
 
-test("can request verification email", async () => {
+test("can verify account", async () => {
   // // Validation should fail without a session.
   const user: string = newRandomUser();
   const password: string = newRandomPassword();
@@ -57,7 +57,16 @@ test("can request verification email", async () => {
   const account_key = AuthApi.getSession().getUserAccountKey();
 
   // Should be able to request validation email.
-  await requestAccountVerificationAndExpect(account_key, 200);
+  const response = await requestAccountVerificationAndExpect(account_key, 200);
+  expect(response.payload).toHaveProperty("confirm_token");
+  const verificationToken = response.payload["confirm_token"];
+
+  // Can verify account with the key.
+  const verificationResult = await verifyAccountAndExpect(
+    verificationToken,
+    200
+  );
+  console.log(verificationResult);
 });
 
 const signUpAndExpect = async (
@@ -85,6 +94,12 @@ const requestAccountVerificationAndExpect = async (
   expectedCode: number
 ) => {
   const response = await AuthApi.requestAccountVerification(accountKey);
+  expect(response.status).toBe(expectedCode);
+  return response;
+};
+
+const verifyAccountAndExpect = async (token: string, expectedCode: number) => {
+  const response = await AuthApi.verifyAccount(token);
   expect(response.status).toBe(expectedCode);
   return response;
 };

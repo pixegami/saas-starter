@@ -83,6 +83,12 @@ class AuthApi extends BaseApi {
     });
   }
 
+  public static verifyAccount(verification_key: string): Promise<AuthResponse> {
+    return this.postRequest("confirm_account", {
+      confirm_token: verification_key,
+    });
+  }
+
   public static signOut(): void {
     this.clearSession();
   }

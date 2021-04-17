@@ -7,21 +7,26 @@ import AuthRoute from "../components/auth/route/AuthRoute";
 import * as AuthViews from "../components/auth/views/AuthViews";
 import * as AuthURL from "../components/auth/route/AuthURL";
 
-const App = () => (
-  <Router>
-    <AuthRoute component={Landing} path="/app" bypassAuth />
-    <AuthRoute component={Dashboard} path="/app/dashboard" />
-    <AuthRoute
-      component={AuthViews.AuthVerifyAccount}
-      path={AuthURL.VERIFY_ACCOUNT}
-    />
+const App = () => {
+  return (
+    <Router>
+      <AuthRoute component={Landing} path="/app" bypassAuth />
+      <AuthRoute component={Dashboard} path="/app/dashboard" />
+      <AuthRoute
+        component={AuthViews.AuthVerifyAccount}
+        path={AuthURL.VERIFY_ACCOUNT}
+      />
 
-    <AuthViews.AuthRegister path={AuthURL.REGISTER} />
-    <AuthViews.AuthSignIn path={AuthURL.SIGN_IN} />
-    <AuthViews.AuthForgotPassword path={AuthURL.FORGOT_PASSWORD} />
-    <AuthViews.AuthResetPassword path={AuthURL.RESET_PASSWORD} />
-    <AuthViews.AuthVerifyAccountSuccess path={AuthURL.VERIFY_ACCOUNT_SUCCESS} />
-    <NotFound default />
-  </Router>
-);
+      <AuthViews.AuthRegister path={AuthURL.REGISTER} />
+      <AuthViews.AuthSignIn path={AuthURL.SIGN_IN} />
+      <AuthViews.AuthForgotPassword path={AuthURL.FORGOT_PASSWORD} />
+      <AuthViews.AuthResetPassword path={AuthURL.RESET_PASSWORD} />
+      <AuthViews.AuthVerifyAccountSuccess
+        path={AuthURL.VERIFY_ACCOUNT_SUCCESS}
+      />
+      <AuthViews.AuthVerifyAccountResult path={AuthURL.VERIFY_ACCOUNT_RESULT} />
+      <NotFound default />
+    </Router>
+  );
+};
 export default App;
