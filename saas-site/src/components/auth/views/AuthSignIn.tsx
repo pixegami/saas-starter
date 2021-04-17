@@ -18,14 +18,16 @@ const AuthSignIn: React.FC<SubComponentBaseProps> = (props) => {
 
   const onSignInSuccess = (result: AuthResponse) => {
     props.onApiResponse(result);
-    console.log("Sign In succeeded");
-    navigate("/app/dashboard");
+    if (result.status == 200) {
+      console.log("Sign In succeeded");
+      navigate("/app/dashboard");
+    }
   };
 
   const onSignIn = () => {
     console.log("Sign in with ", emailField.value, passwordField.value);
     props.onApiRequest();
-    AuthApi.fakeSignIn(emailField.value, passwordField.value)
+    AuthApi.signIn(emailField.value, passwordField.value)
       .then(onSignInSuccess)
       .catch(props.onApiFault);
   };

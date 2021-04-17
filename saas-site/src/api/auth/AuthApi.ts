@@ -23,9 +23,11 @@ class AuthApi extends BaseApi {
       password: password,
     });
 
-    const sideEffectPromise = this.withSideEffect(signInPromise, (x) =>
-      this.getSession().setToken(x.payload.token).save()
-    );
+    const sideEffectPromise = this.withSideEffect(signInPromise, (x) => {
+      if (x.status == 200) {
+        this.getSession().setToken(x.payload.token).save();
+      }
+    });
 
     return this.withResponseTransformer(sideEffectPromise);
   }
@@ -62,6 +64,12 @@ class AuthApi extends BaseApi {
     const signUpPromise = this.postRequest("sign_up", {
       user: email,
       password: password,
+    });
+
+    const sideEffectPromise = this.withSideEffect(signUpPromise, (x) => {
+      if (x.status == 200) {
+        this.getSession().setToken(x.payload.token).save();
+      }
     });
 
     return this.withResponseTransformer(signUpPromise);

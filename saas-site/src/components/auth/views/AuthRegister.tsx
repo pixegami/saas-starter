@@ -9,15 +9,27 @@ import {
   withApiWrapper,
   SubComponentBaseProps,
 } from "../../api/ApiComponents";
+import AuthResponse from "../../../api/auth/AuthResponse";
+import { navigate } from "gatsby";
 
 const AuthRegister: React.FC<SubComponentBaseProps> = (props) => {
   const emailField = ApiStringField.fromHook("Email", React.useState(""));
   const passwordField = ApiStringField.fromHook("Password", React.useState(""));
 
+  const onRegisterSuccess = (result: AuthResponse) => {
+    props.onApiResponse(result);
+    if (result.status == 200) {
+      console.log("Register succeeded");
+      navigate(AuthURL.VERIFY_ACCOUNT);
+    }
+  };
+
   const onRegister = () => {
     console.log("Register with ", emailField.value, passwordField.value);
     props.onApiRequest();
-    AuthApi.delayedError().then(props.onApiResponse).catch(props.onApiFault);
+    AuthApi.signUp(emailField.value, passwordField.value)
+      .then(onRegisterSuccess)
+      .catch(props.onApiFault);
   };
 
   const linkToSignIn = (
