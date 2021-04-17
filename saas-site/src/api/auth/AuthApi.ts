@@ -72,7 +72,15 @@ class AuthApi extends BaseApi {
       }
     });
 
-    return this.withResponseTransformer(signUpPromise);
+    return this.withResponseTransformer(sideEffectPromise);
+  }
+
+  public static requestAccountVerification(
+    account_key: string
+  ): Promise<AuthResponse> {
+    return this.postRequest("request_account_confirmation", {
+      account_key,
+    });
   }
 
   public static signOut(): void {

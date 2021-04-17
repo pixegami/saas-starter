@@ -4,10 +4,12 @@ class AuthSession {
   private static SESSION_STORAGE_NAME: string = "ss_pixegami_auth_session";
   private static TOKEN_VERIFIED_PROPERTY: string = "confirmed";
   private static TOKEN_USER_PROPERTY: string = "user";
+  private static TOKEN_ACCOUNT_KEY_PROPERTY: string = "account_key";
 
   private token: string | undefined;
   private verified: boolean = false;
   private userEmail: string | undefined;
+  private userAccountKey: string | undefined;
   private tokenPayload: any;
 
   public setToken(token: string): AuthSession {
@@ -26,6 +28,10 @@ class AuthSession {
 
   public getUserEmail(): string | undefined {
     return this.userEmail;
+  }
+
+  public getUserAccountKey(): string | undefined {
+    return this.userAccountKey;
   }
 
   public isVerified(): boolean {
@@ -47,6 +53,12 @@ class AuthSession {
       this.userEmail = this.valueFromPayload(
         this.tokenPayload,
         AuthSession.TOKEN_USER_PROPERTY,
+        undefined
+      );
+
+      this.userAccountKey = this.valueFromPayload(
+        this.tokenPayload,
+        AuthSession.TOKEN_ACCOUNT_KEY_PROPERTY,
         undefined
       );
     }

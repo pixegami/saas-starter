@@ -16,13 +16,17 @@ const AuthVerifyAccount: React.FC<SubComponentBaseProps> = (props) => {
   );
 
   const onSuccess = (response: ApiResponse) => {
-    setVerificationEmailSent(true);
     props.onApiResponse(response);
+    if (response.status == 200) {
+      setVerificationEmailSent(true);
+    }
   };
 
   const onClick = () => {
     props.onApiRequest();
-    AuthApi.delayedSuccess().then(onSuccess).catch(props.onApiFault);
+    AuthApi.requestAccountVerification(AuthApi.getSession().getUserAccountKey())
+      .then(onSuccess)
+      .catch(props.onApiFault);
   };
 
   const resendInstructions: string = "Didn't receive it?";
