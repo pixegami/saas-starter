@@ -28,14 +28,14 @@ const AuthRoute: React.FC<AuthRouteProps> = (props) => {
     return <RouteElement {...props} />;
   }
 
-  // If signed in...
+  // Is verified (and by definition, signed in).
+  if (AuthApi.isAccountVerified()) {
+    console.log("AUTH GUARD: PASSED");
+    return <RouteElement {...props} />;
+  }
+
+  // If signed in (not verified).
   if (AuthApi.isSignedIn()) {
-    // If verified, then display the element.
-    if (AuthApi.isAccountVerified()) {
-      console.log("AUTH GUARD: PASSED");
-      return <RouteElement {...props} />;
-    }
-    // If not verified, then re-route it.
     if (props.path == AuthURL.VERIFY_ACCOUNT) {
       return <RouteElement {...props} />;
     } else {

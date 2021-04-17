@@ -1,25 +1,59 @@
+import * as jwt from "jsonwebtoken";
+
 class AuthSession {
   private static SESSION_STORAGE_NAME: string = "ss_pixegami_auth_session";
+  private static TOKEN_VERIFIED_PROPERTY: string = "confirmed";
+  private static TOKEN_USER_PROPERTY: string = "user";
 
   private token: string | undefined;
-
-  public save(): AuthSession {
-    // Save session to local storage.
-    window.localStorage.setItem(
-      AuthSession.SESSION_STORAGE_NAME,
-      this.serialize()
-    );
-    console.log(`Saved Session: ${this.serialize()}`);
-    return this;
-  }
+  private verified: boolean = false;
+  private userEmail: string | undefined;
+  private tokenPayload: any;
 
   public setToken(token: string): AuthSession {
     this.token = token;
+    this.setTokenPayloadFromToken(token);
     return this;
   }
 
   public getToken(): string {
     return this.token;
+  }
+
+  public getTokenPayload(): any {
+    return this.tokenPayload;
+  }
+
+  public getUserEmail(): string | undefined {
+    return this.userEmail;
+  }
+
+  public isVerified(): boolean {
+    return this.verified;
+  }
+
+  private setTokenPayloadFromToken(token: string) {
+    const payload = jwt.decode(token);
+    if (payload === null) {
+      throw new Error("Unable to decode user token.");
+    } else {
+      this.tokenPayload = jwt.decode(token);
+      this.verified = this.valueFromPayload(
+        this.tokenPayload,
+        AuthSession.TOKEN_VERIFIED_PROPERTY,
+        false
+      );
+
+      this.userEmail = this.valueFromPayload(
+        this.tokenPayload,
+        AuthSession.TOKEN_USER_PROPERTY,
+        undefined
+      );
+    }
+  }
+
+  private valueFromPayload(payload: any, key: string, defaultValue: any) {
+    return payload.hasOwnProperty(key) ? payload[key] : defaultValue;
   }
 
   public static restoreOrNew(): AuthSession {
@@ -40,6 +74,16 @@ class AuthSession {
 
   public static clear(): void {
     window.localStorage.removeItem(this.SESSION_STORAGE_NAME);
+  }
+
+  public save(): AuthSession {
+    // Save session to local storage.
+    window.localStorage.setItem(
+      AuthSession.SESSION_STORAGE_NAME,
+      this.serialize()
+    );
+    console.log(`Saved Session: ${this.serialize()}`);
+    return this;
   }
 
   private serialize(): string {

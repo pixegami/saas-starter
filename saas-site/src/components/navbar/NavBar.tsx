@@ -35,7 +35,7 @@ function useWindowDimensions() {
 
 const NavBar: React.FC<NavBarProps> = (props) => {
   const siteTitle = <div className="my-auto">SaaS</div>;
-  const profileName = AuthApi.getSessionToken();
+  const profileName = AuthApi.getSession().getUserEmail();
   const [isShowing, setIsShowing] = React.useState(false);
   const { windowWidth, windowHeight } = useWindowDimensions();
   const wrapperRef = useRef(null);

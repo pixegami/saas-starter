@@ -2,6 +2,7 @@ import ApiResponse from "../base/ApiResponse";
 import BaseApi from "../base/BaseApi";
 import AuthResponse from "./AuthResponse";
 import AuthSession from "./AuthSession";
+import * as jwt from "jsonwebtoken";
 
 class AuthApi extends BaseApi {
   // Configurable fields.
@@ -35,10 +36,15 @@ class AuthApi extends BaseApi {
   ): Promise<AuthResponse> {
     console.log("Signing in!");
 
+    const fakeToken = jwt.sign(
+      { confirmed: false, user: "blah@fake.com" },
+      "myFakeSecret"
+    );
+
     const response: ApiResponse = {
       status: 200,
       message: "Fake operation succeeded!",
-      payload: { token: "some_cool_token", email: email },
+      payload: { token: fakeToken, email: email },
     };
 
     const fakePromise = this.genericFakePromise((resolve, _reject) =>
@@ -70,7 +76,7 @@ class AuthApi extends BaseApi {
     return this.getRequest("validate_token", {}, this.getSession().getToken());
   }
 
-  private static getSession() {
+  public static getSession() {
     if (AuthApi.SESSION === null) {
       this.SESSION = AuthSession.restoreOrNew();
     }
@@ -111,7 +117,7 @@ class AuthApi extends BaseApi {
   }
 
   public static isAccountVerified(): boolean {
-    return false;
+    return this.isSignedIn() && this.getSession().isVerified();
   }
 }
 
