@@ -11,8 +11,11 @@ import {
 } from "../../api/ApiComponents";
 import { navigate } from "gatsby";
 import ApiResponse from "../../../api/base/ApiResponse";
+import { useLocation } from "@reach/router";
 
 const AuthResetPassword: React.FC<SubComponentBaseProps> = (props) => {
+  const query = new URLSearchParams(useLocation().search);
+  const key = query.get("key");
   const passwordField = ApiStringField.fromHook(
     "New Password",
     React.useState("")
@@ -29,7 +32,9 @@ const AuthResetPassword: React.FC<SubComponentBaseProps> = (props) => {
 
   const onClick = () => {
     props.onApiRequest();
-    AuthApi.delayedSuccess().then(onSuccess).catch(props.onApiFault);
+    AuthApi.resetAccount(key, passwordField.value)
+      .then(onSuccess)
+      .catch(props.onApiFault);
   };
 
   const goToSignIn = () => {

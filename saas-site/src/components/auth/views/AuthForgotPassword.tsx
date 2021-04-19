@@ -16,13 +16,19 @@ const AuthForgotPassword: React.FC<SubComponentBaseProps> = (props) => {
   const [recoveryEmailSent, setRecoveryEmailSent] = React.useState(false);
 
   const onSuccess = (response: ApiResponse) => {
-    setRecoveryEmailSent(true);
+    console.log(response);
     props.onApiResponse(response);
+    if (response.status === 200) {
+      setRecoveryEmailSent(true);
+    }
   };
 
   const onClick = () => {
     props.onApiRequest();
-    AuthApi.delayedSuccess().then(onSuccess).catch(props.onApiFault);
+    console.log("Request account reset...");
+    AuthApi.requestAccountReset(emailField.value)
+      .then(onSuccess)
+      .catch(props.onApiFault);
   };
 
   const isDisabled: boolean = props.apiState.isBusy || recoveryEmailSent;

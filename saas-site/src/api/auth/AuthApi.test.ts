@@ -69,6 +69,33 @@ test("can verify account", async () => {
   console.log(verificationResult);
 });
 
+test("can reset account", async () => {
+  // I should be able to reset my password.
+  const user: string = newRandomUser();
+  const oldPassword: string = newRandomPassword();
+  const newPassword: string = newRandomPassword();
+  await signUpAndExpect(user, oldPassword, 200);
+
+  // Request password reset.
+  const resetRequestResponse = await requestAccountResetAndExpect(user, 200);
+
+  // Reset the password
+  console.log(resetRequestResponse.payload);
+  expect(resetRequestResponse.payload).toHaveProperty("reset_token");
+  const resetToken = resetRequestResponse.payload["reset_token"];
+  const resetResponse = await resetAccountAndExpect(
+    resetToken,
+    newPassword,
+    200
+  );
+
+  // Cannot sign in with old password.
+  await signInAndExpect(user, oldPassword, 403);
+
+  // Can sign in with new password.
+  await signInAndExpect(user, newPassword, 200);
+});
+
 const signUpAndExpect = async (
   user: string,
   password: string,
@@ -94,6 +121,25 @@ const requestAccountVerificationAndExpect = async (
   expectedCode: number
 ) => {
   const response = await AuthApi.requestAccountVerification(accountKey);
+  expect(response.status).toBe(expectedCode);
+  return response;
+};
+
+const requestAccountResetAndExpect = async (
+  accountKey: string,
+  expectedCode: number
+) => {
+  const response = await AuthApi.requestAccountReset(accountKey);
+  expect(response.status).toBe(expectedCode);
+  return response;
+};
+
+const resetAccountAndExpect = async (
+  token: string,
+  new_password: string,
+  expectedCode: number
+) => {
+  const response = await AuthApi.resetAccount(token, new_password);
   expect(response.status).toBe(expectedCode);
   return response;
 };

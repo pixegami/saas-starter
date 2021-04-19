@@ -83,6 +83,22 @@ class AuthApi extends BaseApi {
     });
   }
 
+  public static requestAccountReset(user: string): Promise<AuthResponse> {
+    return this.postRequest("request_account_reset", {
+      user,
+    });
+  }
+
+  public static resetAccount(
+    reset_token: string,
+    new_password: string
+  ): Promise<AuthResponse> {
+    return this.postRequest("reset_account", {
+      reset_token,
+      new_password,
+    });
+  }
+
   public static verifyAccount(verification_key: string): Promise<AuthResponse> {
     return this.postRequest("confirm_account", {
       confirm_token: verification_key,

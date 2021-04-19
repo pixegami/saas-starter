@@ -97,6 +97,7 @@ const newUserAuthApi = (scope: cdk.Construct, props: AuthApiProps) => {
       TABLE_NAME: props.table.tableName,
       EMAIL_SOURCE: props.emailSource,
       ENDPOINT: props.endpoint,
+      FRONTEND_URL: "https://ss.pixegami.com/app/",
     },
   };
 
