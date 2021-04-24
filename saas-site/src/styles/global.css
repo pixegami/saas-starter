@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 body {
-  font-family: Ubuntu;
+  font-family: "Ubuntu", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
 html {

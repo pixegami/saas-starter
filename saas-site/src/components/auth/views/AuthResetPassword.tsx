@@ -26,7 +26,9 @@ const AuthResetPassword: React.FC<SubComponentBaseProps> = (props) => {
   );
 
   const onSuccess = (response: ApiResponse) => {
-    setPasswordResetCompleted(true);
+    if (response.status === 200) {
+      setPasswordResetCompleted(true);
+    }
     props.onApiResponse(response);
   };
 

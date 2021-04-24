@@ -42,3 +42,14 @@ We need to add re-direct rules for client-only paths.
     }
 ]
 ```
+
+## TODO
+
+* Backend sends email on sign-up.
+* Consolidate configurations.
+* Backend validation.
+* Salted hashes.
+* Login attempt cool-downs.
+
+* Frontend transfers fields between pages.
+* Field meta-data and saving the info.

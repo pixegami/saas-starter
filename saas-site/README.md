@@ -7,6 +7,11 @@
   Gatsby minimal starter
 </h1>
 
+## TODO
+
+* Frontend transfers fields between pages.
+* Field meta-data and saving the info.
+
 ## 🚀 Quick start
 
 1.  **Create a Gatsby site.**
