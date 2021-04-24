@@ -4,6 +4,7 @@ import email
 import re
 import urllib3
 import time
+import json
 
 
 def handle(event, context):
@@ -11,6 +12,12 @@ def handle(event, context):
 
 
 class EmailValidator:
+
+    NEW_PASSWORD = "myAutoResetPassword"
+
+    def __init__(self):
+        self.api_endpoint = os.getenv("API_ENDPOINT", "api.ss.pixegami.com")
+
     def handle(self, event, context):
         print(f"Event Received: {event}")
         print(event)
@@ -51,7 +58,10 @@ class EmailValidator:
         print(f"Got URLS: {urls}")
 
         # Click each URL in the link.
-        self.activate_urls(urls)
+        transformed_urls = [self.transform_api_url(x) for x in urls]
+        transformed_urls = [x for x in transformed_urls if x is not None]
+        print(f"Transformed URLS: {transformed_urls}")
+        self.activate_urls(transformed_urls)
         print("Email Processing Completed")
 
     def get_message_body(self, local_email_file: str):
@@ -77,3 +87,39 @@ class EmailValidator:
         for url in urls:
             response = http.request("GET", url)
             print(f"URL Response {url}: {response.status}")
+            response_data = json.loads(response.data.decode("utf-8"))
+            print(response_data)
+
+    def transform_api_url(self, url: str):
+        # Transforms the API URL to something our validator can click to simulate the operation.
+        # This is hard-coded and depends on the APIs defined in the compute folder.
+
+        if "reset_password" in url:
+            return self.transform_reset_account_url(url)
+
+        if "verify_account" in url:
+            return self.transform_verify_account_url(url)
+
+        return None
+
+    def transform_reset_account_url(self, url: str):
+
+        # Extract URL parameters to a map.
+        params_map = self.extract_params(url)
+        key = params_map["key"]
+        new_url = f"https://{self.api_endpoint}/auth?operation=reset_account&reset_token={key}&new_password={self.NEW_PASSWORD}"
+        return new_url
+
+    def transform_verify_account_url(self, url: str):
+
+        # Extract URL parameters to a map.
+        params_map = self.extract_params(url)
+        key = params_map["key"]
+        new_url = f"https://{self.api_endpoint}/auth?operation=verify_account&verification_token={key}"
+        return new_url
+
+    def extract_params(self, url: str):
+        # Extract URL parameters to a map.
+        params_list = url.split("?")[1].split("&")
+        params_map = {x.split("=")[0]: x.split("=")[1] for x in params_list}
+        return params_map

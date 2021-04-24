@@ -17,19 +17,21 @@ def request_account_verification_token(auth_handler, email: str, account_key: st
     confirm_frontend_url: str = f"{frontend_url}verify_account?key={token}"
 
     # Fire off the email.
-    send_confirmation_email(email, confirm_url, confirm_frontend_url)
+    send_confirmation_email(email, confirm_frontend_url)
     return token, confirm_url
 
 
-def send_confirmation_email(email: str, confirm_url: str, confirm_frontend_url: str):
+def send_confirmation_email(email: str, confirm_frontend_url: str):
 
     email_source: str = os.getenv("EMAIL_SOURCE", "accounts@pixegami.com")
     email_sender = EmailSender()
     email_props = EmailProps()
     email_props.subject = "Confirm your account at [SERVICE]"
     email_props.source = email_source
-    email_props.text = f"Please click here to confirm your account: {confirm_frontend_url} direct api: {confirm_url}"
-    email_props.html = f"<div>Please click here to confirm your account: <a href='{confirm_frontend_url}'>Confirm Account</a> <a href='{confirm_url}'>Confirm API Account</a></div>"
+    email_props.text = (
+        f"Please click here to confirm your account: {confirm_frontend_url}"
+    )
+    email_props.html = f"<div>Please click here to confirm your account: <a href='{confirm_frontend_url}'>Confirm Account</a></div>"
     email_props.to_addresses = [email]
     email_props.reply_to = []
     email_sender.send_email(email_props)

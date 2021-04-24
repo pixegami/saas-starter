@@ -49,6 +49,8 @@ Content-Type: multipart/alternative; boundary="00000000000070830505b9b86bc7"
 Content-Type: text/plain; charset="UTF-8"
 
 Hello World. Here is your validation link: https://google.com
+Reset your account front-end: https://ss.pixegami.com/app/reset_password?key=0b4267fa68d78b36e78c6ad0be575d5e918c7de0f92e8a11aac756650f2102ee
+Verify your account here: https://ss.pixegami.com/app/verify_account?key=809154b903cbb4ff88002f5c164cd7fa33377dfb448f66ed26567838cc0f477a
 
 --00000000000070830505b9b86bc7
 Content-Type: text/html; charset="UTF-8"

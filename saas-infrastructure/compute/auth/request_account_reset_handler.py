@@ -27,7 +27,7 @@ class RequestAccountResetHandler(AuthHandlerBase):
         reset_frontend_url: str = f"{self.frontend_url}reset_password?key={token}"
 
         # Fire off the email.
-        self.send_reset_email(auth_user.user, reset_url, reset_frontend_url)
+        self.send_reset_email(auth_user.user, reset_frontend_url)
 
         # Return a response.
         if should_return_tokens:
@@ -41,14 +41,16 @@ class RequestAccountResetHandler(AuthHandlerBase):
             response_payload,
         )
 
-    def send_reset_email(self, email: str, reset_url: str, reset_frontend_url: str):
+    def send_reset_email(self, email: str, reset_frontend_url: str):
 
         email_sender = EmailSender()
         email_props = EmailProps()
         email_props.subject = "Reset your account password at [SERVICE]"
         email_props.source = self.email_source
-        email_props.text = f"Please click here to reset your account: {reset_frontend_url} / {reset_url}"
-        email_props.html = f"<div>Please click here to reset your account: <a href='{reset_frontend_url}'>Reset Account</a>< <a href='{reset_url}'>Reset Account API</a></div>"
+        email_props.text = (
+            f"Please click here to reset your account: {reset_frontend_url}"
+        )
+        email_props.html = f"<div>Please click here to reset your account: <a href='{reset_frontend_url}'>Reset Account</a></div>"
         email_props.to_addresses = [email]
         email_props.reply_to = []
 

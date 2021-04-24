@@ -60,10 +60,9 @@ e.g. `validated.pixegami.com`.
 * Backend sends email on sign-up.
 * Refactor names to be better.
 * Salted hashes
-
-
 * Implement email auto-validator stack.
-* Backend validation.
+  
+* Backend validation. (lower case emails, valid emails, correct error messages).
 * Login attempt cool-downs.
 * Consolidate configurations.
 * Can MX record for the email be created by the stack?

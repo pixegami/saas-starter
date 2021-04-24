@@ -3,11 +3,13 @@ import json
 import uuid
 import jwt
 import time
-import time
 
 
 API_ENDPOINT = "https://api.ss.pixegami.com/auth"
 VALIDATION_EMAIL = "auth.pixegami.com"  # Emails sent here get auto-validated.
+AUTO_RESET_PASSWORD = (
+    "myAutoResetPassword"  # The email validator will reset the password to this.
+)
 JWT_KEY = "SOME_KEY"
 
 
@@ -48,21 +50,6 @@ def test_verify_account():
     assert response.status == 200
 
 
-def test_can_verify_via_email():
-
-    user = generate_random_email(VALIDATION_EMAIL)
-    password = generate_random_password()
-    sign_up_response = sign_up(user, password, 200)
-
-    # Verification email should be sent on sign-up.
-    # Wait for the email receiver to resolve.
-    time.sleep(5)
-    sign_in_response = sign_in(user, password, 200)
-    token_payload = token_payload_from_response(sign_in_response)
-    print("Token Payload: ", token_payload)
-    assert token_payload["verified"]
-
-
 def test_can_create_test_user():
     # Can use the 'test user' endpoint to create one with pre-confirmed status.
     user = generate_random_email()
@@ -88,6 +75,44 @@ def test_can_reset_account():
     # Wait a second or two before signing in again.
     time.sleep(2)
     sign_in(user, new_password)
+
+
+############################################
+# These tests need email automatic validator
+############################################
+
+
+def test_can_verify_via_email():
+
+    user = generate_random_email(VALIDATION_EMAIL)
+    password = generate_random_password()
+    sign_up(user, password, 200)
+
+    # Verification email should be sent on sign-up.
+    # Wait for the email receiver to resolve.
+    time.sleep(5)
+    sign_in_response = sign_in(user, password, 200)
+    token_payload = token_payload_from_response(sign_in_response)
+    print("Token Payload: ", token_payload)
+    assert token_payload["verified"]
+
+
+def test_can_reset_account_via_email():
+
+    user = generate_random_email(VALIDATION_EMAIL)
+    password = generate_random_password()
+
+    sign_up_test_user(user, password, 200)
+    request_account_reset(user, 200)
+
+    # Give SES time to process the email.
+    time.sleep(5)
+    sign_in(user, AUTO_RESET_PASSWORD)
+
+
+############################################
+# API/Supporting functions
+############################################
 
 
 def sign_up(user: str, password: str, expected_status: int = 200):

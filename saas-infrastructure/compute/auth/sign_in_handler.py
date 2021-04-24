@@ -1,10 +1,5 @@
-import json
-import time
 from auth_handler_base import AuthHandlerBase
 import bcrypt
-import jwt
-import uuid
-import traceback
 from handler_exception import HandlerException
 from return_message import new_return_message
 

@@ -39,7 +39,7 @@ class AuthApi extends BaseApi {
     console.log("Signing in!");
 
     const fakeToken = jwt.sign(
-      { confirmed: false, user: "blah@fake.com" },
+      { verified: false, user: "blah@fake.com" },
       "myFakeSecret"
     );
 
@@ -78,7 +78,7 @@ class AuthApi extends BaseApi {
   public static requestAccountVerification(
     account_key: string
   ): Promise<AuthResponse> {
-    return this.postRequest("request_account_confirmation", {
+    return this.postRequest("request_account_verification", {
       account_key,
     });
   }
@@ -99,9 +99,11 @@ class AuthApi extends BaseApi {
     });
   }
 
-  public static verifyAccount(verification_key: string): Promise<AuthResponse> {
-    return this.postRequest("confirm_account", {
-      confirm_token: verification_key,
+  public static verifyAccount(
+    verification_token: string
+  ): Promise<AuthResponse> {
+    return this.postRequest("verify_account", {
+      verification_token,
     });
   }
 

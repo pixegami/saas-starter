@@ -2,7 +2,7 @@ import * as jwt from "jsonwebtoken";
 
 class AuthSession {
   private static SESSION_STORAGE_NAME: string = "ss_pixegami_auth_session";
-  private static TOKEN_VERIFIED_PROPERTY: string = "confirmed";
+  private static TOKEN_VERIFIED_PROPERTY: string = "verified";
   private static TOKEN_USER_PROPERTY: string = "user";
   private static TOKEN_ACCOUNT_KEY_PROPERTY: string = "account_key";
   private static IS_BROWSER = typeof window !== "undefined";

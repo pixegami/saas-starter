@@ -13,18 +13,15 @@ const App = () => {
       <AuthRoute component={Landing} path="/app" bypassAuth />
       <AuthRoute component={Dashboard} path="/app/dashboard" />
       <AuthRoute
-        component={AuthViews.AuthVerifyAccount}
-        path={AuthURL.VERIFY_ACCOUNT}
+        component={AuthViews.AuthRequestAccountVerification}
+        path={AuthURL.VERIFY_ACCOUNT_REQUEST}
       />
 
       <AuthViews.AuthRegister path={AuthURL.REGISTER} />
       <AuthViews.AuthSignIn path={AuthURL.SIGN_IN} />
       <AuthViews.AuthForgotPassword path={AuthURL.FORGOT_PASSWORD} />
       <AuthViews.AuthResetPassword path={AuthURL.RESET_PASSWORD} />
-      <AuthViews.AuthVerifyAccountSuccess
-        path={AuthURL.VERIFY_ACCOUNT_SUCCESS}
-      />
-      <AuthViews.AuthVerifyAccountResult path={AuthURL.VERIFY_ACCOUNT_RESULT} />
+      <AuthViews.AuthVerifyAccount path={AuthURL.VERIFY_ACCOUNT} />
       <NotFound default />
     </Router>
   );

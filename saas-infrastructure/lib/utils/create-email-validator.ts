@@ -5,7 +5,11 @@ import { Code, FunctionProps, Runtime } from "@aws-cdk/aws-lambda";
 import * as iam from "@aws-cdk/aws-iam";
 import { Duration } from "@aws-cdk/core";
 
-const createEmailValidator = (scope: cdk.Construct, servicePrefix: string) => {
+const createEmailValidator = (
+  scope: cdk.Construct,
+  servicePrefix: string,
+  apiEndpoint: string
+) => {
   // Create bucket to store the mail.
   const emailTestBucket = new s3.Bucket(scope, "EmailBucket", {
     bucketName: `${servicePrefix}.cloud.auth.email-validator`,
@@ -22,6 +26,7 @@ const createEmailValidator = (scope: cdk.Construct, servicePrefix: string) => {
     memorySize: 256,
     environment: {
       BUCKET: emailTestBucket.bucketName,
+      API_ENDPOINT: apiEndpoint,
       FOLDER: "/tmp",
     },
   };
