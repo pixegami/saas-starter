@@ -5,6 +5,7 @@ import time
 from handler_base import HandlerBase
 import jwt
 from handler_exception import HandlerException
+from email_sender import validate_email
 
 
 class AuthUser:
@@ -96,14 +97,6 @@ class AuthHandlerBase(HandlerBase):
         payload = self.get_item(account_key)
         return AuthUser.from_payload(payload)
 
-    def can_create_user(self, user: str) -> bool:
-        try:
-            self.get_user_credentials(user)
-        except HandlerException as e:
-            if e.status_code == 404:
-                return True
-        return False
-
     def put_token(self, key: str, token_type: str, token: str, expiry_hours: int = 1):
         item = {
             "pk": key,
@@ -126,6 +119,19 @@ class AuthHandlerBase(HandlerBase):
             raise HandlerException(404, f"Item {account_key} was not found.")
 
         return response["Item"]
+
+    def validate_user_does_not_exist(self, user: str) -> bool:
+        try:
+            self.get_user_credentials(user)
+        except HandlerException as e:
+            if e.status_code == 404:
+                return
+
+        raise HandlerException(400, f"{user} cannot be created. User already exists.")
+
+    def validate_email_regex(self, user: str) -> bool:
+        if not validate_email(user):
+            raise HandlerException(400, f"{user} is not a valid email.")
 
     def get_item_from_gsi(self, gsi_index: str, gsi_key: str, gsi_value: str):
         print(f"Getting GSI Items for {gsi_key}.")

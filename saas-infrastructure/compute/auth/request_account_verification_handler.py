@@ -16,6 +16,9 @@ class RequestAccountVerificationHandler(AuthHandlerBase):
         email = auth_user.user
         should_return_verification_tokens = self.is_test_user(email)
 
+        # Validation.
+        self.validate_email_regex(email)
+
         # User is already verified, this should fail.
         if auth_user.verified:
             raise HandlerException(400, "This user has already been verified.")

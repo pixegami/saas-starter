@@ -20,3 +20,9 @@ def test_sign_diff_case():
     # Give SES time to process the email.
     time.sleep(5)
     sign_in(user, AUTO_RESET_PASSWORD)
+
+
+def test_cannot_sign_with_invalid_email():
+    user = "this@notEmail"
+    password = generate_random_password()
+    sign_up_test_user(user, password, 400)

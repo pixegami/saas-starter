@@ -1,7 +1,6 @@
 from auth_handler_base import AuthHandlerBase, AuthUser
 import bcrypt
 import uuid
-from handler_exception import HandlerException
 from return_message import new_return_message
 from request_account_verification_token import request_account_verification_token
 
@@ -18,11 +17,9 @@ class SignUpHandler(AuthHandlerBase):
         password = request_data["password"]
         flags = request_data["flags"] if "flags" in request_data else []
 
-        # Check if user exists.
-        if not self.can_create_user(user):
-            raise HandlerException(
-                400, f"User {user} cannot be created. User already exists."
-            )
+        # Validate at this user can be created.
+        self.validate_email_regex(user)
+        self.validate_user_does_not_exist(user)
 
         # Blah
         key = uuid.uuid4().hex

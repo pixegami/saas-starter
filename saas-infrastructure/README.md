@@ -61,8 +61,10 @@ e.g. `validated.pixegami.com`.
 * Refactor names to be better.
 * Salted hashes
 * Implement email auto-validator stack.
+* Case insensitive login.
   
-* Backend validation. (lower case emails, valid emails, correct error messages).
+* Backend validation. (valid emails, strong passwords, email/password lengths, correct error messages).
+* NMeaningful error messages.
 * Login attempt cool-downs.
 * Consolidate configurations.
 * Can MX record for the email be created by the stack?

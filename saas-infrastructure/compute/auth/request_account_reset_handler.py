@@ -17,10 +17,14 @@ class RequestAccountResetHandler(AuthHandlerBase):
 
     def handle_action(self, request_data: dict, event: dict, context: dict):
 
-        user_email = request_data["user"]
+        user_email = str(request_data["user"]).lower()
+
+        # Validation.
+        self.validate_email_regex(user_email)
+
+        # Get what we need to reset the account.
         auth_user = self.get_user_credentials(user_email)
         should_return_tokens = self.is_test_user(user_email)
-
         token = secrets.token_hex()
         self.put_token(auth_user.key, TokenKeys.TOKEN_RESET, token)
         reset_url: str = f"{self.endpoint}?operation=reset_account&reset_url={token}"
