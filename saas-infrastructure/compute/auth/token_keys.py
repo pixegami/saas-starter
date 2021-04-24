@@ -1,0 +1,3 @@
+class TokenKeys:
+    TOKEN_RESET = "TOKEN.RESET"
+    TOKEN_VERIFY = "TOKEN.VERIFY"

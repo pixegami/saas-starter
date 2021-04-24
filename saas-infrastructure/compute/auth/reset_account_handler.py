@@ -1,9 +1,7 @@
-import json
-import time
 from auth_handler_base import AuthHandlerBase
-import uuid
 import bcrypt
 from return_message import new_return_message
+from token_keys import TokenKeys
 
 
 class ResetAccountHandler(AuthHandlerBase):
@@ -22,12 +20,12 @@ class ResetAccountHandler(AuthHandlerBase):
         hashed_password = bcrypt.hashpw(str.encode(new_password), salt=bcrypt.gensalt())
         hashed_password_str = hashed_password.decode("utf-8")
         self.update_user_password(account_key, hashed_password_str)
-        self.delete_key(account_key, self.TOKEN_RESET)
+        self.delete_key(account_key, TokenKeys.TOKEN_RESET)
 
         response_payload = {"reset_token": token, "key": account_key}
 
         return new_return_message(
             200,
-            f"Confirm Token Success for account key {account_key}",
+            f"Password reset success for [{account_key}]",
             response_payload,
         )

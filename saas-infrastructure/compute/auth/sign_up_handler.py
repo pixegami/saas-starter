@@ -1,11 +1,9 @@
-import json
-import time
 from auth_handler_base import AuthHandlerBase, AuthUser
 import bcrypt
-import jwt
 import uuid
 from handler_exception import HandlerException
 from return_message import new_return_message
+from request_account_verification_token import request_account_verification_token
 
 
 class SignUpHandler(AuthHandlerBase):
@@ -15,7 +13,7 @@ class SignUpHandler(AuthHandlerBase):
 
     def handle_action(self, request_data: dict, event: dict, context: dict):
 
-        user = request_data["user"]
+        email = user = request_data["user"]
         password = request_data["password"]
         flags = request_data["flags"] if "flags" in request_data else []
 
@@ -30,14 +28,19 @@ class SignUpHandler(AuthHandlerBase):
         hashed_password = bcrypt.hashpw(str.encode(password), salt=bcrypt.gensalt())
         hashed_password_str = hashed_password.decode("utf-8")
         should_expire = "TMP" in flags
-        should_confirm = "CONFIRMED" in flags
+        should_verify = "AUTO_VERIFY" in flags
+
         self.put_user_credentials(
-            key, user, hashed_password_str, should_expire, should_confirm
+            key, user, hashed_password_str, should_expire, should_verify
         )
 
-        auth_user = AuthUser(key, user, hashed_password_str, should_confirm)
+        auth_user = AuthUser(key, user, hashed_password_str, should_verify)
         token = auth_user.get_token(self.JWT_HASH_KEY)
         response_payload = {"token": token}
+
+        # Create verification token (if it's not auto-verified).
+        if not should_verify:
+            request_account_verification_token(self, email, key)
 
         return new_return_message(
             200,

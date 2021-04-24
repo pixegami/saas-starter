@@ -8,15 +8,15 @@ from handler_exception import HandlerException
 
 
 class AuthUser:
-    def __init__(self, key, user, hashed_password_str, confirmed: bool = False):
+    def __init__(self, key, user, hashed_password_str, verified: bool = False):
         self.key: str = key
         self.user: str = user
         self.hashed_password_str: str = hashed_password_str
-        self.confirmed: bool = confirmed
+        self.verified: bool = verified
 
     def get_token(self, hash_key: str):
         token = jwt.encode(
-            {"account_key": self.key, "user": self.user, "confirmed": self.confirmed},
+            {"account_key": self.key, "user": self.user, "verified": self.verified},
             hash_key,
             algorithm="HS256",
         )
@@ -28,7 +28,7 @@ class AuthUser:
             payload["pk"],
             payload["user"],
             payload["hashed_password"],
-            payload["confirmed"],
+            payload["verified"],
         )
 
 
@@ -36,9 +36,6 @@ class AuthHandlerBase(HandlerBase):
 
     EXPIRY_MINUTES = 60
     JWT_HASH_KEY = "wqd53034578vj10@!_FJf93fh23fF#@jf302f"
-
-    TOKEN_RESET = "TOKEN.RESET"
-    TOKEN_CONFIRM = "TOKEN.CONFIRM_ACCOUNT"
 
     def __init__(self):
         self.schema = {}
@@ -52,7 +49,7 @@ class AuthHandlerBase(HandlerBase):
         user: str,
         hashed_password: str,
         should_expire: bool,
-        should_confirm: bool = False,
+        should_verify: bool = False,
     ):
 
         item = {
@@ -60,7 +57,7 @@ class AuthHandlerBase(HandlerBase):
             "sk": "CREDENTIALS",
             "user": user,
             "hashed_password": hashed_password,
-            "confirmed": should_confirm,
+            "verified": should_verify,
             "last_activity": int(time.time()),
         }
 
@@ -69,10 +66,10 @@ class AuthHandlerBase(HandlerBase):
 
         return self.get_user_table().put_item(Item=item)
 
-    def update_user_confirmation(self, key: str):
+    def update_user_verification(self, key: str):
         return self.get_user_table().update_item(
             Key={"pk": key, "sk": "CREDENTIALS"},
-            UpdateExpression="SET confirmed = :v1",
+            UpdateExpression="SET verified = :v1",
             ExpressionAttributeValues={
                 ":v1": True,
             },
@@ -163,3 +160,6 @@ class AuthHandlerBase(HandlerBase):
 
     def get_timestamp_int(self):
         return int(time.time())
+
+    def is_test_user(self, email: str):
+        return email.startswith("test-user")

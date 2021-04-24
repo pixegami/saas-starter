@@ -1,10 +1,10 @@
 from handler_base import HandlerBase
 from sign_in_handler import SignInHandler
 from sign_up_handler import SignUpHandler
-from create_confirm_account_token_handler import CreateConfirmAccountTokenHandler
-from create_reset_token_handler import CreateResetTokenHandler
+from request_account_verification_handler import RequestAccountVerificationHandler
+from request_account_reset_handler import RequestAccountResetHandler
 from reset_account_handler import ResetAccountHandler
-from confirm_account_handler import ConfirmAccountHandler
+from verify_account_handler import VerifyAccountHandler
 from validate_token_handler import ValidateTokenHandler
 from create_test_account_handler import CreateTestAccountHandler
 from handler_exception import HandlerException
@@ -21,9 +21,9 @@ class EntryPointHandler(HandlerBase):
         self.operation_map = {
             "sign_in": SignInHandler(),
             "sign_up": SignUpHandler(),
-            "request_account_confirmation": CreateConfirmAccountTokenHandler(),
-            "confirm_account": ConfirmAccountHandler(),
-            "request_account_reset": CreateResetTokenHandler(),
+            "request_account_verification": RequestAccountVerificationHandler(),
+            "verify_account": VerifyAccountHandler(),
+            "request_account_reset": RequestAccountResetHandler(),
             "reset_account": ResetAccountHandler(),
             "validate_token": ValidateTokenHandler(),
             "create_test_account": CreateTestAccountHandler(),

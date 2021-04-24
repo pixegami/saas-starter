@@ -13,5 +13,5 @@ class CreateTestAccountHandler(AuthHandlerBase):
     def handle_action(self, request_data: dict, event: dict, context: dict):
         sign_up_handler = SignUpHandler()
         # Force add TMP and CONFIRMED flags.
-        request_data["flags"] = ["TMP", "CONFIRMED"]
+        request_data["flags"] = ["TMP", "AUTO_VERIFY"]
         return sign_up_handler.handle_action(request_data, event, context)

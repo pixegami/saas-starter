@@ -3,6 +3,7 @@ import json
 import uuid
 import jwt
 import time
+import time
 
 
 API_ENDPOINT = "https://api.ss.pixegami.com/auth"
@@ -27,8 +28,8 @@ def test_sign_up():
     validate(token)
 
 
-def test_can_confirm_account():
-    # A user can sign-up, and confirm their account.
+def test_verify_account():
+    # A user can sign-up, and request account verification.
 
     user = generate_random_email()
     password = generate_random_password()
@@ -37,11 +38,11 @@ def test_can_confirm_account():
     token = sign_up_response["payload"]["token"]
     token_payload = jwt.decode(token, options={"verify_signature": False})
     account_key = token_payload["account_key"]
-    confirmation_request_response = request_account_confirmation(account_key, 200)
-    confirm_url = confirmation_request_response["payload"]["confirm_url"]
+    response = request_account_verification(account_key, 200)
 
+    verification_url = response["payload"]["verification_url"]
     http = urllib3.PoolManager()
-    response = http.request("GET", confirm_url)
+    response = http.request("GET", verification_url)
     print(response.status, response.data)
     assert response.status == 200
 
@@ -57,7 +58,7 @@ def test_can_confirm_account():
 #     token = sign_up_response["payload"]["token"]
 #     token_payload = jwt.decode(token, options={"verify_signature": False})
 #     account_key = token_payload["account_key"]
-#     request_account_confirmation(account_key, 200)
+#     request_account_verification(account_key, 200)
 
 #     # Wait for the email receiver to resolve.
 #     time.sleep(5)
@@ -74,7 +75,7 @@ def test_can_create_test_user():
 
     token_payload = token_payload_from_response(response)
     print(token_payload)
-    assert token_payload["confirmed"]
+    assert token_payload["verified"]
 
 
 def test_can_reset_account():
@@ -88,6 +89,8 @@ def test_can_reset_account():
     reset_token = response["payload"]["reset_token"]
     reset_account(reset_token, new_password, 200)
 
+    # Wait a second or two before signing in again.
+    time.sleep(2)
     sign_in(user, new_password)
 
 
@@ -121,10 +124,10 @@ def validate(token: str, expected_status: int = 200):
     return response_data
 
 
-def request_account_confirmation(account_key: str, expected_status: int = 200):
+def request_account_verification(account_key: str, expected_status: int = 200):
     payload = {"account_key": account_key}
     status, response_data = post_request(
-        operation="request_account_confirmation", payload=payload
+        operation="request_account_verification", payload=payload
     )
     assert status == expected_status
     return response_data

@@ -46,10 +46,11 @@ We need to add re-direct rules for client-only paths.
 ## TODO
 
 * Backend sends email on sign-up.
-* Consolidate configurations.
-* Backend validation.
-* Salted hashes.
-* Login attempt cool-downs.
+* Refactor names to be better.
+* Salted hashes
 
-* Frontend transfers fields between pages.
-* Field meta-data and saving the info.
+* Refactors
+* Implement email auto-validator stack.
+* Backend validation.
+* Login attempt cool-downs.
+* Consolidate configurations.
