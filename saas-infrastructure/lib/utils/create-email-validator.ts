@@ -5,10 +5,10 @@ import { Code, FunctionProps, Runtime } from "@aws-cdk/aws-lambda";
 import * as iam from "@aws-cdk/aws-iam";
 import { Duration } from "@aws-cdk/core";
 
-const createEmailValidator = (scope: cdk.Construct) => {
+const createEmailValidator = (scope: cdk.Construct, servicePrefix: string) => {
   // Create bucket to store the mail.
   const emailTestBucket = new s3.Bucket(scope, "EmailBucket", {
-    bucketName: "valheim.cloud.auth.email-validator",
+    bucketName: `${servicePrefix}.cloud.auth.email-validator`,
     removalPolicy: cdk.RemovalPolicy.DESTROY,
     lifecycleRules: [{ expiration: Duration.days(1) }],
   });

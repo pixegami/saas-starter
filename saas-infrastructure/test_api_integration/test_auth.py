@@ -7,6 +7,7 @@ import time
 
 
 API_ENDPOINT = "https://api.ss.pixegami.com/auth"
+VALIDATION_EMAIL = "auth.pixegami.com"  # Emails sent here get auto-validated.
 JWT_KEY = "SOME_KEY"
 
 
@@ -47,24 +48,19 @@ def test_verify_account():
     assert response.status == 200
 
 
-# Add this test once we have proper email validation.
-# def test_can_confirm_via_email():
+def test_can_verify_via_email():
 
-#     user = generate_random_email("auth.pixegami.com")
-#     password = generate_random_password()
-#     sign_up_response = sign_up(user, password, 200)
+    user = generate_random_email(VALIDATION_EMAIL)
+    password = generate_random_password()
+    sign_up_response = sign_up(user, password, 200)
 
-#     # This will cause a confirmation email to be sent.
-#     token = sign_up_response["payload"]["token"]
-#     token_payload = jwt.decode(token, options={"verify_signature": False})
-#     account_key = token_payload["account_key"]
-#     request_account_verification(account_key, 200)
-
-#     # Wait for the email receiver to resolve.
-#     time.sleep(5)
-#     sign_in_response = sign_in(user, password, 200)
-#     token_payload = token_payload_from_response(sign_in_response)
-#     assert token_payload["confirmed"]
+    # Verification email should be sent on sign-up.
+    # Wait for the email receiver to resolve.
+    time.sleep(5)
+    sign_in_response = sign_in(user, password, 200)
+    token_payload = token_payload_from_response(sign_in_response)
+    print("Token Payload: ", token_payload)
+    assert token_payload["verified"]
 
 
 def test_can_create_test_user():

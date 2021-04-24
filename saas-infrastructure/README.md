@@ -43,14 +43,27 @@ We need to add re-direct rules for client-only paths.
 ]
 ```
 
+## Adding Auto Email Validator
+
+Once the email validator Lambda is deployed, you also need to add a rule in the SES console to write
+emails to the correct bucket, and to invoke the appropriate Lambda function.
+
+* The recipient should be whatever is specified in the `test_auth.py` integration tests' `VALIDATION_EMAIL`, 
+e.g. `validated.pixegami.com`.
+* Create an MX Record in Route53 for the domain name you want to use for the `VALIDATION_EMAIL`, so SES can receive it.
+* (Action 1) The S3 bucket should be whatever was created by the `create-email-validator` function.
+* (Action 2) The Lambda function should be the one created by `create-email-validator` function.
+* Once you run the `test_auth.py` tests again, the tests requiring email validation should work.
+
 ## TODO
 
 * Backend sends email on sign-up.
 * Refactor names to be better.
 * Salted hashes
 
-* Refactors
+
 * Implement email auto-validator stack.
 * Backend validation.
 * Login attempt cool-downs.
 * Consolidate configurations.
+* Can MX record for the email be created by the stack?

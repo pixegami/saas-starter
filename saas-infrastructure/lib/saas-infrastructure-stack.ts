@@ -4,6 +4,7 @@ import { StaticSite } from "./stacks/static-site";
 import createUserAuthApi from "./stacks/create-user-auth-api";
 import ServiceProps from "./utils/service-props";
 import createRestApi from "./stacks/create-rest-api";
+import createEmailValidator from "./utils/create-email-validator";
 
 export class SaasInfrastructureStack extends cdk.Stack {
   constructor(
@@ -29,6 +30,9 @@ export class SaasInfrastructureStack extends cdk.Stack {
     // Create the main REST API Body.
     const api = createRestApi(this, apiDomainName, zone, serviceProps);
     createUserAuthApi(this, api, apiDomainName, serviceProps);
+
+    // Create the email validator Lambda.
+    createEmailValidator(this, serviceProps.servicePrefix);
 
     // Main static site front-end.
     new StaticSite(this, "MainSite", {
