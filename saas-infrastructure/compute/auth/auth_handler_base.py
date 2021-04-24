@@ -88,7 +88,8 @@ class AuthHandlerBase(HandlerBase):
         self.get_user_table().delete_item(Key={"pk": key, "sk": sk})
 
     def get_user_credentials(self, user: str) -> (AuthUser, dict):
-        payload = self.get_item_from_gsi("user_index", "user", user)
+        # User is not case sensitive.
+        payload = self.get_item_from_gsi("user_index", "user", user.lower())
         return AuthUser.from_payload(payload)
 
     def get_credentials_from_key(self, account_key: str) -> (AuthUser, dict):

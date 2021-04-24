@@ -35,8 +35,8 @@ test("auth login account not verified", async () => {
   // Token should exist, and have the 'confirmed' status as false.
   expect(signInResponse.token).not.toBeUndefined();
   const tokenPayload = jwt.decode(signInResponse.token);
-  expect(tokenPayload).toHaveProperty("confirmed");
-  expect(tokenPayload["confirmed"]).toBe(false);
+  expect(tokenPayload).toHaveProperty("verified");
+  expect(tokenPayload["verified"]).toBe(false);
   console.log(tokenPayload);
 });
 
@@ -58,8 +58,8 @@ test("can verify account", async () => {
 
   // Should be able to request validation email.
   const response = await requestAccountVerificationAndExpect(account_key, 200);
-  expect(response.payload).toHaveProperty("confirm_token");
-  const verificationToken = response.payload["confirm_token"];
+  expect(response.payload).toHaveProperty("verification_token");
+  const verificationToken = response.payload["verification_token"];
 
   // Can verify account with the key.
   const verificationResult = await verifyAccountAndExpect(
@@ -155,7 +155,7 @@ const randomUUID = () => {
 };
 
 const newRandomUser = () => {
-  return `tst-user-${randomUUID()}@pixegami.com`;
+  return `test-user-${randomUUID()}@pixegami.com`;
 };
 
 const newRandomPassword = () => {

@@ -13,7 +13,8 @@ class SignUpHandler(AuthHandlerBase):
 
     def handle_action(self, request_data: dict, event: dict, context: dict):
 
-        email = user = request_data["user"]
+        # Username/email should not be case sensitive.
+        email = user = str(request_data["user"]).lower()
         password = request_data["password"]
         flags = request_data["flags"] if "flags" in request_data else []
 
