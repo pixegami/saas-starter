@@ -6,6 +6,7 @@ from handler_base import HandlerBase
 import jwt
 from handler_exception import HandlerException
 from email_sender import validate_email
+from input_validator import InputValidator
 
 
 class AuthUser:
@@ -43,6 +44,7 @@ class AuthHandlerBase(HandlerBase):
         self.action = None
         self.user_table = None
         self.session_table = None
+        self.validator: InputValidator = InputValidator()
 
     def put_user_credentials(
         self,

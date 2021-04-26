@@ -17,7 +17,9 @@ class SignUpHandler(AuthHandlerBase):
         password = request_data["password"]
         flags = request_data["flags"] if "flags" in request_data else []
 
-        # Validate at this user can be created.
+        # Validate at this user and password can be created.
+        self.validator.password(password)
+        self.validator.email(user)
         self.validate_email_regex(user)
         self.validate_user_does_not_exist(user)
 

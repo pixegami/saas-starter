@@ -104,7 +104,7 @@ const AuthVerifyAccount: React.FC<SubComponentBaseProps> = (props) => {
           request a new verification key and try again.
         </div>
         <ApiTextLink
-          linkPath={AuthURL.VERIFY_ACCOUNT}
+          linkPath={AuthURL.VERIFY_ACCOUNT_REQUEST}
           linkText="re-verify"
           preLinkText="Sign in to"
         />

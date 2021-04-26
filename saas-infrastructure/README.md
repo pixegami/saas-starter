@@ -62,9 +62,10 @@ e.g. `validated.pixegami.com`.
 * Salted hashes
 * Implement email auto-validator stack.
 * Case insensitive login.
-  
-* Backend validation. (valid emails, strong passwords, email/password lengths, correct error messages).
-* NMeaningful error messages.
+* Valid emails.
+* Backend validation. (strong passwords, email lengths).
+* 
+* Meaningful error messages.
 * Login attempt cool-downs.
 * Consolidate configurations.
 * Can MX record for the email be created by the stack?

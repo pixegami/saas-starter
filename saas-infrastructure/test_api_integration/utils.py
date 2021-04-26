@@ -8,7 +8,7 @@ import time
 API_ENDPOINT = "https://api.ss.pixegami.com/auth"
 VALIDATION_EMAIL = "auth.pixegami.com"  # Emails sent here get auto-validated.
 AUTO_RESET_PASSWORD = (
-    "myAutoResetPassword"  # The email validator will reset the password to this.
+    "myAutoResetPasswordAB12!"  # The email validator will reset the password to this.
 )
 JWT_KEY = "SOME_KEY"
 
@@ -115,4 +115,4 @@ def generate_random_email(base_domain: str = "pixegami.com"):
 
 
 def generate_random_password():
-    return f"test-pass-{uuid.uuid4().hex[:12]}"
+    return f"test-pass-1A-{uuid.uuid4().hex[:12]}"
