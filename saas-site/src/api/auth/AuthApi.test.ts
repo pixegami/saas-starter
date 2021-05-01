@@ -2,6 +2,7 @@ import AuthApi from "./AuthApi";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import * as jwt from "jsonwebtoken";
+import AuthResponse from "./AuthResponse";
 
 beforeEach(async () => {
   // HTTP Adapter required to solve CORS error.
@@ -43,7 +44,7 @@ test("auth login account not verified", async () => {
 test("validate with empty session fails", async () => {
   // // Validation should fail without a session.
   const validationResponse = await AuthApi.validate();
-  expect(validationResponse.status).toBe(400);
+  expect(validationResponse.status).toBe(403);
 });
 
 test("can verify account", async () => {
@@ -83,11 +84,7 @@ test("can reset account", async () => {
   console.log(resetRequestResponse.payload);
   expect(resetRequestResponse.payload).toHaveProperty("reset_token");
   const resetToken = resetRequestResponse.payload["reset_token"];
-  const resetResponse = await resetAccountAndExpect(
-    resetToken,
-    newPassword,
-    200
-  );
+  await resetAccountAndExpect(resetToken, newPassword, 200);
 
   // Cannot sign in with old password.
   await signInAndExpect(user, oldPassword, 403);
@@ -102,8 +99,7 @@ const signUpAndExpect = async (
   expectedCode: number
 ) => {
   const response = await AuthApi.signUp(user, password);
-  expect(response.status).toBe(expectedCode);
-  return response;
+  return expectResponseOrPrint(response, expectedCode);
 };
 
 const signInAndExpect = async (
@@ -112,8 +108,7 @@ const signInAndExpect = async (
   expectedCode: number
 ) => {
   const response = await AuthApi.signIn(user, password);
-  expect(response.status).toBe(expectedCode);
-  return response;
+  return expectResponseOrPrint(response, expectedCode);
 };
 
 const requestAccountVerificationAndExpect = async (
@@ -121,8 +116,7 @@ const requestAccountVerificationAndExpect = async (
   expectedCode: number
 ) => {
   const response = await AuthApi.requestAccountVerification(accountKey);
-  expect(response.status).toBe(expectedCode);
-  return response;
+  return expectResponseOrPrint(response, expectedCode);
 };
 
 const requestAccountResetAndExpect = async (
@@ -130,8 +124,7 @@ const requestAccountResetAndExpect = async (
   expectedCode: number
 ) => {
   const response = await AuthApi.requestAccountReset(accountKey);
-  expect(response.status).toBe(expectedCode);
-  return response;
+  return expectResponseOrPrint(response, expectedCode);
 };
 
 const resetAccountAndExpect = async (
@@ -140,13 +133,24 @@ const resetAccountAndExpect = async (
   expectedCode: number
 ) => {
   const response = await AuthApi.resetAccount(token, new_password);
-  expect(response.status).toBe(expectedCode);
-  return response;
+  return expectResponseOrPrint(response, expectedCode);
 };
 
 const verifyAccountAndExpect = async (token: string, expectedCode: number) => {
   const response = await AuthApi.verifyAccount(token);
+  return expectResponseOrPrint(response, expectedCode);
+};
+
+const expectResponseOrPrint = (
+  response: AuthResponse,
+  expectedCode: number
+) => {
+  if (response.status !== expectedCode) {
+    console.log("Response Message", response.message);
+    console.log("Response Payload", response.payload);
+  }
   expect(response.status).toBe(expectedCode);
+
   return response;
 };
 
@@ -155,9 +159,9 @@ const randomUUID = () => {
 };
 
 const newRandomUser = () => {
-  return `test-user-${randomUUID()}@pixegami.com`;
+  return `test-user-1aA${randomUUID()}@pixegami.com`;
 };
 
 const newRandomPassword = () => {
-  return `password-${randomUUID()}`;
+  return `password-1aA${randomUUID()}`;
 };

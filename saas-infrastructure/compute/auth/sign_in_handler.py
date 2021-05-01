@@ -1,6 +1,6 @@
 from auth_handler_base import AuthHandlerBase
 import bcrypt
-from handler_exception import HandlerException
+from auth_exceptions import AuthExceptions
 from return_message import new_return_message
 
 
@@ -24,7 +24,7 @@ class SignInHandler(AuthHandlerBase):
 
         # If they do, create a JWT and send it back.
         if not is_valid:
-            raise HandlerException(403, f"Auth failure!")
+            raise AuthExceptions.AUTH_FAILURE
 
         token = user_creds.get_token(self.JWT_HASH_KEY)
         response_payload = {"token": token}

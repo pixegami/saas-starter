@@ -1,11 +1,8 @@
-import json
-import time
 from auth_handler_base import AuthHandlerBase
 import jwt
-import uuid
 import traceback
-from handler_exception import HandlerException
 from return_message import new_return_message
+from auth_exceptions import AuthExceptions
 
 
 class ValidateTokenHandler(AuthHandlerBase):
@@ -23,16 +20,16 @@ class ValidateTokenHandler(AuthHandlerBase):
             token = auth_header.split(" ")[1]
             print(f"Got token: {token}")
         except Exception as e:
-            raise HandlerException(400, "Invalid or missing Authorization header.")
+            raise AuthExceptions.MISSING_HEADER
 
         try:
             decoded_token = jwt.decode(token, self.JWT_HASH_KEY, algorithms=["HS256"])
         except jwt.ExpiredSignatureError as e:
             print(f"Caught Exception: {str(e)}")
             traceback.print_exc()
-            raise HandlerException(400, f"Failed to validate token: {str(e)}")
+            raise AuthExceptions.INVALID_TOKEN
         except Exception as e:
-            raise HandlerException(400, f"Failed to validate token: {str(e)}")
+            raise AuthExceptions.INVALID_TOKEN
 
         response_payload = decoded_token
         return new_return_message(

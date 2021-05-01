@@ -1,12 +1,10 @@
-import json
-import os
-import boto3
 import time
 from handler_base import HandlerBase
 import jwt
 from handler_exception import HandlerException
 from email_sender import validate_email
 from input_validator import InputValidator
+from auth_exceptions import AuthExceptions
 
 
 class AuthUser:
@@ -118,7 +116,7 @@ class AuthHandlerBase(HandlerBase):
         table = self.get_user_table()
         response = table.get_item(Key={"pk": account_key, "sk": "CREDENTIALS"})
         if "Item" not in response:
-            raise HandlerException(404, f"Item {account_key} was not found.")
+            raise AuthExceptions.USER_NOT_FOUND
 
         return response["Item"]
 
@@ -128,12 +126,11 @@ class AuthHandlerBase(HandlerBase):
         except HandlerException as e:
             if e.status_code == 404:
                 return
-
-        raise HandlerException(400, f"{user} cannot be created. User already exists.")
+        raise AuthExceptions.USER_ALREADY_EXISTS
 
     def validate_email_regex(self, user: str) -> bool:
         if not validate_email(user):
-            raise HandlerException(400, f"{user} is not a valid email.")
+            raise AuthExceptions.INVALID_EMAIL
 
     def get_item_from_gsi(self, gsi_index: str, gsi_key: str, gsi_value: str):
         print(f"Getting GSI Items for {gsi_key}.")
@@ -150,15 +147,15 @@ class AuthHandlerBase(HandlerBase):
         )
 
         if "Items" not in response:
-            raise HandlerException(404, f"Items {gsi_key} was not found.")
+            raise AuthExceptions.KEY_NOT_FOUND
 
         items = response["Items"]
 
         if len(items) == 0:
-            raise HandlerException(404, "Token not found.")
+            raise AuthExceptions.TOKEN_NOT_FOUND
 
         if len(items) > 1:
-            raise HandlerException(500, f"More than 1 match found. {len(items)}")
+            raise AuthExceptions.DUPLICATE_TOKENS_FOUND
 
         return items[0]
 
