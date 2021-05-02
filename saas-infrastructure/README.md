@@ -65,16 +65,8 @@ e.g. `validated.pixegami.com`.
 * Valid emails.
 * Backend validation. (strong passwords, email lengths).
 * Meaningful error messages.
-* 
 * Login attempt cool-downs.
 * 
 * Consolidate configurations.
 * Can MX record for the email be created by the stack?
 
-
-Login Attempt Cooldown:
-
-* SK: "CONSECUTIVE_FAILED_SIGN_IN_ATTEMPTS"
-* value: 5
-* expiry_time: 1XXX
-* 

@@ -39,10 +39,15 @@ def test_sign_in_cooldown_recovery():
     user = generate_random_email()
     password = generate_random_password()
     sign_up_test_user(user, password)
-    block_user_attempts(user)
+
+    # Max out the attempts.
+    sign_in_max_attempt(user, generate_random_password(), 403)
+
+    # Validate that it is rejected.
+    sign_in(user, generate_random_password(), 429)
 
     # Sign in and spoof 24h into the future.
-    sign_in(user, password, 200)
+    sign_in_future(user, password, 200)
 
 
 def test_successful_sign_in_resets_cooldown():
@@ -53,16 +58,15 @@ def test_successful_sign_in_resets_cooldown():
 
     # Sign in a few times.
     for _ in range(3):
-        sign_in(user, generate_random_password(), 403)
+        response = sign_in(user, generate_random_password(), 403)
 
-    # Sign in with the right password. Attempts should be reset.
+    # Sign in with the right password. This should show a non-zero attempt.
     response = sign_in(user, password)
-    print(response["data"])
+    assert response.data["payload"]["attempt"] > 0
 
-
-def block_user_attempts(user):
-    # Set the user's status to blocked with a cooldown.
-    pass
+    # Sign in again. Attempt should be back at 0.
+    response = sign_in(user, password)
+    assert response.data["payload"]["attempt"] == 0
 
 
 # Need a way to spoof my sign-in time.

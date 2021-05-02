@@ -1,5 +1,6 @@
 import time
 from handler_base import HandlerBase
+from typing import Union
 import jwt
 from handler_exception import HandlerException
 from input_validator import InputValidator
@@ -7,11 +8,20 @@ from auth_exceptions import AuthExceptions
 
 
 class AuthUser:
-    def __init__(self, key, user, hashed_password_str, verified: bool = False):
+    def __init__(
+        self,
+        key,
+        user,
+        hashed_password_str,
+        verified: bool = False,
+        expiry_time: Union[int, None] = None,
+    ):
         self.key: str = key
         self.user: str = user
         self.hashed_password_str: str = hashed_password_str
         self.verified: bool = verified
+        self.expiry_time: int = expiry_time
+        self.is_temp: bool = expiry_time is not None
 
     def get_token(self, hash_key: str):
         token = jwt.encode(
@@ -26,8 +36,9 @@ class AuthUser:
         return AuthUser(
             payload["pk"],
             payload["user"],
-            payload["value"],
+            payload["hashed_password"],
             payload["verified"],
+            payload["expiry_time"] if "expiry_time" in payload else None,
         )
 
 
@@ -38,7 +49,6 @@ class AuthHandlerBase(HandlerBase):
     MAX_SIGN_IN_ATTEMPTS = 5
 
     JWT_HASH_KEY = "wqd53034578vj10@!_FJf93fh23fF#@jf302f"
-
     SK_CONSECUTIVE_FAILED_SIGN_IN_ATTEMPTS = "CONSECUTIVE_FAILED_SIGN_IN_ATTEMPTS"
 
     def __init__(self):
@@ -61,7 +71,7 @@ class AuthHandlerBase(HandlerBase):
             "pk": key,
             "sk": "CREDENTIALS",
             "user": user,
-            "value": hashed_password,
+            "hashed_password": hashed_password,
             "verified": should_verify,
             "last_activity": int(time.time()),
         }
@@ -71,15 +81,15 @@ class AuthHandlerBase(HandlerBase):
 
         return self.get_user_table().put_item(Item=item)
 
-    def put_sign_in_attempt_failure(self, key: str, user: str, value: str):
+    def put_sign_in_attempt_failure(self, key: str, user: str, attempt: int):
 
         item = {
             "pk": key,
             "sk": self.SK_CONSECUTIVE_FAILED_SIGN_IN_ATTEMPTS,
-            "value": int(value),
+            "attempt": int(attempt),
             "last_activity": int(time.time()),
             "next_attempt_time": int(time.time())
-            + self._get_sign_in_cooldown_expiry_seconds(value),
+            + self._get_sign_in_cooldown_expiry_seconds(attempt),
         }
 
         item["expiry_time"] = int(time.time() + self.EXPIRY_24_HOURS)
@@ -95,7 +105,7 @@ class AuthHandlerBase(HandlerBase):
             return 0, 0
 
         item = response["Item"]
-        return int(item["value"]), int(item["next_attempt_time"])
+        return int(item["attempt"]), int(item["next_attempt_time"])
 
     def _get_sign_in_cooldown_expiry_seconds(self, attempts: int):
         if attempts < self.MAX_SIGN_IN_ATTEMPTS:
@@ -114,7 +124,7 @@ class AuthHandlerBase(HandlerBase):
     def update_user_password(self, key: str, hashed_password: str):
         return self.get_user_table().update_item(
             Key={"pk": key, "sk": "CREDENTIALS"},
-            UpdateExpression="SET value = :v1",
+            UpdateExpression="SET hashed_password = :v1",
             ExpressionAttributeValues={
                 ":v1": hashed_password,
             },

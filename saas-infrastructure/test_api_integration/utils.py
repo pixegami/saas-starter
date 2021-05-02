@@ -18,74 +18,121 @@ JWT_KEY = "SOME_KEY"
 ############################################
 
 
-def sign_up(user: str, password: str, expected_status: int = 200):
-    status, response_data = post_request(
+class ApiResponse:
+    def __init__(self, status: int, data: dict):
+        self.status = status
+        self.data = data
+
+
+def sign_up(
+    user: str, password: str, expected_status: Union[int, Set[int], None] = 200
+):
+    response = post_request(
         operation="sign_up", payload={"user": user, "password": password}
     )
-    assert status == expected_status
-    return response_data
+    return assert_status(response, expected_status)
 
 
-def sign_up_test_user(user: str, password: str, expected_status: int = 200):
-    status, response_data = post_request(
+def sign_up_test_user(
+    user: str, password: str, expected_status: Union[int, Set[int], None] = 200
+):
+    response = post_request(
         operation="create_test_account", payload={"user": user, "password": password}
     )
-    assert status == expected_status
-    return response_data
+    return assert_status(response, expected_status)
 
 
-def sign_in(user: str, password: str, expected_status: Union[int, Set[int]] = 200):
-    status, response_data = post_request(
-        operation="sign_in", payload={"user": user, "password": password}
+def sign_in(
+    user: str,
+    password: str,
+    expected_status: Union[int, Set[int], None] = 200,
+    flags: list = [],
+):
+    response = post_request(
+        operation="sign_in",
+        payload={"user": user, "password": password},
+        extra_flags=flags,
     )
+    return assert_status(response, expected_status)
+
+
+def sign_in_future(
+    user: str, password: str, expected_status: Union[int, Set[int], None] = 200
+):
+    # Sign in, but X days into the future (to test lock-out cooldown).
+    return sign_in(user, password, expected_status, ["FUTURE"])
+
+
+def sign_in_max_attempt(
+    user: str, password: str, expected_status: Union[int, Set[int], None] = 200
+):
+    # Sign in, but X days into the future (to test lock-out cooldown).
+    return sign_in(user, password, expected_status, ["MAX_ATTEMPT"])
+
+
+def assert_status(
+    response: ApiResponse, expected_status: Union[int, Set[int], None] = 200
+):
+    if expected_status is None:
+        return response
+
     if type(expected_status) is int:
-        assert status == expected_status
+        assert response.status == expected_status
     else:
-        assert status in expected_status
-    return response_data
+        assert response.status in expected_status
+
+    return response
 
 
-def validate(token: str, expected_status: int = 200):
-    status, response_data = get_request(operation="validate_token", token=token)
-    assert status == expected_status
-    return response_data
+def validate(token: str, expected_status: Union[int, Set[int], None] = 200):
+    response = get_request(operation="validate_token", token=token)
+    return assert_status(response, expected_status)
 
 
-def request_account_verification(account_key: str, expected_status: int = 200):
+def request_account_verification(
+    account_key: str, expected_status: Union[int, Set[int], None] = 200
+):
     payload = {"account_key": account_key}
-    status, response_data = post_request(
-        operation="request_account_verification", payload=payload
-    )
-    assert status == expected_status
-    return response_data
+    response = post_request(operation="request_account_verification", payload=payload)
+    return assert_status(response, expected_status)
 
 
-def request_account_reset(user: str, expected_status: int = 200):
+def request_account_reset(user: str, expected_status: Union[int, Set[int], None] = 200):
     payload = {"user": user}
-    status, response_data = post_request(
-        operation="request_account_reset", payload=payload
-    )
-    assert status == expected_status
-    return response_data
+    response = post_request(operation="request_account_reset", payload=payload)
+    return assert_status(response, expected_status)
 
 
-def reset_account(reset_token: str, new_password: str, expected_status: int = 200):
+def reset_account(
+    reset_token: str,
+    new_password: str,
+    expected_status: Union[int, Set[int], None] = 200,
+):
     payload = {"reset_token": reset_token, "new_password": new_password}
-    status, response_data = post_request(operation="reset_account", payload=payload)
-    assert status == expected_status
-    return response_data
+    response = post_request(operation="reset_account", payload=payload)
+    return assert_status(response, expected_status)
 
 
-def get_request(operation: str, payload: dict = {}, token: str = None):
-    return generic_request("GET", operation, payload, token)
+def get_request(
+    operation: str, payload: dict = {}, token: str = None, extra_flags: list = []
+):
+    return generic_request("GET", operation, payload, token, extra_flags)
 
 
-def post_request(operation: str, payload: dict = {}, token: str = None):
-    return generic_request("POST", operation, payload, token)
+def post_request(
+    operation: str, payload: dict = {}, token: str = None, extra_flags: list = []
+):
+    return generic_request("POST", operation, payload, token, extra_flags)
 
 
-def generic_request(method: str, operation: str, payload: dict = {}, token: str = None):
-    request_data = {"operation": operation, **payload, "flags": ["TMP"]}
+def generic_request(
+    method: str,
+    operation: str,
+    payload: dict = {},
+    token: str = None,
+    extra_flags: list = [],
+):
+    request_data = {"operation": operation, **payload, "flags": ["TMP"] + extra_flags}
 
     if token:
         headers = {"Authorization": f"Bearer {token}"}
@@ -106,11 +153,11 @@ def generic_request(method: str, operation: str, payload: dict = {}, token: str 
     status = response.status
     response_data = json.loads(response.data.decode("utf-8"))
     print("Response:", status, response_data)
-    return status, response_data
+    return ApiResponse(status, response_data)
 
 
-def token_payload_from_response(response_data):
-    token = response_data["payload"]["token"]
+def token_payload_from_response(response: ApiResponse):
+    token = response.data["payload"]["token"]
     return jwt.decode(token, options={"verify_signature": False})
 
 
