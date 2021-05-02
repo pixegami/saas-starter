@@ -21,8 +21,8 @@ class AuthExceptions:
 
     # 500
 
-    DUPLICATE_TOKENS_FOUND = HandlerException(
-        500, "Duplicate tokens were found. Please request a new token."
+    DUPLICATE_ENTRIES_FOUND = HandlerException(
+        500, "Unexpected duplicate entries were found for this key."
     )
 
     # 400

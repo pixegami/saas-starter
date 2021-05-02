@@ -15,10 +15,11 @@ def test_sign_diff_case():
     sign_in(user.upper(), password, 200)
 
     # Request account reset with upper-case user name.
+    # Our email validator SES should automatically process the email.
     request_account_reset(user.upper(), 200)
 
     # Give SES time to process the email.
-    time.sleep(5)
+    time.sleep(7)
     sign_in(user, AUTO_RESET_PASSWORD)
 
 

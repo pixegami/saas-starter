@@ -12,6 +12,12 @@ class InputValidator:
 
     def email(self, x: str):
         self._email_length(x)
+        self.email_regex(x)
+
+    def email_regex(self, email: str):
+        regex = "[^@]+@[^@]+\.[^@]+"
+        if not re.search(regex, email):
+            self._fail(f"The email '{email}' is not a valid address.")
 
     def _password_length(self, x: str):
         min_length = 4
@@ -31,7 +37,7 @@ class InputValidator:
 
         if not (has_digit and has_upper and has_lower):
             self._fail(
-                "Password must contain at least one number, one lower-case, and one upper-case character."
+                "Password not strong enough. It must contain at least one number, one lower-case, and one upper-case character."
             )
 
     def _email_length(self, x: str):

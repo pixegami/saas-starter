@@ -1,14 +1,8 @@
-import re
 import boto3
 from typing import List
 
 
 UTF8 = "UTF-8"
-
-
-def validate_email(email: str):
-    regex = "[^@]+@[^@]+\.[^@]+"
-    return re.search(regex, email)
 
 
 class EmailProps:

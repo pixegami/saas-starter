@@ -64,9 +64,9 @@ e.g. `validated.pixegami.com`.
 * Case insensitive login.
 * Valid emails.
 * Backend validation. (strong passwords, email lengths).
-* 
 * Meaningful error messages.
 * 
 * Login attempt cool-downs.
+* 
 * Consolidate configurations.
 * Can MX record for the email be created by the stack?

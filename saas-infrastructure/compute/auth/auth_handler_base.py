@@ -2,7 +2,6 @@ import time
 from handler_base import HandlerBase
 import jwt
 from handler_exception import HandlerException
-from email_sender import validate_email
 from input_validator import InputValidator
 from auth_exceptions import AuthExceptions
 
@@ -90,8 +89,11 @@ class AuthHandlerBase(HandlerBase):
 
     def get_user_credentials(self, user: str) -> (AuthUser, dict):
         # User is not case sensitive.
-        payload = self.get_item_from_gsi("user_index", "user", user.lower())
-        return AuthUser.from_payload(payload)
+        try:
+            payload = self.get_item_from_gsi("user_index", "user", user.lower())
+            return AuthUser.from_payload(payload)
+        except HandlerException as e:
+            raise AuthExceptions.USER_NOT_FOUND if e.status_code == 404 else e
 
     def get_credentials_from_key(self, account_key: str) -> (AuthUser, dict):
         payload = self.get_item(account_key)
@@ -108,9 +110,12 @@ class AuthHandlerBase(HandlerBase):
         return self.get_user_table().put_item(Item=item)
 
     def get_key_for_token(self, token: str):
-        payload = self.get_item_from_gsi("token_index", "token", token)
-        key = payload["pk"]
-        return key
+        try:
+            payload = self.get_item_from_gsi("token_index", "token", token)
+            key = payload["pk"]
+            return key
+        except HandlerException as e:
+            raise AuthExceptions.TOKEN_NOT_FOUND if e.status_code == 404 else e
 
     def get_item(self, account_key: str):
         table = self.get_user_table()
@@ -127,10 +132,6 @@ class AuthHandlerBase(HandlerBase):
             if e.status_code == 404:
                 return
         raise AuthExceptions.USER_ALREADY_EXISTS
-
-    def validate_email_regex(self, user: str) -> bool:
-        if not validate_email(user):
-            raise AuthExceptions.INVALID_EMAIL
 
     def get_item_from_gsi(self, gsi_index: str, gsi_key: str, gsi_value: str):
         print(f"Getting GSI Items for {gsi_key}.")
@@ -152,10 +153,10 @@ class AuthHandlerBase(HandlerBase):
         items = response["Items"]
 
         if len(items) == 0:
-            raise AuthExceptions.TOKEN_NOT_FOUND
+            raise AuthExceptions.KEY_NOT_FOUND
 
         if len(items) > 1:
-            raise AuthExceptions.DUPLICATE_TOKENS_FOUND
+            raise AuthExceptions.DUPLICATE_ENTRIES_FOUND
 
         return items[0]
 

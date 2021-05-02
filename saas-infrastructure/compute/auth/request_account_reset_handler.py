@@ -20,7 +20,7 @@ class RequestAccountResetHandler(AuthHandlerBase):
         user_email = str(request_data["user"]).lower()
 
         # Validation.
-        self.validate_email_regex(user_email)
+        self.validator.email_regex(user_email)
 
         # Get what we need to reset the account.
         auth_user = self.get_user_credentials(user_email)
@@ -31,7 +31,7 @@ class RequestAccountResetHandler(AuthHandlerBase):
         reset_frontend_url: str = f"{self.frontend_url}reset_password?key={token}"
 
         # Fire off the email.
-        self.send_reset_email(auth_user.user, reset_frontend_url)
+        self.send_reset_email(user_email, reset_frontend_url)
 
         # Return a response.
         if should_return_tokens:
