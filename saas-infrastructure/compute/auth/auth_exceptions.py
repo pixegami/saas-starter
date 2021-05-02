@@ -33,3 +33,9 @@ class AuthExceptions:
     USER_ALREADY_EXISTS = HandlerException(
         400, "This email account has already been registered."
     )
+
+    # 429
+    TOO_MANY_FAILED_ATTEMPTS = HandlerException(
+        429,
+        "Too many failed sign-in attempts. Please wait up to 24 hours before trying again.",
+    )

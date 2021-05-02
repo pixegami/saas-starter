@@ -70,3 +70,11 @@ e.g. `validated.pixegami.com`.
 * 
 * Consolidate configurations.
 * Can MX record for the email be created by the stack?
+
+
+Login Attempt Cooldown:
+
+* SK: "CONSECUTIVE_FAILED_SIGN_IN_ATTEMPTS"
+* value: 5
+* expiry_time: 1XXX
+* 

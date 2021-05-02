@@ -26,7 +26,7 @@ class AuthUser:
         return AuthUser(
             payload["pk"],
             payload["user"],
-            payload["hashed_password"],
+            payload["value"],
             payload["verified"],
         )
 
@@ -34,7 +34,12 @@ class AuthUser:
 class AuthHandlerBase(HandlerBase):
 
     EXPIRY_MINUTES = 60
+    EXPIRY_24_HOURS = 86400
+    MAX_SIGN_IN_ATTEMPTS = 5
+
     JWT_HASH_KEY = "wqd53034578vj10@!_FJf93fh23fF#@jf302f"
+
+    SK_CONSECUTIVE_FAILED_SIGN_IN_ATTEMPTS = "CONSECUTIVE_FAILED_SIGN_IN_ATTEMPTS"
 
     def __init__(self):
         self.schema = {}
@@ -56,7 +61,7 @@ class AuthHandlerBase(HandlerBase):
             "pk": key,
             "sk": "CREDENTIALS",
             "user": user,
-            "hashed_password": hashed_password,
+            "value": hashed_password,
             "verified": should_verify,
             "last_activity": int(time.time()),
         }
@@ -65,6 +70,37 @@ class AuthHandlerBase(HandlerBase):
             item["expiry_time"] = int(time.time() + self.EXPIRY_MINUTES * 60)
 
         return self.get_user_table().put_item(Item=item)
+
+    def put_sign_in_attempt_failure(self, key: str, user: str, value: str):
+
+        item = {
+            "pk": key,
+            "sk": self.SK_CONSECUTIVE_FAILED_SIGN_IN_ATTEMPTS,
+            "value": int(value),
+            "last_activity": int(time.time()),
+            "next_attempt_time": int(time.time())
+            + self._get_sign_in_cooldown_expiry_seconds(value),
+        }
+
+        item["expiry_time"] = int(time.time() + self.EXPIRY_24_HOURS)
+        return self.get_user_table().put_item(Item=item)
+
+    def get_sign_in_attempt_failures(self, key: str):
+        table = self.get_user_table()
+        response = table.get_item(
+            Key={"pk": key, "sk": self.SK_CONSECUTIVE_FAILED_SIGN_IN_ATTEMPTS}
+        )
+
+        if "Item" not in response:
+            return 0, 0
+
+        item = response["Item"]
+        return int(item["value"]), int(item["next_attempt_time"])
+
+    def _get_sign_in_cooldown_expiry_seconds(self, attempts: int):
+        if attempts < self.MAX_SIGN_IN_ATTEMPTS:
+            return 0
+        return self.EXPIRY_24_HOURS
 
     def update_user_verification(self, key: str):
         return self.get_user_table().update_item(
@@ -78,7 +114,7 @@ class AuthHandlerBase(HandlerBase):
     def update_user_password(self, key: str, hashed_password: str):
         return self.get_user_table().update_item(
             Key={"pk": key, "sk": "CREDENTIALS"},
-            UpdateExpression="SET hashed_password = :v1",
+            UpdateExpression="SET value = :v1",
             ExpressionAttributeValues={
                 ":v1": hashed_password,
             },
@@ -156,7 +192,9 @@ class AuthHandlerBase(HandlerBase):
             raise AuthExceptions.KEY_NOT_FOUND
 
         if len(items) > 1:
-            raise AuthExceptions.DUPLICATE_ENTRIES_FOUND
+            raise AuthExceptions.DUPLICATE_ENTRIES_FOUND.override_message(
+                f"Unexpected duplicate entries were found for index {gsi_index} and key {gsi_key}.",
+            )
 
         return items[0]
 

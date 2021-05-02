@@ -3,6 +3,7 @@ import uuid
 import urllib3
 import jwt
 import time
+from typing import Union, Set
 
 
 API_ENDPOINT = "https://api.ss.pixegami.com/auth"
@@ -33,11 +34,14 @@ def sign_up_test_user(user: str, password: str, expected_status: int = 200):
     return response_data
 
 
-def sign_in(user: str, password: str, expected_status: int = 200):
+def sign_in(user: str, password: str, expected_status: Union[int, Set[int]] = 200):
     status, response_data = post_request(
         operation="sign_in", payload={"user": user, "password": password}
     )
-    assert status == expected_status
+    if type(expected_status) is int:
+        assert status == expected_status
+    else:
+        assert status in expected_status
     return response_data
 
 
