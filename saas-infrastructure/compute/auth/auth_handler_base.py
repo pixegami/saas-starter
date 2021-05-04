@@ -1,7 +1,9 @@
 import time
-from handler_base import HandlerBase
+import os
 from typing import Union
+
 import jwt
+from handler_base import HandlerBase
 from handler_exception import HandlerException
 from input_validator import InputValidator
 from auth_exceptions import AuthExceptions
@@ -48,7 +50,7 @@ class AuthHandlerBase(HandlerBase):
     EXPIRY_24_HOURS = 86400
     MAX_SIGN_IN_ATTEMPTS = 5
 
-    JWT_HASH_KEY = "wqd53034578vj10@!_FJf93fh23fF#@jf302f"
+    JWT_HASH_KEY = os.getenv("AUTH_SECRET")
     SK_CONSECUTIVE_FAILED_SIGN_IN_ATTEMPTS = "CONSECUTIVE_FAILED_SIGN_IN_ATTEMPTS"
 
     def __init__(self):

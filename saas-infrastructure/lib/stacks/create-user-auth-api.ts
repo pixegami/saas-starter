@@ -2,6 +2,7 @@ import * as cdk from "@aws-cdk/core";
 import * as ddb from "@aws-cdk/aws-dynamodb";
 import * as lambda from "@aws-cdk/aws-lambda";
 import * as iam from "@aws-cdk/aws-iam";
+import * as secretsmanager from "@aws-cdk/aws-secretsmanager";
 import { BillingMode } from "@aws-cdk/aws-dynamodb";
 import { RestApi } from "@aws-cdk/aws-apigateway";
 import { wrapWithApi, WrapWithApiProps } from "../utils/api-commons";
@@ -65,6 +66,7 @@ const createUserAuthApi = (
     table: table,
     emailSource: authEmailSource,
     endpoint: authEndpoint,
+    frontendUrl: serviceProps.serviceFrontendUrl,
   };
 
   newUserAuthApi(scope, authApiProps);
@@ -76,9 +78,13 @@ interface AuthApiProps extends WrapWithApiProps {
   table: ddb.Table;
   emailSource: string;
   endpoint: string;
+  frontendUrl: string;
 }
 
 const newUserAuthApi = (scope: cdk.Construct, props: AuthApiProps) => {
+  // This will be used as hashing key for the JWT tokens.
+  const secret = new secretsmanager.Secret(scope, "AuthSecret");
+
   const layer = new lambda.LayerVersion(scope, "BaseLayer", {
     code: lambda.Code.fromAsset("compute/base_layer/layer.zip"),
     compatibleRuntimes: [lambda.Runtime.PYTHON_3_8, lambda.Runtime.PYTHON_3_7],
@@ -97,7 +103,8 @@ const newUserAuthApi = (scope: cdk.Construct, props: AuthApiProps) => {
       TABLE_NAME: props.table.tableName,
       EMAIL_SOURCE: props.emailSource,
       ENDPOINT: props.endpoint,
-      FRONTEND_URL: "https://ss.pixegami.com/app/",
+      FRONTEND_URL: props.frontendUrl,
+      AUTH_SECRET: secret.secretValue.toString(),
     },
   };
 

@@ -32,7 +32,7 @@ export class SaasInfrastructureStack extends cdk.Stack {
     createUserAuthApi(this, api, apiDomainName, serviceProps);
 
     // Create the email validator Lambda.
-    createEmailValidator(this, serviceProps.servicePrefix, apiDomainName);
+    createEmailValidator(this, serviceProps, apiDomainName, zone);
 
     // Main static site front-end.
     new StaticSite(this, "MainSite", {

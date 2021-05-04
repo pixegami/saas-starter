@@ -67,8 +67,3 @@ def test_successful_sign_in_resets_cooldown():
     # Sign in again. Attempt should be back at 0.
     response = sign_in(user, password)
     assert response.data["payload"]["attempt"] == 0
-
-
-# Need a way to spoof my sign-in time.
-# Need response objects from the sign in?
-# Need a way to instantly block a user?

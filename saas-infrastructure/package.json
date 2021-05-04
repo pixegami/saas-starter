@@ -26,6 +26,7 @@
     "@aws-cdk/aws-lambda": "1.94.1",
     "@aws-cdk/aws-route53-targets": "1.94.1",
     "@aws-cdk/aws-ssm": "1.94.1",
+    "@aws-cdk/aws-secretsmanager": "1.94.1",
     "@aws-cdk/core": "1.94.1",
     "source-map-support": "^0.5.16"
   }

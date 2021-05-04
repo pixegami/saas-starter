@@ -12,6 +12,8 @@ const serviceProps: ServiceProps = {
   serviceRootDomain: "pixegami.com",
   serviceSubDomain: "ss",
   servicePrefix: "ss",
+  serviceFrontendUrl: "https://ss.pixegami.com/app/",
+  region: AWS_REGION,
 };
 
 const app = new cdk.App();

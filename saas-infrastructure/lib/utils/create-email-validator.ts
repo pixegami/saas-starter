@@ -1,18 +1,21 @@
 import * as cdk from "@aws-cdk/core";
 import * as lambda from "@aws-cdk/aws-lambda";
 import * as s3 from "@aws-cdk/aws-s3";
+import * as route53 from "@aws-cdk/aws-route53";
 import { Code, FunctionProps, Runtime } from "@aws-cdk/aws-lambda";
 import * as iam from "@aws-cdk/aws-iam";
 import { Duration } from "@aws-cdk/core";
+import ServiceProps from "./service-props";
 
 const createEmailValidator = (
   scope: cdk.Construct,
-  servicePrefix: string,
-  apiEndpoint: string
+  serviceProps: ServiceProps,
+  apiEndpoint: string,
+  hostedZone: route53.IHostedZone
 ) => {
   // Create bucket to store the mail.
   const emailTestBucket = new s3.Bucket(scope, "EmailBucket", {
-    bucketName: `${servicePrefix}.cloud.auth.email-validator`,
+    bucketName: `${serviceProps.servicePrefix}.cloud.auth.email-validator`,
     removalPolicy: cdk.RemovalPolicy.DESTROY,
     lifecycleRules: [{ expiration: Duration.days(1) }],
   });
@@ -42,6 +45,18 @@ const createEmailValidator = (
   emailTestBucket.grantRead(emailValidatorLambda);
   emailTestBucket.grantReadWrite(sesServicePrinciple);
   emailValidatorLambda.grantInvoke(sesServicePrinciple);
+
+  // Create MX Record for the email validator.
+  new route53.MxRecord(scope, "EmailReceiverRecord", {
+    recordName: `auth.${serviceProps.serviceRootDomain}`,
+    zone: hostedZone,
+    values: [
+      {
+        hostName: `inbound-smtp.${serviceProps.region}.amazonaws.com`,
+        priority: 10,
+      },
+    ],
+  });
 };
 
 export default createEmailValidator;

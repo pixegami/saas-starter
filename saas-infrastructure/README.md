@@ -66,7 +66,9 @@ e.g. `validated.pixegami.com`.
 * Backend validation. (strong passwords, email lengths).
 * Meaningful error messages.
 * Login attempt cool-downs.
-* 
-* Consolidate configurations.
+* Consolidate configurations. <-- not much to do there?
 * Can MX record for the email be created by the stack?
+* 
+* KMS For JWT key
+* Consolidate Config Pt 2: Get it into JSON so both CDK and tests can load it.
 
