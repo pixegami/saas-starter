@@ -16,7 +16,7 @@ class EmailValidator:
     NEW_PASSWORD = "myAutoResetPasswordAB12!"
 
     def __init__(self):
-        self.api_endpoint = os.getenv("API_ENDPOINT", "api.ss.pixegami.com")
+        self.api_endpoint = os.getenv("API_ENDPOINT")
 
     def handle(self, event, context):
         print(f"Event Received: {event}")

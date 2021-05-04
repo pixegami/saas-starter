@@ -10,7 +10,7 @@ in `compute/base_layer/Dockerfile` to create one.
 The Python files will test the API integration of the SaaS. Run it from the base directory:
 
 ```bash
-python -m pytest -s test_api_integration/test_auth.py
+python -m pytest -s test_api_integration/*
 ```
 
 
@@ -25,7 +25,7 @@ SaasInfrastructureStack.MainSiteDistributionId2F6DCE80 = E4LY2JIIF7FSC
 ```
 ## S3 Bucket Redirect Rules
 
-We need to add re-direct rules for client-only paths.
+We need to add re-direct rules for client-only paths (maybe?)
 
 ```json
 [
@@ -50,7 +50,6 @@ emails to the correct bucket, and to invoke the appropriate Lambda function.
 
 * The recipient should be whatever is specified in the `test_auth.py` integration tests' `VALIDATION_EMAIL`, 
 e.g. `validated.pixegami.com`.
-* Create an MX Record in Route53 for the domain name you want to use for the `VALIDATION_EMAIL`, so SES can receive it.
 * (Action 1) The S3 bucket should be whatever was created by the `create-email-validator` function.
 * (Action 2) The Lambda function should be the one created by `create-email-validator` function.
 * Once you run the `test_auth.py` tests again, the tests requiring email validation should work.
@@ -68,7 +67,12 @@ e.g. `validated.pixegami.com`.
 * Login attempt cool-downs.
 * Consolidate configurations. <-- not much to do there?
 * Can MX record for the email be created by the stack?
+* AWS Secret Manager for JWT key.
 * 
-* KMS For JWT key
 * Consolidate Config Pt 2: Get it into JSON so both CDK and tests can load it.
+
+
+## Wish List
+
+* Better looking email templates.
 

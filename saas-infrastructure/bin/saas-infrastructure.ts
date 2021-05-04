@@ -3,20 +3,19 @@ import "source-map-support/register";
 import * as cdk from "@aws-cdk/core";
 import { SaasInfrastructureStack } from "../lib/saas-infrastructure-stack";
 import ServiceProps from "../lib/utils/service-props";
+import * as config from "../service.config.json";
 
 // Configure all infrastructure things here.
-const AWS_ACCOUNT: string = "535707483867";
-const AWS_REGION: string = "us-east-1";
 const serviceProps: ServiceProps = {
-  serviceName: "SaasStarter",
-  serviceRootDomain: "pixegami.com",
+  serviceName: config.name,
+  serviceRootDomain: config.domain,
   serviceSubDomain: "ss",
-  servicePrefix: "ss",
-  serviceFrontendUrl: "https://ss.pixegami.com/app/",
-  region: AWS_REGION,
+  servicePrefix: config.prefix,
+  serviceFrontendUrl: config.frontendUrl,
+  region: config.awsRegion,
 };
 
 const app = new cdk.App();
 new SaasInfrastructureStack(app, "SaasInfrastructureStack", serviceProps, {
-  env: { account: AWS_ACCOUNT, region: AWS_REGION },
+  env: { account: config.awsAccount, region: config.awsRegion },
 });

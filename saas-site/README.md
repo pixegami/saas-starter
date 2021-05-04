@@ -11,6 +11,8 @@
 
 * Frontend transfers fields between pages.
 * Field meta-data and saving the info.
+* Password lock
+* Consolidate the configuration.
 
 ## 🚀 Quick start
 

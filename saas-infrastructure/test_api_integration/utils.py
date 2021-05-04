@@ -5,9 +5,14 @@ import jwt
 import time
 from typing import Union, Set
 
+# Load the config JSON from root directory.
+with open("./service.config.json", "r") as f:
+    config_data = json.load(f)
 
-API_ENDPOINT = "https://api.ss.pixegami.com/auth"
-VALIDATION_EMAIL = "auth.pixegami.com"  # Emails sent here get auto-validated.
+
+DOMAIN = config_data["domain"]
+API_ENDPOINT = f"https://api.ss.{DOMAIN}/auth"
+VALIDATION_EMAIL = f"auth.{DOMAIN}"  # Emails sent here get auto-validated.
 AUTO_RESET_PASSWORD = (
     "myAutoResetPasswordAB12!"  # The email validator will reset the password to this.
 )
@@ -161,7 +166,7 @@ def token_payload_from_response(response: ApiResponse):
     return jwt.decode(token, options={"verify_signature": False})
 
 
-def generate_random_email(base_domain: str = "pixegami.com"):
+def generate_random_email(base_domain: str = "no-op-test-email.com"):
     return f"test-user-{uuid.uuid4().hex[:12]}@{base_domain}"
 
 
