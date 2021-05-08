@@ -1,5 +1,12 @@
 ## Setup
 
+* Make sure you have AWS Account.
+* Do the CDK Bootstrapping.
+* Have AWS CLI and CDK CLI installed.
+* Get safe-listed for production traffic in SES region that you want.
+* Register your domain.
+* Verify the domain in SES.
+
 ### Docker Base Layer
 
 You will need a base layer `.zip` file for the API stack's base Lambda layer. Follow instructions
@@ -68,8 +75,9 @@ e.g. `validated.pixegami.com`.
 * Consolidate configurations. <-- not much to do there?
 * Can MX record for the email be created by the stack?
 * AWS Secret Manager for JWT key.
-* 
-* Consolidate Config Pt 2: Get it into JSON so both CDK and tests can load it.
+
+* Add payments infrastructure.
+* Add a service scaffolding.
 
 
 ## Wish List

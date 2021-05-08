@@ -16,10 +16,7 @@ export class SaasInfrastructureStack extends cdk.Stack {
     super(scope, id, props);
 
     // Work out the domain names to use.
-    const compositeDomainName = serviceProps.serviceSubDomain
-      ? `${serviceProps.serviceSubDomain}.${serviceProps.serviceRootDomain}`
-      : serviceProps.serviceRootDomain;
-    const apiDomainName = `api.${compositeDomainName}`;
+    const apiDomainName = `api.${serviceProps.serviceRootDomain}`;
 
     // The main hosted zone.
     const zone = route53.HostedZone.fromLookup(this, "HostedZone", {
@@ -37,7 +34,6 @@ export class SaasInfrastructureStack extends cdk.Stack {
     // Main static site front-end.
     new StaticSite(this, "MainSite", {
       domainName: serviceProps.serviceRootDomain,
-      siteSubDomain: serviceProps.serviceSubDomain,
     });
   }
 }

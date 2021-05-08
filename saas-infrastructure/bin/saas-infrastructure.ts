@@ -9,13 +9,12 @@ import * as config from "../service.config.json";
 const serviceProps: ServiceProps = {
   serviceName: config.name,
   serviceRootDomain: config.domain,
-  serviceSubDomain: "ss",
   servicePrefix: config.prefix,
   serviceFrontendUrl: config.frontendUrl,
   region: config.awsRegion,
 };
 
 const app = new cdk.App();
-new SaasInfrastructureStack(app, "SaasInfrastructureStack", serviceProps, {
+new SaasInfrastructureStack(app, `${config.name}MasterStack`, serviceProps, {
   env: { account: config.awsAccount, region: config.awsRegion },
 });

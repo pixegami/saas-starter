@@ -23,7 +23,7 @@ def request_account_verification_token(auth_handler, email: str, account_key: st
 
 def send_confirmation_email(email: str, confirm_frontend_url: str):
 
-    email_source: str = os.getenv("EMAIL_SOURCE", "accounts@pixegami.com")
+    email_source: str = os.getenv("EMAIL_SOURCE")
     email_sender = EmailSender()
     email_props = EmailProps()
     email_props.subject = "Confirm your account at [SERVICE]"

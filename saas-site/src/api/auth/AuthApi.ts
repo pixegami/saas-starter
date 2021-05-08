@@ -6,7 +6,7 @@ import * as jwt from "jsonwebtoken";
 
 class AuthApi extends BaseApi {
   // Configurable fields.
-  private static ENDPOINT: string = "https://api.ss.pixegami.com/auth";
+  private static ENDPOINT: string = "https://api.bonestack.com/auth";
 
   // Functional fields.
   private static SESSION: AuthSession | null = null;

@@ -11,7 +11,7 @@ with open("./service.config.json", "r") as f:
 
 
 DOMAIN = config_data["domain"]
-API_ENDPOINT = f"https://api.ss.{DOMAIN}/auth"
+API_ENDPOINT = f"https://api.{DOMAIN}/auth"
 VALIDATION_EMAIL = f"auth.{DOMAIN}"  # Emails sent here get auto-validated.
 AUTO_RESET_PASSWORD = (
     "myAutoResetPasswordAB12!"  # The email validator will reset the password to this.

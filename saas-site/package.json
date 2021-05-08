@@ -13,8 +13,8 @@
     "build": "gatsby build",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
-    "deploy": "aws s3 sync public s3://ss.pixegami.com/ --acl public-read",
-    "invalidate": "aws cloudfront create-invalidation --distribution-id E4LY2JIIF7FSC --paths \"/*\"",
+    "deploy": "aws s3 sync public s3://bonestack.com/ --acl public-read",
+    "invalidate": "aws cloudfront create-invalidation --distribution-id E8CNJ3J98G2WV --paths \"/*\"",
     "full-deploy": "npm run build && npm run deploy && npm run invalidate"
   },
   "dependencies": {

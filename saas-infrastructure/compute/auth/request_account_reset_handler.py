@@ -11,7 +11,7 @@ class RequestAccountResetHandler(AuthHandlerBase):
     def __init__(self):
         super().__init__()
         self.schema = {"user": True}
-        self.email_source: str = os.getenv("EMAIL_SOURCE", "accounts@pixegami.com")
+        self.email_source: str = os.getenv("EMAIL_SOURCE")
         self.endpoint: str = os.getenv("ENDPOINT", "UNKNOWN")
         self.frontend_url: str = os.getenv("FRONTEND_URL", "UNKNOWN")
 

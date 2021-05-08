@@ -1,8 +1,8 @@
 {
-  "name": "SaasStarter",
+  "name": "BoneService",
   "awsAccount": "535707483867",
   "awsRegion": "us-east-1",
-  "domain": "pixegami.com",
-  "prefix": "ss",
-  "frontendUrl": "https://ss.pixegami.com/app/"
+  "domain": "bonestack.com",
+  "prefix": "bonestack",
+  "frontendUrl": "https://bonestack.com/app/"
 }

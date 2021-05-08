@@ -159,7 +159,7 @@ const randomUUID = () => {
 };
 
 const newRandomUser = () => {
-  return `test-user-1aA${randomUUID()}@pixegami.com`;
+  return `test-user-1aA${randomUUID()}@bonestack.com`;
 };
 
 const newRandomPassword = () => {
