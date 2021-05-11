@@ -22,6 +22,7 @@ const App = () => {
       <AuthViews.AuthForgotPassword path={AuthURL.FORGOT_PASSWORD} />
       <AuthViews.AuthResetPassword path={AuthURL.RESET_PASSWORD} />
       <AuthViews.AuthVerifyAccount path={AuthURL.VERIFY_ACCOUNT} />
+      <Dashboard path="/app/dashboard2" />
       <NotFound default />
     </Router>
   );

@@ -15,6 +15,14 @@ module.exports = {
         icon: "src/images/icon.png",
       },
     },
+    {
+      resolve: `gatsby-source-stripe`,
+      options: {
+        objects: ["Price"],
+        secretKey: "sk_test_dVPxaaBuDLylUmztkCmomO0p00dyqHOvDf",
+        downloadFiles: false,
+      },
+    },
     "gatsby-transformer-remark",
     "gatsby-transformer-sharp",
     {
