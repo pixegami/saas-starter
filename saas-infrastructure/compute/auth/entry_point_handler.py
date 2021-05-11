@@ -8,6 +8,7 @@ from verify_account_handler import VerifyAccountHandler
 from validate_token_handler import ValidateTokenHandler
 from create_test_account_handler import CreateTestAccountHandler
 from handler_exception import HandlerException
+from create_payment_session_handler import CreatePaymentSessionHandler
 
 
 def handler(event, context=None):
@@ -27,6 +28,7 @@ class EntryPointHandler(HandlerBase):
             "reset_account": ResetAccountHandler(),
             "validate_token": ValidateTokenHandler(),
             "create_test_account": CreateTestAccountHandler(),
+            "create_payment_session": CreatePaymentSessionHandler(),
         }
 
     def handle_action(self, request_data: dict, event: dict, context: dict):

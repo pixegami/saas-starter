@@ -9,6 +9,9 @@
 
 ## TODO
 
+* Centralize front-end config: tests, npm build targets, and API.
+
+
 * Frontend transfers fields between pages.
 * Field meta-data and saving the info.
 * Password lock
