@@ -121,9 +121,36 @@ const newUserAuthApi = (scope: cdk.Construct, props: AuthApiProps) => {
     resources: ["*"],
   });
 
+  const stripeWebhookFunctionProps: lambda.FunctionProps = {
+    code: Code.fromAsset("compute/auth"),
+    runtime: Runtime.PYTHON_3_7,
+    timeout: Duration.seconds(10),
+    handler: "stripe_webhook_handler.handle",
+    memorySize: 256,
+    layers: [layer],
+    environment: {
+      TABLE_NAME: props.table.tableName,
+      EMAIL_SOURCE: props.emailSource,
+      ENDPOINT: props.endpoint,
+      FRONTEND_URL: props.frontendUrl,
+      AUTH_SECRET: secret.secretValue.toString(),
+    },
+  };
+
+  const stripeFunction = new lambda.Function(
+    scope,
+    "stripe",
+    stripeWebhookFunctionProps
+  );
+
   authFunction.addToRolePolicy(sendEmailStatement);
   wrapWithApi(authFunction, props.api, props);
   props.table.grantFullAccess(authFunction);
+
+  // Stripe API (HACKY!)
+  stripeFunction.addToRolePolicy(sendEmailStatement);
+  wrapWithApi(stripeFunction, props.api, { ...props, name: "stripe" });
+  props.table.grantFullAccess(stripeFunction);
 };
 
 export default createUserAuthApi;
