@@ -1,5 +1,6 @@
 import * as React from "react";
 import { loadStripe } from "@stripe/stripe-js";
+import PaymentApi from "../api/payment/PaymentApi";
 
 interface DashboardProps {
   path: string;
@@ -8,7 +9,7 @@ interface DashboardProps {
 const Dashboard: React.FC<DashboardProps> = (props) => {
   const [loading, setLoading] = React.useState(false);
 
-  const redirectToCheckout = async (event) => {
+  const onClickCheckout = async (event) => {
     event.preventDefault();
     setLoading(true);
 
@@ -16,8 +17,11 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
       "pk_test_aKOhvFXppSG39jKNDvVi3tYT006IbA5jQL"
     );
 
+    const paymentResponse = await PaymentApi.requestCheckout();
+    const sessionId = paymentResponse.payload.session_id;
+    console.log("Got payment Session: ", sessionId);
     const { error } = await stripe.redirectToCheckout({
-      sessionId: "blah",
+      sessionId,
       // mode: "subscription",
       // lineItems: [{ price: "price_1Ipw2ECCoJYujIqgPAGPkuYZ", quantity: 1 }],
       // successUrl: `${window.location.origin}/`,
@@ -31,7 +35,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
   };
 
   const checkoutButton = (
-    <button disabled={loading} onClick={redirectToCheckout}>
+    <button disabled={loading} onClick={onClickCheckout}>
       BUY MY BOOK
     </button>
   );

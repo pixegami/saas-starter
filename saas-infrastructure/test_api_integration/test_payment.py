@@ -6,12 +6,18 @@ def setup():
 
 
 def test_create_payment_session():
-    create_payment_session("price_1Ipw2ECCoJYujIqgPAGPkuYZ", 200)
+    create_payment_session(200)
 
 
-def create_payment_session(
-    pay_id: str, expected_status: Union[int, Set[int], None] = 200
-):
-    payload = {"price_id": pay_id}
-    response = post_request(operation="create_payment_session", payload=payload)
+def create_payment_session(expected_status: Union[int, Set[int], None] = 200):
+    # User must be signed-up and signed in to create a payment session.
+    user = generate_random_email()
+    password = generate_random_password()
+    sign_up(user, password, 200)
+    sign_in_response = sign_in(user, password, 200)
+
+    token = sign_in_response.data["payload"]["token"]
+    response = post_request(operation="create_payment_session", token=token)
+    print(response)
+
     return assert_status(response, expected_status)
