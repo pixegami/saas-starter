@@ -15,11 +15,13 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
     const stripe = await loadStripe(
       "pk_test_aKOhvFXppSG39jKNDvVi3tYT006IbA5jQL"
     );
+
     const { error } = await stripe.redirectToCheckout({
-      mode: "subscription",
-      lineItems: [{ price: "price_1Ipw2ECCoJYujIqgPAGPkuYZ", quantity: 1 }],
-      successUrl: `${window.location.origin}/`,
-      cancelUrl: `${window.location.origin}/`,
+      sessionId: "blah",
+      // mode: "subscription",
+      // lineItems: [{ price: "price_1Ipw2ECCoJYujIqgPAGPkuYZ", quantity: 1 }],
+      // successUrl: `${window.location.origin}/`,
+      // cancelUrl: `${window.location.origin}/`,
     });
 
     if (error) {
