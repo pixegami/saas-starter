@@ -9,6 +9,7 @@ from validate_token_handler import ValidateTokenHandler
 from create_test_account_handler import CreateTestAccountHandler
 from handler_exception import HandlerException
 from create_payment_session_handler import CreatePaymentSessionHandler
+from validate_membership_handler import ValidateMembershipHandler
 
 
 def handler(event, context=None):
@@ -29,6 +30,7 @@ class EntryPointHandler(HandlerBase):
             "validate_token": ValidateTokenHandler(),
             "create_test_account": CreateTestAccountHandler(),
             "create_payment_session": CreatePaymentSessionHandler(),
+            "validate_membership": ValidateMembershipHandler(),
         }
 
     def handle_action(self, request_data: dict, event: dict, context: dict):

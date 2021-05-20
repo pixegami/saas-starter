@@ -76,6 +76,7 @@ class AuthHandlerBase(HandlerBase):
             "hashed_password": hashed_password,
             "verified": should_verify,
             "last_activity": int(time.time()),
+            "membership_expiry_time": int(0),
         }
 
         if should_expire:
@@ -166,11 +167,13 @@ class AuthHandlerBase(HandlerBase):
             raise AuthExceptions.TOKEN_NOT_FOUND if e.status_code == 404 else e
 
     def get_item(self, account_key: str):
+        return self.get_item_with_sk(account_key, "CREDENTIALS")
+
+    def get_item_with_sk(self, account_key: str, sk: str):
         table = self.get_user_table()
-        response = table.get_item(Key={"pk": account_key, "sk": "CREDENTIALS"})
+        response = table.get_item(Key={"pk": account_key, "sk": sk})
         if "Item" not in response:
             raise AuthExceptions.USER_NOT_FOUND
-
         return response["Item"]
 
     def validate_user_does_not_exist(self, user: str) -> bool:
@@ -180,6 +183,15 @@ class AuthHandlerBase(HandlerBase):
             if e.status_code == 404:
                 return
         raise AuthExceptions.USER_ALREADY_EXISTS
+
+    def validate_membership_status(self, account_key: str) -> bool:
+        item = self.get_item(account_key)
+        if "membership_expiry_time" in item:
+            membership_expiry_time = int(item["membership_expiry_time"])
+            if int(time.time()) > membership_expiry_time:
+                raise AuthExceptions.MEMBERSHIP_NOT_VALID
+        else:
+            raise AuthExceptions.MEMBERSHIP_NOT_VALID
 
     def get_item_from_gsi(self, gsi_index: str, gsi_key: str, gsi_value: str):
         print(f"Getting GSI Items for {gsi_key}.")

@@ -3,6 +3,11 @@ from handler_exception import HandlerException
 
 class AuthExceptions:
 
+    # 402
+    MEMBERSHIP_NOT_VALID = HandlerException(402, "Not a member.")
+
+    MEMBERSHIP_EXPIRED = HandlerException(402, "Membership has expired.")
+
     # 403
     AUTH_FAILURE = HandlerException(403, "Incorrect password or email.")
     INVALID_TOKEN = HandlerException(
