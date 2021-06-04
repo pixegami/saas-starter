@@ -1,6 +1,6 @@
 import time
 import os
-from typing import Union
+from typing import Tuple, Union
 
 import jwt
 from handler_base import HandlerBase
@@ -133,10 +133,19 @@ class AuthHandlerBase(HandlerBase):
             },
         )
 
+    def update_user_membership(self, key: str, new_expiry_time: int):
+        return self.get_user_table().update_item(
+            Key={"pk": key, "sk": "CREDENTIALS"},
+            UpdateExpression="SET membership_expiry_time = :v1",
+            ExpressionAttributeValues={
+                ":v1": new_expiry_time,
+            },
+        )
+
     def delete_key(self, key: str, sk: str):
         self.get_user_table().delete_item(Key={"pk": key, "sk": sk})
 
-    def get_user_credentials(self, user: str) -> (AuthUser, dict):
+    def get_user_credentials(self, user: str) -> Tuple[AuthUser, dict]:
         # User is not case sensitive.
         try:
             payload = self.get_item_from_gsi("user_index", "user", user.lower())
@@ -144,7 +153,7 @@ class AuthHandlerBase(HandlerBase):
         except HandlerException as e:
             raise AuthExceptions.USER_NOT_FOUND if e.status_code == 404 else e
 
-    def get_credentials_from_key(self, account_key: str) -> (AuthUser, dict):
+    def get_credentials_from_key(self, account_key: str) -> Tuple[AuthUser, dict]:
         payload = self.get_item(account_key)
         return AuthUser.from_payload(payload)
 

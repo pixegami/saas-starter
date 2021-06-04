@@ -12,6 +12,8 @@ with open("./service.config.json", "r") as f:
 
 DOMAIN = config_data["domain"]
 API_ENDPOINT = f"https://api.{DOMAIN}/auth"
+STRIPE_WEBHOOK_ENDPOINT = f"https://api.{DOMAIN}/stripe"
+
 VALIDATION_EMAIL = f"auth.{DOMAIN}"  # Emails sent here get auto-validated.
 AUTO_RESET_PASSWORD = (
     "myAutoResetPasswordAB12!"  # The email validator will reset the password to this.
@@ -172,3 +174,7 @@ def generate_random_email(base_domain: str = "no-op-test-email.com"):
 
 def generate_random_password():
     return f"test-pass-1A-{uuid.uuid4().hex[:12]}"
+
+
+def get_token_payload(token: str):
+    return jwt.decode(token, options={"verify_signature": False})
