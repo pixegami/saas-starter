@@ -44,9 +44,22 @@ def sign_up_test_user(
     user: str, password: str, expected_status: Union[int, Set[int], None] = 200
 ):
     response = post_request(
-        operation="create_test_account", payload={"user": user, "password": password}
+        operation="create_test_account",
+        payload={"user": user, "password": password},
     )
     return assert_status(response, expected_status)
+
+
+def sign_up_test_user_as_member(
+    user: str, password: str, expected_status: Union[int, Set[int], None] = 200
+):
+    response = post_request(
+        operation="create_test_account",
+        payload={"user": user, "password": password},
+        extra_flags=["AUTO_MEMBER"],
+    )
+    return assert_status(response, expected_status)
+
 
 
 def sign_in(

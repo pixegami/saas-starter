@@ -1,4 +1,7 @@
+from foo_member_handler import FooMemberHandler
+from foo_save_handler import FooSaveHandler
 from handler_base import HandlerBase
+from foo_handler import FooHandler
 from sign_in_handler import SignInHandler
 from sign_up_handler import SignUpHandler
 from request_account_verification_handler import RequestAccountVerificationHandler
@@ -31,6 +34,9 @@ class EntryPointHandler(HandlerBase):
             "create_test_account": CreateTestAccountHandler(),
             "create_payment_session": CreatePaymentSessionHandler(),
             "validate_membership": ValidateMembershipHandler(),
+            "foo": FooHandler(),
+            "foo_save": FooSaveHandler(),
+            "foo_member": FooMemberHandler(),
         }
 
     def handle_action(self, request_data: dict, event: dict, context: dict):

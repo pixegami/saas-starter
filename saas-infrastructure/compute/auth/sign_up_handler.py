@@ -26,11 +26,14 @@ class SignUpHandler(AuthHandlerBase):
         key = uuid.uuid4().hex
         hashed_password = bcrypt.hashpw(str.encode(password), salt=bcrypt.gensalt())
         hashed_password_str = hashed_password.decode("utf-8")
+
+        # Be careful with security because users can game these flags.
         should_expire = "TMP" in flags
         should_verify = "AUTO_VERIFY" in flags
+        should_be_member = "AUTO_MEMBER" in flags
 
         self.put_user_credentials(
-            key, user, hashed_password_str, should_expire, should_verify
+            key, user, hashed_password_str, should_expire, should_verify, should_be_member
         )
 
         auth_user = AuthUser(key, user, hashed_password_str, should_verify)

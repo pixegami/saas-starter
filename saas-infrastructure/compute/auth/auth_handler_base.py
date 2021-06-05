@@ -67,7 +67,10 @@ class AuthHandlerBase(HandlerBase):
         hashed_password: str,
         should_expire: bool,
         should_verify: bool = False,
+        should_be_member: bool = False,
     ):
+
+        member_expiry = int(time.time() + 3000) if should_be_member else int(0)
 
         item = {
             "pk": key,
@@ -76,7 +79,7 @@ class AuthHandlerBase(HandlerBase):
             "hashed_password": hashed_password,
             "verified": should_verify,
             "last_activity": int(time.time()),
-            "membership_expiry_time": int(0),
+            "membership_expiry_time": member_expiry,
         }
 
         if should_expire:
