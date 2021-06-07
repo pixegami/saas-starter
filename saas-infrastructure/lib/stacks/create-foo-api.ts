@@ -17,7 +17,7 @@ const createFooApi = (
   layer: LayerVersion,
   serviceProps: ServiceProps
 ) => {
-  const tableName: string = `${serviceProps.servicePrefix}.foo`;
+  const tableName: string = `${serviceProps.servicePrefix}.foo.items`;
   const endpoint: string = `https://${apiEndpoint}/foo`;
   const authEndpoint: string = `https://${apiEndpoint}/auth`;
 
@@ -27,7 +27,7 @@ const createFooApi = (
       type: ddb.AttributeType.STRING,
     },
     sortKey: {
-      name: "sk",
+      name: "type",
       type: ddb.AttributeType.STRING,
     },
     timeToLiveAttribute: "expiry_time",
@@ -35,6 +35,46 @@ const createFooApi = (
     billingMode: BillingMode.PAY_PER_REQUEST,
     removalPolicy: cdk.RemovalPolicy.DESTROY,
   });
+
+  const userIndex: ddb.GlobalSecondaryIndexProps = {
+    indexName: "user_index",
+    partitionKey: {
+      name: "user_key",
+      type: ddb.AttributeType.STRING,
+    },
+    sortKey: {
+      name: "updated_time",
+      type: ddb.AttributeType.NUMBER,
+    },
+  };
+
+  const typeIndex: ddb.GlobalSecondaryIndexProps = {
+    indexName: "type_index",
+    partitionKey: {
+      name: "type",
+      type: ddb.AttributeType.STRING,
+    },
+    sortKey: {
+      name: "updated_time",
+      type: ddb.AttributeType.NUMBER,
+    },
+  };
+
+  const compoundIndex: ddb.GlobalSecondaryIndexProps = {
+    indexName: "compound_index",
+    partitionKey: {
+      name: "compound_key",
+      type: ddb.AttributeType.STRING,
+    },
+    sortKey: {
+      name: "updated_time",
+      type: ddb.AttributeType.NUMBER,
+    },
+  };
+
+  table.addGlobalSecondaryIndex(userIndex);
+  table.addGlobalSecondaryIndex(typeIndex);
+  table.addGlobalSecondaryIndex(compoundIndex);
 
   const apiProps: WrapWithApiProps = {
     name: "foo",
@@ -56,7 +96,6 @@ const createFooApi = (
   };
 
   const fooFunction = new lambda.Function(scope, apiProps.name, functionProps);
-
   wrapWithApi(fooFunction, api, apiProps);
   table.grantFullAccess(fooFunction);
 };

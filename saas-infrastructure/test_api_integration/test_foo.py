@@ -11,29 +11,31 @@ def setup():
 
 
 def test_foo():
-    # Generic Foo API response test.
     foo_request = {"operation": "foo"}
     assert_status(post_request_to_foo(foo_request), 200)
 
 
 def test_foo_member_only():
-    # Test that members can successfully call foo_member.
     token = create_user_token(is_member=True)
     foo_request = {"operation": "foo_member"}
     assert_status(post_request_to_foo(foo_request, token), 200)
 
 
 def test_foo_member_not_authorized():
-    # Test that non-members or non-tokens cannot call foo.
     foo_request = {"operation": "foo_member"}
     assert_status(post_request_to_foo(foo_request), 403)
 
 
 def test_foo_member_not_subscribed():
-    # Test that non-members or non-tokens cannot call foo.
     token = create_user_token()
     foo_request = {"operation": "foo_member"}
     assert_status(post_request_to_foo(foo_request, token), 402)
+
+
+def test_foo_member_put_item():
+    token = create_user_token(is_member=True)
+    foo_request = {"operation": "foo_save", "content": "Hello World!"}
+    assert_status(post_request_to_foo(foo_request, token), 200)
 
 
 # =================================================

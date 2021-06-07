@@ -45,7 +45,7 @@ class HandlerBase:
             table_name = os.environ[self.ENV_TABLE_NAME]
             return self.get_table(table_name)
         except Exception:
-            raise HandlerException(500, f"Unspecified ENV_TABLE_NAME.")
+            raise HandlerException(500, "Unspecified ENV_TABLE_NAME.")
 
     def handle(self, event, context=None):
         try:

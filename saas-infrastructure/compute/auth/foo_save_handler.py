@@ -1,14 +1,25 @@
-from auth_handler_base import AuthHandlerBase
-from handler_base import HandlerBase
+from foo_handler_base import FooHandlerBase
 from return_message import new_return_message
 
 
-class FooSaveHandler(HandlerBase):
+class FooSaveHandler(FooHandlerBase):
     def __init__(self):
         super().__init__()
-        self.schema = {}
+        self.schema = {"content": True}
 
     def handle_action(self, request_data: dict, event: dict, context: dict):
+
+        # Validate first.
+        payload = self.validated_payload(event)
+
+        # Organize data to write.
+        content_value = request_data["content"]
+        flags = request_data["flags"] if "flags" in request_data else []
+        should_expire = "TMP" in flags
+        user_key = payload["account_key"]
+
+        # Write item to the DB.
+        self.put_item("POST", user_key, content_value, should_expire)
 
         response_payload = {}
         return new_return_message(
