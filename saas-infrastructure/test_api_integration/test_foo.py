@@ -32,10 +32,17 @@ def test_foo_member_not_subscribed():
     assert_status(post_request_to_foo(foo_request, token), 402)
 
 
-def test_foo_member_put_item():
+def test_foo_member_put_and_get_item():
     token = create_user_token(is_member=True)
-    foo_request = {"operation": "foo_save", "content": "Hello World!"}
+    random_content = f"Hello Random Content {uuid.uuid4().hex[:6]}"
+    foo_request = {"operation": "foo_save", "content": random_content}
     assert_status(post_request_to_foo(foo_request, token), 200)
+
+    # Now try to get the same item.
+    foo_request = {"operation": "foo_get_item"}
+    item_response = assert_status(post_request_to_foo(foo_request, token), 200)
+    print(item_response.data["payload"])
+    assert item_response.data["payload"]["item_content"] == random_content
 
 
 # =================================================

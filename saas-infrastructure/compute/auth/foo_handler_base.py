@@ -60,6 +60,43 @@ class FooHandlerBase(HandlerBase):
 
         return self.get_item_table().put_item(Item=item)
 
+    def get_latest_item(self):
+        item = self.get_item_from_gsi("type_index", "type", "POST", reverse=True)
+        return item
+
+    def get_item_from_gsi(
+        self, gsi_index: str, gsi_key: str, gsi_value: str, reverse: bool = False
+    ):
+        print(f"Getting GSI Items for {gsi_key}.")
+        table = self.get_item_table()
+        response = table.query(
+            IndexName=gsi_index,
+            KeyConditionExpression="#K = :v1",
+            ExpressionAttributeValues={
+                ":v1": gsi_value,
+            },
+            ExpressionAttributeNames={
+                "#K": gsi_key,
+            },
+            Limit=1,
+            ScanIndexForward=not reverse,
+        )
+
+        if "Items" not in response:
+            raise AuthExceptions.KEY_NOT_FOUND
+
+        items = response["Items"]
+
+        if len(items) == 0:
+            raise AuthExceptions.KEY_NOT_FOUND
+
+        if len(items) > 1:
+            raise AuthExceptions.DUPLICATE_ENTRIES_FOUND.override_message(
+                f"Unexpected duplicate entries were found for index {gsi_index} and key {gsi_key}.",
+            )
+
+        return items[0]
+
     def get_item_table(self):
         if self.item_table is None:
             self.item_table = self.get_default_table()

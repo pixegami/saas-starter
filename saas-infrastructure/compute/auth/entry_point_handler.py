@@ -1,3 +1,4 @@
+from foo_get_item_handler import FooGetItemHandler
 from foo_member_handler import FooMemberHandler
 from foo_save_handler import FooSaveHandler
 from handler_base import HandlerBase
@@ -36,6 +37,7 @@ class EntryPointHandler(HandlerBase):
             "validate_membership": ValidateMembershipHandler(),
             "foo": FooHandler(),
             "foo_save": FooSaveHandler(),
+            "foo_get_item": FooGetItemHandler(),
             "foo_member": FooMemberHandler(),
         }
 
