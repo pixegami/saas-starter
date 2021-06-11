@@ -1,6 +1,7 @@
-import { navigate } from "gatsby";
+import { Link, navigate } from "gatsby";
 import React, { useRef } from "react";
 import AuthApi from "../../api/auth/AuthApi";
+import * as AuthURL from "../auth/route/AuthURL";
 import NavBarDropdown from "./NavBarDropdown";
 import { NavMenuCommonProps } from "./NavBarInterfaces";
 import NavBarPopupMenu from "./NavBarPopupMenu";
@@ -38,13 +39,39 @@ function useWindowDimensions() {
 
 const NavBar: React.FC<NavBarProps> = (props) => {
   const siteTitle = <div className="my-auto">SaaS</div>;
+  const isSignedIn = AuthApi.isSignedIn();
+  const wrapperRef = useRef(null);
+  let interactiveNavElement = null;
+  let mobileNavElement = null;
+
+  if (isSignedIn) {
+    const navCommonProps = getNavBarCommonAttributes(wrapperRef);
+    interactiveNavElement = <NavBarProfileElement {...navCommonProps} />;
+    mobileNavElement = <NavMobileMenu {...navCommonProps} />;
+  } else {
+    interactiveNavElement = <NavBarSignInElement />;
+  }
+
+  return (
+    <div className="mb-2 border-b border-gray-300">
+      <div className="bg-white p-4 pt-4 pb-4 md:p-4 flex w-full">
+        <div className="flex justify-between m-auto w-full max-w-4xl">
+          {siteTitle}
+          <div className="relative" ref={wrapperRef}>
+            {interactiveNavElement}
+          </div>
+        </div>
+      </div>
+      {mobileNavElement}
+    </div>
+  );
+};
+
+const getNavBarCommonAttributes = (wrapperRef) => {
   const profileName = AuthApi.getSession().getUserEmail();
   const [isShowing, setIsShowing] = React.useState(false);
   const { windowWidth, windowHeight } = useWindowDimensions();
-  const wrapperRef = useRef(null);
-
   const isMobileSize = windowWidth <= 640;
-
   const navCommonProps: NavMenuCommonProps = {
     isShowing,
     setIsShowing,
@@ -64,19 +91,24 @@ const NavBar: React.FC<NavBarProps> = (props) => {
       },
     ],
   };
+  return navCommonProps;
+};
 
+const NavBarProfileElement = (props: NavMenuCommonProps) => {
   return (
-    <div className="mb-2 border-b border-gray-300">
-      <div className="bg-white p-4 pt-4 pb-4 md:p-4 flex w-full">
-        <div className="flex justify-between m-auto w-full max-w-4xl">
-          {siteTitle}
-          <div className="relative" ref={wrapperRef}>
-            <NavBarPopupMenu {...navCommonProps} />
-            <NavBarDropdown {...navCommonProps} />
-          </div>
-        </div>
-      </div>
-      <NavMobileMenu {...navCommonProps} />
+    <>
+      <NavBarPopupMenu {...props} />
+      <NavBarDropdown {...props} />
+    </>
+  );
+};
+
+const NavBarSignInElement = (props) => {
+  return (
+    <div className=" px-2 py-1 text-sm font-bold rounded-md border border-blue-500">
+      <Link to={AuthURL.SIGN_IN} className="text-blue-600 hover:underline">
+        Sign In
+      </Link>
     </div>
   );
 };

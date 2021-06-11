@@ -20,7 +20,7 @@ const AuthSignIn: React.FC<SubComponentBaseProps> = (props) => {
     props.onApiResponse(result);
     if (result.status == 200) {
       console.log("Sign In succeeded");
-      navigate("/app/dashboard");
+      navigate("/app/");
     }
   };
 
