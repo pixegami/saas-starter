@@ -68,7 +68,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
   return (
     <div className="mb-2 border-b border-gray-300">
       <div className="bg-white p-4 pt-4 pb-4 md:p-4 flex w-full">
-        <div className="flex justify-between m-auto w-full max-w-6xl">
+        <div className="flex justify-between m-auto w-full max-w-4xl">
           {siteTitle}
           <div className="relative" ref={wrapperRef}>
             <NavBarPopupMenu {...navCommonProps} />
