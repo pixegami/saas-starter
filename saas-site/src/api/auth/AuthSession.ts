@@ -2,9 +2,11 @@ import * as jwt from "jsonwebtoken";
 
 class AuthSession {
   private static SESSION_STORAGE_NAME: string = "ss_pixegami_auth_session";
+
   private static TOKEN_VERIFIED_PROPERTY: string = "verified";
   private static TOKEN_USER_PROPERTY: string = "user";
   private static TOKEN_ACCOUNT_KEY_PROPERTY: string = "account_key";
+
   private static IS_BROWSER = typeof window !== "undefined";
 
   private token: string | undefined;
@@ -62,6 +64,10 @@ class AuthSession {
         AuthSession.TOKEN_ACCOUNT_KEY_PROPERTY,
         undefined
       );
+
+      console.log("Loaded email: " + this.userEmail);
+      console.log("Loaded account key: " + this.userAccountKey);
+      console.log("Loaded verification status: " + this.verified);
     }
   }
 
@@ -112,7 +118,7 @@ class AuthSession {
   private static parse(sessionString: string): AuthSession {
     const jsonObject = JSON.parse(sessionString);
     const authSession: AuthSession = new AuthSession();
-    authSession.token = jsonObject.token;
+    authSession.setToken(jsonObject.token);
     return authSession;
   }
 }
