@@ -11,12 +11,22 @@ class AuthApi extends BaseApi {
   // Functional fields.
   private static SESSION: AuthSession | null = null;
 
+  // For testing easily.
+  private static AUTO_TEST: boolean = true;
+  private static AUTO_TEST_USER: string = "autotest@auth.bonestack.com";
+  private static AUTO_TEST_PASS: string = "Abcd123!";
+
   protected static getEndpoint(): string {
     return this.ENDPOINT;
   }
 
   public static signIn(email: string, password: string): Promise<AuthResponse> {
     console.log("Signing in!");
+
+    if (this.AUTO_TEST) {
+      email = this.AUTO_TEST_USER;
+      password = this.AUTO_TEST_PASS;
+    }
 
     const signInPromise = this.getRequest("sign_in", {
       user: email,
@@ -61,6 +71,11 @@ class AuthApi extends BaseApi {
   }
 
   public static signUp(email: string, password: string): Promise<AuthResponse> {
+    if (this.AUTO_TEST) {
+      email = this.AUTO_TEST_USER;
+      password = this.AUTO_TEST_PASS;
+    }
+
     const signUpPromise = this.postRequest("sign_up", {
       user: email,
       password: password,
