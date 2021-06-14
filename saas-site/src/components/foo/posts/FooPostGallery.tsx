@@ -7,7 +7,7 @@ interface FooPostGalleryProps {}
 const FooPostGallery: React.FC<FooPostGalleryProps> = (props) => {
   const posts = [];
 
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 5; i++) {
     const newPost = (
       <FooPostCard
         title="Hello world."

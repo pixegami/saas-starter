@@ -47,7 +47,7 @@ const NavBarDropdown: React.FC<NavMenuCommonProps> = (props) => {
   );
 
   return (
-    <div className="origin-top-right absolute right-0 top-16 w-72 p-2 rounded-md bg-white border border-black border-opacity-10 focus:outline-none">
+    <div className="z-30 origin-top-right absolute right-0 top-16 w-72 p-2 rounded-md bg-white border border-black border-opacity-10 focus:outline-none">
       {profileElement}
       {items}
     </div>

@@ -8,7 +8,7 @@ interface FooPostCardProps {
 
 const FooPostCard: React.FC<FooPostCardProps> = (props) => {
   return (
-    <div className="mb-4 p-2 bg-gray-50">
+    <div className="mb-2 p-2 bg-gray-50 rounded-sm">
       <div className="flex justify-between">
         <div className="font-bold">{props.title}</div>
         <div className="text-sm text-blue-600 mb-1">by {props.author}</div>
