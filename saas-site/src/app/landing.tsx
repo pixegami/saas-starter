@@ -11,9 +11,9 @@ interface LandingProps {
 const Landing: React.FC<LandingProps> = (props) => {
   return (
     <>
-      <FooView />
       <FooWritePostView />
       <FooPostGallery />
+      <FooView />
     </>
   );
 };

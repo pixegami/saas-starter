@@ -8,7 +8,14 @@ const FooPostGallery: React.FC<FooPostGalleryProps> = (props) => {
   const posts = [];
 
   for (let i = 0; i < 10; i++) {
-    const newPost = <FooPostCard key={"post" + i} />;
+    const newPost = (
+      <FooPostCard
+        title="Hello world."
+        content="A quick brown fox jumped over the lazy dog."
+        author="aCoolUser"
+        key={"post" + i}
+      />
+    );
     posts.push(newPost);
   }
 

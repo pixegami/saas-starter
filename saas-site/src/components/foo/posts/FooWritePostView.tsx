@@ -56,7 +56,7 @@ const postDisabledView = () => {
   const goToSignIn = () => navigate(AuthURL.SIGN_IN);
 
   return (
-    <div className="text-center flex w-full bg-gray-200 p-4 rounded-md">
+    <div className="text-center flex w-full bg-gray-100 p-4 rounded-md">
       <div className="m-auto">
         <div className="text-gray-600 mb-4">You must be signed in to post.</div>
 
