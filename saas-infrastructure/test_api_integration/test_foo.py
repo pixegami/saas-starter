@@ -12,7 +12,28 @@ def setup():
 
 def test_foo():
     foo_request = {"operation": "foo"}
-    assert_status(post_request_to_foo(foo_request), 200)
+    response = assert_status(post_request_to_foo(foo_request), 200)
+    assert response.payload["is_signed_in"] is False
+    assert response.payload["is_member"] is False
+    assert response.payload["is_verified"] is False
+
+
+def test_foo_signed_in():
+    token = create_user_token()
+    foo_request = {"operation": "foo"}
+    response = assert_status(post_request_to_foo(foo_request, token), 200)
+    assert response.payload["is_signed_in"] is True
+    assert response.payload["is_member"] is False
+    assert response.payload["is_verified"] is True
+
+
+def test_foo_member():
+    token = create_user_token(is_member=True)
+    foo_request = {"operation": "foo"}
+    response = assert_status(post_request_to_foo(foo_request, token), 200)
+    assert response.payload["is_signed_in"] is True
+    assert response.payload["is_member"] is True
+    assert response.payload["is_verified"] is True
 
 
 def test_foo_member_only():

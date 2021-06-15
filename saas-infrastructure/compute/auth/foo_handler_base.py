@@ -31,6 +31,9 @@ class FooHandlerBase(HandlerBase):
         self.validate_membership(token)
 
         # If success, return the validated payload.
+        return self.payload_from_token(token)
+
+    def payload_from_token(self, token: str):
         payload = jwt.decode(token, options={"verify_signature": False})
         return payload
 
@@ -127,12 +130,22 @@ class FooHandlerBase(HandlerBase):
         return response
 
     def validate_membership(self, token: str):
+        if not self.is_member(token):
+            raise HandlerException(403, "Not a member.")
+
+    def is_signed_in(self, event: dict):
+        try:
+            token = self.token_from_header(event)
+            self.validate(token)
+            return True
+        except HandlerException as e:
+            return False
+
+    def is_member(self, token: str):
         response = self.generic_request(
             "POST", operation="validate_membership", token=token
         )
-        if response.status != 200:
-            raise HandlerException(response.status, "Not a member!")
-        return response
+        return response.status == 200
 
     def generic_request(
         self,

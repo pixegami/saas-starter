@@ -29,6 +29,7 @@ class ApiResponse:
     def __init__(self, status: int, data: dict):
         self.status = status
         self.data = data
+        self.payload = data.get("payload", None)
 
 
 def sign_up(
@@ -59,7 +60,6 @@ def sign_up_test_user_as_member(
         extra_flags=["AUTO_MEMBER"],
     )
     return assert_status(response, expected_status)
-
 
 
 def sign_in(
