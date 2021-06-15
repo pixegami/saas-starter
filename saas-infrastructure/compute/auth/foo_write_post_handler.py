@@ -2,7 +2,7 @@ from foo_handler_base import FooHandlerBase
 from return_message import new_return_message
 
 
-class FooSaveHandler(FooHandlerBase):
+class FooWritePostHandler(FooHandlerBase):
     def __init__(self):
         super().__init__()
         self.schema = {"content": True}
@@ -24,6 +24,6 @@ class FooSaveHandler(FooHandlerBase):
         response_payload = {}
         return new_return_message(
             200,
-            f"Successfully ran my foo_save: {response_payload}",
+            f"Successfully ran my foo_write_post: {response_payload}",
             response_payload,
         )

@@ -1,6 +1,6 @@
-from foo_get_item_handler import FooGetItemHandler
+from foo_get_posts_handler import FooGetPostsHandler
 from foo_member_handler import FooMemberHandler
-from foo_save_handler import FooSaveHandler
+from foo_write_post_handler import FooWritePostHandler
 from handler_base import HandlerBase
 from foo_handler import FooHandler
 from sign_in_handler import SignInHandler
@@ -36,8 +36,8 @@ class EntryPointHandler(HandlerBase):
             "create_payment_session": CreatePaymentSessionHandler(),
             "validate_membership": ValidateMembershipHandler(),
             "foo": FooHandler(),
-            "foo_save": FooSaveHandler(),
-            "foo_get_item": FooGetItemHandler(),
+            "foo_write_post": FooWritePostHandler(),
+            "foo_get_posts": FooGetPostsHandler(),
             "foo_member": FooMemberHandler(),
         }
 

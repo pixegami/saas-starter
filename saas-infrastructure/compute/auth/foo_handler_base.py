@@ -22,13 +22,14 @@ class FooHandlerBase(HandlerBase):
         self.auth_endpoint = os.getenv("AUTH_ENDPOINT")
         self.item_table = None
 
-    def validated_payload(self, event):
+    def validated_payload(self, event: dict, validate_member: bool = False):
         # If not signed in, fail.
         token = self.token_from_header(event)
         self.validate(token)
 
         # If not member, fail.
-        self.validate_membership(token)
+        if validate_member:
+            self.validate_membership(token)
 
         # If success, return the validated payload.
         return self.payload_from_token(token)
@@ -63,12 +64,19 @@ class FooHandlerBase(HandlerBase):
 
         return self.get_item_table().put_item(Item=item)
 
-    def get_latest_item(self):
-        item = self.get_item_from_gsi("type_index", "type", "POST", reverse=True)
+    def get_latest_items(self, count: int = 1):
+        item = self.get_item_from_gsi(
+            "type_index", "type", "POST", reverse=True, count=count
+        )
         return item
 
     def get_item_from_gsi(
-        self, gsi_index: str, gsi_key: str, gsi_value: str, reverse: bool = False
+        self,
+        gsi_index: str,
+        gsi_key: str,
+        gsi_value: str,
+        reverse: bool = False,
+        count: int = 1,
     ):
         print(f"Getting GSI Items for {gsi_key}.")
         table = self.get_item_table()
@@ -81,7 +89,7 @@ class FooHandlerBase(HandlerBase):
             ExpressionAttributeNames={
                 "#K": gsi_key,
             },
-            Limit=1,
+            Limit=count,
             ScanIndexForward=not reverse,
         )
 
@@ -89,16 +97,7 @@ class FooHandlerBase(HandlerBase):
             raise AuthExceptions.KEY_NOT_FOUND
 
         items = response["Items"]
-
-        if len(items) == 0:
-            raise AuthExceptions.KEY_NOT_FOUND
-
-        if len(items) > 1:
-            raise AuthExceptions.DUPLICATE_ENTRIES_FOUND.override_message(
-                f"Unexpected duplicate entries were found for index {gsi_index} and key {gsi_key}.",
-            )
-
-        return items[0]
+        return items
 
     def get_item_table(self):
         if self.item_table is None:
