@@ -21,7 +21,7 @@ class AuthSession {
     return this;
   }
 
-  public getToken(): string {
+  public getToken(): string | undefined {
     return this.token;
   }
 

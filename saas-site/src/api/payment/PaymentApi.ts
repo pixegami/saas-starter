@@ -10,10 +10,14 @@ class PaymentApi extends BaseApi {
   }
 
   public static requestCheckout(): Promise<ApiResponse> {
-    console.log("Creating Checkout Session");
-    return this.getRequest("create_payment_session", {
-      token: AuthApi.getSession().getToken(),
-    });
+    console.log(
+      "Creating Checkout Session with token " + AuthApi.getSession().getToken()
+    );
+    return this.getRequest(
+      "create_payment_session",
+      {},
+      AuthApi.getSession().getToken()
+    );
   }
 
   // TODO: Add response transformer for PaymentResponse.

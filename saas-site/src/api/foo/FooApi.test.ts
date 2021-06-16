@@ -1,39 +1,40 @@
-import PaymentApi from "./PaymentApi";
+import FooApi from "./FooApi";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import * as jwt from "jsonwebtoken";
-import ApiResponse from "../base/ApiResponse";
 import AuthApi from "../auth/AuthApi";
+import AuthResponse from "../auth/AuthResponse";
+import BaseApi from "../base/BaseApi";
 
 beforeEach(async () => {
   // HTTP Adapter required to solve CORS error.
   axios.defaults.adapter = require("axios/lib/adapters/http");
+  console.log("Preparing for new test.");
+  console.log("Clearing AuthApi state.");
   AuthApi.clearSession();
 
   // Set the timeout.
   jest.setTimeout(45000);
 });
 
-test("request checkout session", async () => {
-  await createAndSignUser();
-  const response = await requestPaymentCheckoutAndExpect(200);
-  console.log(response.payload);
-  expect(response.payload).toHaveProperty("session_id");
+test("foo not signed in", async () => {
+  // Token validation should succeed.
+  const response = await FooApi.foo();
+  expect(response.status).toBe(200);
+  expect(response.isSignedIn).toBe(false);
+  expect(response.isPremium).toBe(false);
+  expect(response.isVerified).toBe(false);
 });
 
-const requestPaymentCheckoutAndExpect = async (expectedCode: number) => {
-  const response = await PaymentApi.requestCheckout();
-  return expectResponseOrPrint(response, expectedCode);
-};
-
-const expectResponseOrPrint = (response: ApiResponse, expectedCode: number) => {
-  if (response.status !== expectedCode) {
-    console.log("Response Message", response.message);
-    console.log("Response Payload", response.payload);
-  }
-  expect(response.status).toBe(expectedCode);
-  return response;
-};
+test("foo signed in but not verified", async () => {
+  // Token validation should succeed.
+  await createAndSignUser();
+  const response = await FooApi.foo();
+  expect(response.status).toBe(200);
+  expect(response.isSignedIn).toBe(true);
+  expect(response.isPremium).toBe(false);
+  expect(response.isVerified).toBe(false);
+});
 
 const createAndSignUser = async () => {
   const user: string = newRandomUser();
@@ -59,6 +60,19 @@ const signInAndExpect = async (
 ) => {
   const response = await AuthApi.signIn(user, password);
   return expectResponseOrPrint(response, expectedCode);
+};
+
+const expectResponseOrPrint = (
+  response: AuthResponse,
+  expectedCode: number
+) => {
+  if (response.status !== expectedCode) {
+    console.log("Response Message", response.message);
+    console.log("Response Payload", response.payload);
+  }
+  expect(response.status).toBe(expectedCode);
+
+  return response;
 };
 
 const randomUUID = () => {

@@ -10,7 +10,7 @@ class FooMemberHandler(FooHandlerBase):
     def handle_action(self, request_data: dict, event: dict, context: dict):
 
         # If not signed in, fail.
-        payload = self.validated_payload(event)
+        payload = self.validated_payload(event, validate_member=True)
 
         response_payload = {"token_payload": payload}
         return new_return_message(

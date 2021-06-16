@@ -12,7 +12,7 @@ class AuthApi extends BaseApi {
   private static SESSION: AuthSession | null = null;
 
   // For testing easily.
-  private static AUTO_TEST: boolean = true;
+  private static AUTO_TEST: boolean = false;
   private static AUTO_TEST_USER: string = "autotest@auth.bonestack.com";
   private static AUTO_TEST_PASS: string = "Abcd123!";
 
