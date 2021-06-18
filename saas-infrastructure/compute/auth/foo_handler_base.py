@@ -62,13 +62,21 @@ class FooHandlerBase(HandlerBase):
         if should_expire:
             item["expiry_time"] = int(time.time() + 600)
 
-        return self.get_item_table().put_item(Item=item)
+        self.get_item_table().put_item(Item=item)
+        return key
 
     def get_latest_items(self, count: int = 1):
         item = self.get_item_from_gsi(
             "type_index", "type", "POST", reverse=True, count=count
         )
         return item
+
+    def get_item(self, pk: str, sk: str):
+        table = self.get_item_table()
+        response = table.get_item(Key={"pk": pk, "type": sk})
+        if "Item" not in response:
+            raise AuthExceptions.USER_NOT_FOUND
+        return response["Item"]
 
     def get_item_from_gsi(
         self,

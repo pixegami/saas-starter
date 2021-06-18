@@ -17,7 +17,7 @@ class FooGetPostsHandler(FooHandlerBase):
                 {
                     "content": item["primary_value"],
                     "user": item["user_key"],
-                    "key": item["primary_value"],
+                    "key": item["pk"],
                 }
             )
 

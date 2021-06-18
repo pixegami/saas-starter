@@ -36,6 +36,36 @@ test("foo signed in but not verified", async () => {
   expect(response.isVerified).toBe(false);
 });
 
+test("foo can write and get post", async () => {
+  const randomContent = `My random content ${randomUUID()}`;
+
+  await createAndSignUser();
+  const response = await FooApi.putPost("My Post Title", randomContent);
+  expect(response.status).toBe(200);
+  expect(response.itemKey).not.toBeUndefined();
+  const postKey = response.itemKey;
+
+  // Try to get the post from batch.
+  const getPostsResponse = await FooApi.getPosts();
+  expect(getPostsResponse.status).toBe(200);
+  expect(getPostsResponse.items).not.toBeUndefined();
+
+  // Check that most recent item is the one we put.
+  const mostRecentItem = getPostsResponse.items[0];
+  expect(mostRecentItem.content).toEqual(randomContent);
+  expect(mostRecentItem.key).not.toBeUndefined();
+  expect(mostRecentItem.user).not.toBeUndefined();
+
+  // Try to get the specific post directly.
+  const getPostResponse = await FooApi.getPost(postKey);
+  expect(getPostResponse.status).toBe(200);
+  expect(getPostResponse.items).not.toBeUndefined();
+});
+
+// ===================================================================================================
+//
+// ===================================================================================================
+
 const createAndSignUser = async () => {
   const user: string = newRandomUser();
   const password: string = newRandomPassword();

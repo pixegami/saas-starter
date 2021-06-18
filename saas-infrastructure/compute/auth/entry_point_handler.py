@@ -1,3 +1,4 @@
+from foo_get_post_handler import FooGetPostHandler
 from foo_get_posts_handler import FooGetPostsHandler
 from foo_member_handler import FooMemberHandler
 from foo_write_post_handler import FooWritePostHandler
@@ -39,6 +40,7 @@ class EntryPointHandler(HandlerBase):
             "foo_write_post": FooWritePostHandler(),
             "foo_get_posts": FooGetPostsHandler(),
             "foo_member": FooMemberHandler(),
+            "foo_get_post": FooGetPostHandler(),
         }
 
     def handle_action(self, request_data: dict, event: dict, context: dict):

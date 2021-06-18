@@ -11,15 +11,32 @@ class FooApi extends BaseApi {
   }
 
   public static foo(): Promise<FooResponse> {
-    const token = AuthApi.getSessionToken();
-    console.log("Calling Foo with token " + token);
-    const responsePromise = this.getRequest("foo", {}, token);
-    const sideEffectPromise = this.withSideEffect(responsePromise, (x) => {
-      if (x.status == 200) {
-      }
-    });
+    return this.callApiWithTokenAndWrappedResponse("foo", {});
+  }
 
-    return withFooResponse(sideEffectPromise);
+  public static putPost(title: string, content: string): Promise<FooResponse> {
+    return this.callApiWithTokenAndWrappedResponse("foo_write_post", {
+      title,
+      content,
+    });
+  }
+
+  public static getPosts(): Promise<FooResponse> {
+    return this.callApiWithTokenAndWrappedResponse("foo_get_posts", {});
+  }
+
+  public static getPost(key: string): Promise<FooResponse> {
+    return this.callApiWithTokenAndWrappedResponse("foo_get_post", { key });
+  }
+
+  private static callApiWithTokenAndWrappedResponse(
+    apiName: string,
+    params: any
+  ): Promise<FooResponse> {
+    const token = AuthApi.getSessionToken();
+    console.log("Calling " + apiName + " with token " + token);
+    const responsePromise = this.getRequest(apiName, params, token);
+    return withFooResponse(responsePromise);
   }
 }
 

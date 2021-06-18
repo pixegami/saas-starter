@@ -57,13 +57,23 @@ def test_foo_write_and_get_posts():
     token = create_user_token()
     random_content = f"Hello Random Content {uuid.uuid4().hex[:6]}"
     foo_request = {"operation": "foo_write_post", "content": random_content}
-    assert_status(post_request_to_foo(foo_request, token), 200)
+    write_response = assert_status(post_request_to_foo(foo_request, token), 200)
+    assert write_response.payload["item_key"] is not None
+    item_key = write_response.payload["item_key"]
 
     # Now try to get the same item.
     foo_request = {"operation": "foo_get_posts"}
     item_response = assert_status(post_request_to_foo(foo_request, token), 200)
     print(item_response.payload)
 
+    # Check it is returned in the batch.
+    posts = item_response.payload["items"]
+    latest_post = posts[0]
+    assert latest_post["content"] == random_content
+
+    # Check that we can get the item directly.
+    foo_request = {"operation": "foo_get_post", "key": item_key}
+    item_response = assert_status(post_request_to_foo(foo_request, token), 200)
     posts = item_response.payload["items"]
     latest_post = posts[0]
     assert latest_post["content"] == random_content

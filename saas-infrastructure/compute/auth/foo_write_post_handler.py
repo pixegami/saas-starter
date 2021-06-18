@@ -19,9 +19,10 @@ class FooWritePostHandler(FooHandlerBase):
         user_key = payload["account_key"]
 
         # Write item to the DB.
-        self.put_item("POST", user_key, content_value, should_expire)
+        item_key = self.put_item("POST", user_key, content_value, should_expire)
 
-        response_payload = {}
+        response_payload = {"item_key": item_key}
+
         return new_return_message(
             200,
             f"Successfully ran my foo_write_post: {response_payload}",
