@@ -1,6 +1,6 @@
 import ApiResponse from "../base/ApiResponse";
 
-interface FooResponse extends ApiResponse {
+export interface FooResponse extends ApiResponse {
   isPremium?: boolean;
   isVerified?: boolean;
   isSignedIn?: boolean;
@@ -8,7 +8,7 @@ interface FooResponse extends ApiResponse {
   items?: FooPost[];
 }
 
-interface FooPost {
+export interface FooPost {
   content: string;
   user: string;
   key: string;
@@ -43,5 +43,3 @@ export const withFooResponse = (
       .catch(reject);
   });
 };
-
-export default FooResponse;

@@ -1,6 +1,6 @@
 import AuthApi from "../auth/AuthApi";
 import BaseApi from "../base/BaseApi";
-import FooResponse, { withFooResponse } from "./FooResponse";
+import { FooResponse, withFooResponse } from "./FooResponse";
 
 class FooApi extends BaseApi {
   // Configurable fields.

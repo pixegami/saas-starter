@@ -23,8 +23,8 @@
 .loader-dark,
 .loader-dark:after {
   border-radius: 50%;
-  width: 5em;
-  height: 5em;
+  width: 2.8em;
+  height: 2.8em;
 }
 
 .loader-dark {
@@ -32,10 +32,10 @@
   font-size: 8px;
   position: relative;
   text-indent: -9999em;
-  border-top: 0.8em solid rgba(0, 0, 0, 0.3);
-  border-right: 0.8em solid rgba(0, 0, 0, 0.3);
-  border-bottom: 0.8em solid rgba(0, 0, 0, 0.3);
-  border-left: 0.8em solid #dadada;
+  border-top: 0.4em solid rgba(0, 0, 0, 0.3);
+  border-right: 0.4em solid rgba(0, 0, 0, 0.3);
+  border-bottom: 0.4em solid rgba(0, 0, 0, 0.3);
+  border-left: 0.4em solid #dadada;
   -webkit-transform: translateZ(0);
   -ms-transform: translateZ(0);
   transform: translateZ(0);
