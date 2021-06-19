@@ -3,17 +3,36 @@ import * as React from "react";
 import withBoxStyling from "../../hoc/withBoxStyling";
 import * as AuthURL from "../../auth/route/AuthURL";
 import AuthApi from "../../../api/auth/AuthApi";
+import {
+  SubComponentBaseProps,
+  withApiWrapper,
+} from "../../api/ApiComponentWrapper";
+import { FooResponse } from "../../../api/foo/FooResponse";
+import FooApi from "../../../api/foo/FooApi";
 
-interface FooWritePostViewProps {}
+interface FooWritePostViewProps extends SubComponentBaseProps {}
 
-const postEnabledView = () => {
-  const [isLoading, setIsLoading] = React.useState(false);
+const PostEnabledView: React.FC<FooWritePostViewProps> = (props) => {
   const [postContent, setPostContent] = React.useState("");
-  const onClickPost = () => {
-    setIsLoading(true);
+  const [postSucceeded, setPostSucceeded] = React.useState(false);
+
+  const onPostSuccess = (result: FooResponse) => {
+    props.onApiResponse(result);
+    if (result.status == 200) {
+      console.log("Foo post succeeded!");
+      setPostSucceeded(true);
+    }
   };
 
-  const buttonLabel = isLoading ? (
+  const onClickPost = () => {
+    console.log("Foo Post with Content ", postContent);
+    props.onApiRequest();
+    FooApi.putPost("Untitled", postContent)
+      .then(onPostSuccess)
+      .catch(props.onApiFault);
+  };
+  const isBusy = props.apiState.isBusy;
+  const buttonLabel = isBusy ? (
     <div className="w-6 h-6 flex m-auto">
       <div className="loader" />
     </div>
@@ -21,38 +40,63 @@ const postEnabledView = () => {
     "Post"
   );
 
-  return (
-    <div>
-      <textarea
-        id="message"
-        name="message"
-        rows={2}
-        className="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block 
-          w-full sm:text-sm border border-gray-300 rounded-md disabled:opacity-50
-          p-2"
-        placeholder="Write your message here..."
-        defaultValue={postContent}
-        onChange={(e) => {
-          setPostContent(e.currentTarget.value);
-        }}
-        disabled={isLoading}
-      ></textarea>
-      <div className="mt-4 flex w-full">
-        <div className="ml-auto my-auto">
+  let postContentElement;
+  if (postSucceeded) {
+    postContentElement = (
+      <div className="text-center flex w-full bg-green-100 p-4 rounded-md">
+        <div className="m-auto">
+          <div className="text-green-800 mb-4">
+            Post succeeded! Do you want to write another?
+          </div>
+
           <button
-            className="rounded-md bg-blue-600 text-white px-4 py-2 font-bold w-32 disabled:opacity-50"
-            disabled={isLoading}
-            onClick={onClickPost}
+            className="rounded-md bg-blue-600 text-white px-4 py-2 font-bold w-32"
+            onClick={() => {
+              setPostSucceeded(false);
+              setPostContent("");
+            }}
           >
-            {buttonLabel}
+            New Post
           </button>
         </div>
       </div>
-    </div>
-  );
+    );
+  } else {
+    postContentElement = (
+      <div>
+        <textarea
+          id="message"
+          name="message"
+          rows={2}
+          className="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block 
+    w-full sm:text-sm border border-gray-300 rounded-md disabled:opacity-50
+    p-2"
+          placeholder="Write your message here..."
+          defaultValue={postContent}
+          onChange={(e) => {
+            setPostContent(e.currentTarget.value);
+          }}
+          disabled={isBusy}
+        ></textarea>
+        <div className="mt-4 flex w-full">
+          <div className="ml-auto my-auto">
+            <button
+              className="rounded-md bg-blue-600 text-white px-4 py-2 font-bold w-32 disabled:opacity-50"
+              disabled={isBusy}
+              onClick={onClickPost}
+            >
+              {buttonLabel}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return <div>{postContentElement}</div>;
 };
 
-const postDisabledView = () => {
+const PostDisabledView: React.FC<FooWritePostViewProps> = (props) => {
   const goToSignIn = () => navigate(AuthURL.SIGN_IN);
 
   return (
@@ -73,7 +117,11 @@ const postDisabledView = () => {
 
 const FooWritePostView: React.FC<FooWritePostViewProps> = (props) => {
   const isSignedIn: boolean = AuthApi.isSignedIn();
-  const postView = isSignedIn ? postEnabledView() : postDisabledView();
+  const postView = isSignedIn ? (
+    <PostEnabledView {...props} />
+  ) : (
+    <PostDisabledView {...props} />
+  );
 
   return (
     <>
@@ -83,4 +131,4 @@ const FooWritePostView: React.FC<FooWritePostViewProps> = (props) => {
   );
 };
 
-export default withBoxStyling(FooWritePostView);
+export default withBoxStyling(withApiWrapper(FooWritePostView));
