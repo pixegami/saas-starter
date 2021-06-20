@@ -2,6 +2,11 @@ import * as React from "react";
 import withBoxStyling from "../hoc/withBoxStyling";
 import AuthApi from "../../api/auth/AuthApi";
 import FooApi from "../../api/foo/FooApi";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCheckCircle,
+  faTimesCircle,
+} from "@fortawesome/free-solid-svg-icons";
 
 interface FooViewProps {}
 
@@ -12,9 +17,16 @@ interface ServiceResponseProps {
 }
 
 const ServiceResponseView = (props: ServiceResponseProps) => {
-  const isSignedInStatus = props.fooIsSignedIn ? "✓" : "✖";
-  const isVerifiedStatus = props.fooIsIsVerified ? "✓" : "✖";
-  const isPremiumMember = props.fooIsPremium ? "✓" : "✖";
+  const checkCircleIcon = <FontAwesomeIcon icon={faCheckCircle} />;
+  const checkTimesIcon = <FontAwesomeIcon icon={faTimesCircle} />;
+
+  const isSignedInStatus = props.fooIsSignedIn
+    ? checkCircleIcon
+    : checkTimesIcon;
+  const isVerifiedStatus = props.fooIsIsVerified
+    ? checkCircleIcon
+    : checkTimesIcon;
+  const isPremiumMember = props.fooIsPremium ? checkCircleIcon : checkTimesIcon;
   const isSignedInColor = props.fooIsSignedIn
     ? "text-green-500"
     : "text-red-500";

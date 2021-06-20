@@ -9,10 +9,12 @@ interface LandingProps {
 }
 
 const Landing: React.FC<LandingProps> = (props) => {
+  const [postRefreshId, setPostRefreshId] = React.useState("");
+
   return (
     <>
-      <FooWritePostView />
-      <FooPostGallery />
+      <FooWritePostView setPostRefreshId={setPostRefreshId} />
+      <FooPostGallery postRefreshId={postRefreshId} />
       <FooView />
     </>
   );

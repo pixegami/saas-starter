@@ -10,6 +10,10 @@ import {
 import FooApi from "../../../api/foo/FooApi";
 import { FooPost } from "../../../api/foo/FooResponse";
 
+interface FooPostGalleryProps extends SubComponentBaseProps {
+  postRefreshId?: string;
+}
+
 interface RefreshComponentProps {
   isRefreshing: boolean;
   onClickRefresh: React.MouseEventHandler<HTMLButtonElement>;
@@ -38,7 +42,7 @@ const RefreshComponent: React.FC<RefreshComponentProps> = (
   return <div className="my-auto">{displayableElement}</div>;
 };
 
-const FooPostGallery: React.FC<SubComponentBaseProps> = (props) => {
+const FooPostGallery: React.FC<FooPostGalleryProps> = (props) => {
   const [rawPosts, setRawPosts] = React.useState<FooPost[]>([]);
 
   const onClickRefresh = () => {
@@ -46,6 +50,7 @@ const FooPostGallery: React.FC<SubComponentBaseProps> = (props) => {
   };
 
   const refreshPosts = () => {
+    console.log("Refreshing Post for UUID: " + props.postRefreshId);
     let isMounted: boolean = true;
     props.onApiRequest();
     FooApi.getPosts()
@@ -69,7 +74,7 @@ const FooPostGallery: React.FC<SubComponentBaseProps> = (props) => {
   };
 
   // Load the posts on page load.
-  React.useEffect(refreshPosts, []);
+  React.useEffect(refreshPosts, [props.postRefreshId]);
 
   let postsElement;
   const thereArePosts = rawPosts.length > 0;

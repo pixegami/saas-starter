@@ -3,6 +3,7 @@ import * as React from "react";
 import withBoxStyling from "../../hoc/withBoxStyling";
 import * as AuthURL from "../../auth/route/AuthURL";
 import AuthApi from "../../../api/auth/AuthApi";
+import { v4 as uuidv4 } from "uuid";
 import {
   SubComponentBaseProps,
   withApiWrapper,
@@ -10,7 +11,9 @@ import {
 import { FooResponse } from "../../../api/foo/FooResponse";
 import FooApi from "../../../api/foo/FooApi";
 
-interface FooWritePostViewProps extends SubComponentBaseProps {}
+interface FooWritePostViewProps extends SubComponentBaseProps {
+  setPostRefreshId?(x: string): void;
+}
 
 const PostEnabledView: React.FC<FooWritePostViewProps> = (props) => {
   const [postContent, setPostContent] = React.useState("");
@@ -21,6 +24,8 @@ const PostEnabledView: React.FC<FooWritePostViewProps> = (props) => {
     if (result.status == 200) {
       console.log("Foo post succeeded!");
       setPostSucceeded(true);
+      const randomId = uuidv4().replaceAll("-", "").substr(0, 12);
+      props.setPostRefreshId(randomId);
     }
   };
 
