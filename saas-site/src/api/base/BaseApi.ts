@@ -43,23 +43,30 @@ class BaseApi {
     throw new Error("getEndpoint() is not implemented!");
   }
 
-  protected static getRequest(operation: string, payload: any, token?: string) {
-    return this.genericRequest("GET", operation, payload, token);
+  protected static getRequest(
+    operation: string,
+    payload: any,
+    token?: string,
+    extraFlags?: string[]
+  ) {
+    return this.genericRequest("GET", operation, payload, token, extraFlags);
   }
 
   protected static postRequest(
     operation: string,
     payload: any,
-    token?: string
+    token?: string,
+    extraFlags?: string[]
   ) {
-    return this.genericRequest("POST", operation, payload, token);
+    return this.genericRequest("POST", operation, payload, token, extraFlags);
   }
 
   private static genericRequest(
     method: Method,
     operation: string,
     payload: any,
-    token?: string
+    token?: string,
+    extraFlags?: string[]
   ) {
     const request: ApiRequest = {
       endpoint: this.getEndpoint(),
@@ -67,6 +74,7 @@ class BaseApi {
       operation: operation,
       payload: payload,
       token: token,
+      extraFlags: extraFlags,
     };
     return this.sendRequest(request);
   }
@@ -113,10 +121,17 @@ class BaseApi {
       };
     }
 
+    // Concat the flags.
+
+    const flags =
+      request.extraFlags === undefined
+        ? ["TMP"]
+        : ["TMP", ...request.extraFlags];
+
     // If a payload exists, add it to the request.
     const payload = {
       operation: request.operation,
-      flags: ["TMP"],
+      flags: flags,
       ...request.payload,
     };
 

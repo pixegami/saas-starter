@@ -28,7 +28,7 @@ const NavMobileMenu: React.FC<NavMenuCommonProps> = (props) => {
 
   const profileElement = (
     <div className="block py-3 text-gray-700 w-full text-left">
-      Profile: {props.profileName}
+      {props.profileName}
     </div>
   );
 

@@ -79,12 +79,11 @@ const getNavBarCommonAttributes = (wrapperRef) => {
     isMobile: isMobileSize,
     profileName: profileName,
     items: [
-      { label: "Profile", action: console.log },
-      { label: "Settings", action: console.log },
+      { label: "Dashboard", action: () => navigate("/app/") },
+      { label: "Profile", action: () => navigate("/app/profile") },
       {
         label: "Sign Out",
         action: () => {
-          console.log("sign out click");
           AuthApi.signOut();
           navigate("/app/dashboard");
         },

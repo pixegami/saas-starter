@@ -6,12 +6,14 @@ import NotFound from "../app/notFound";
 import AuthRoute from "../components/auth/route/AuthRoute";
 import * as AuthViews from "../components/auth/views/AuthViews";
 import * as AuthURL from "../components/auth/route/AuthURL";
+import ProfileView from "../app/ProfileView";
 
 const App = () => {
   return (
     <Router>
       <AuthRoute component={Landing} path="/app" bypassAuth />
       <AuthRoute component={Dashboard} path="/app/dashboard" />
+      <AuthRoute component={ProfileView} path="/app/profile" />
       <AuthRoute
         component={AuthViews.AuthRequestAccountVerification}
         path={AuthURL.VERIFY_ACCOUNT_REQUEST}

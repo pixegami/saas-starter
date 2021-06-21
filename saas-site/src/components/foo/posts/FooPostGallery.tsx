@@ -1,46 +1,17 @@
 import * as React from "react";
 import withBoxStyling from "../../hoc/withBoxStyling";
 import FooPostCard from "./FooPostCard";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import {
   SubComponentBaseProps,
   withApiWrapper,
 } from "../../api/ApiComponentWrapper";
 import FooApi from "../../../api/foo/FooApi";
 import { FooPost } from "../../../api/foo/FooResponse";
+import ApiRefresher from "../../api/ApiRefresher";
 
 interface FooPostGalleryProps extends SubComponentBaseProps {
   postRefreshId?: string;
 }
-
-interface RefreshComponentProps {
-  isRefreshing: boolean;
-  onClickRefresh: React.MouseEventHandler<HTMLButtonElement>;
-}
-
-const RefreshComponent: React.FC<RefreshComponentProps> = (
-  props: RefreshComponentProps
-) => {
-  let displayableElement;
-  if (props.isRefreshing) {
-    displayableElement = (
-      <div>
-        <div className="w-7 h-7 flex">
-          <div className="loader-dark" />
-        </div>
-      </div>
-    );
-  } else {
-    displayableElement = (
-      <button onClick={props.onClickRefresh}>
-        <FontAwesomeIcon className="fa-lg text-gray-600" icon={faSyncAlt} />
-      </button>
-    );
-  }
-
-  return <div className="my-auto">{displayableElement}</div>;
-};
 
 const FooPostGallery: React.FC<FooPostGalleryProps> = (props) => {
   const [rawPosts, setRawPosts] = React.useState<FooPost[]>([]);
@@ -78,8 +49,8 @@ const FooPostGallery: React.FC<FooPostGalleryProps> = (props) => {
 
   let postsElement;
   const thereArePosts = rawPosts.length > 0;
+  const posts = [];
   if (thereArePosts) {
-    const posts = [];
     for (let i = 0; i < rawPosts.length; i++) {
       const rawPost = rawPosts[i];
       const newPost = (
@@ -88,20 +59,24 @@ const FooPostGallery: React.FC<FooPostGalleryProps> = (props) => {
           content={rawPost.content}
           author={rawPost.user.substr(0, 8)}
           key={rawPost.key}
+          isLoading={false}
         />
       );
       posts.push(newPost);
     }
-    postsElement = <div>{posts}</div>;
   } else {
-    postsElement = <div>No posts!</div>;
+    for (let i = 0; i < 5; i++) {
+      const newPost = <FooPostCard isLoading={true} key={"postLoading" + i} />;
+      posts.push(newPost);
+    }
   }
+  postsElement = <div>{posts}</div>;
 
   return (
     <>
       <div className="flex justify-between mb-4">
         <h1 className="text-xl font-bold my-auto">Recent Posts</h1>
-        <RefreshComponent
+        <ApiRefresher
           onClickRefresh={onClickRefresh}
           isRefreshing={props.apiState.isBusy}
         />

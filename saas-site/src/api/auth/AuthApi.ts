@@ -70,16 +70,29 @@ class AuthApi extends BaseApi {
     return this.withResponseTransformer(sideEffectPromise);
   }
 
-  public static signUp(email: string, password: string): Promise<AuthResponse> {
+  public static signUp(
+    email: string,
+    password: string,
+    withTestAccount: boolean = false,
+    autoMember: boolean = false
+  ): Promise<AuthResponse> {
     if (this.AUTO_TEST) {
       email = this.AUTO_TEST_USER;
       password = this.AUTO_TEST_PASS;
     }
 
-    const signUpPromise = this.postRequest("sign_up", {
-      user: email,
-      password: password,
-    });
+    const operation = withTestAccount ? "create_test_account" : "sign_up";
+    const extraFlags = autoMember ? ["AUTO_MEMBER"] : [];
+
+    const signUpPromise = this.postRequest(
+      operation,
+      {
+        user: email,
+        password: password,
+      },
+      undefined,
+      extraFlags
+    );
 
     const sideEffectPromise = this.withSideEffect(signUpPromise, (x) => {
       if (x.status == 200) {
@@ -120,6 +133,20 @@ class AuthApi extends BaseApi {
     return this.postRequest("verify_account", {
       verification_token,
     });
+  }
+
+  public static async validateMembership(): Promise<ApiResponse> {
+    console.log("Validating membership with " + this.getSession().getToken());
+    return this.getRequest(
+      "validate_membership",
+      {},
+      this.getSession().getToken()
+    );
+  }
+
+  public static async getMembershipStatus(): Promise<boolean> {
+    const validationResponse = await AuthApi.validateMembership();
+    return validationResponse.status === 200;
   }
 
   public static signOut(): void {

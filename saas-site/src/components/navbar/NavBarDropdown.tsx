@@ -42,7 +42,7 @@ const NavBarDropdown: React.FC<NavMenuCommonProps> = (props) => {
 
   const profileElement = (
     <div className="block px-4 py-2 text-gray-700 w-full text-left font-bold border-b mb-2 pb-3">
-      Profile: {props.profileName}
+      {props.profileName}
     </div>
   );
 

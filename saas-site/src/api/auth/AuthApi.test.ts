@@ -93,12 +93,49 @@ test("can reset account", async () => {
   await signInAndExpect(user, newPassword, 200);
 });
 
+test("premium not signed in", async () => {
+  const validationResponse = await AuthApi.validateMembership();
+  expect(validationResponse.status).toBe(403);
+});
+
+test("premium not a member", async () => {
+  await createAndSignInToVerifiedAccount();
+  const validationResponse = await AuthApi.validateMembership();
+  expect(validationResponse.status).toBe(402);
+});
+
+test("premium is a member", async () => {
+  await createAndSignInToVerifiedAccount(true);
+  const validationResponse = await AuthApi.validateMembership();
+  expect(validationResponse.status).toBe(200);
+});
+
+test("get premium is a member", async () => {
+  await createAndSignInToVerifiedAccount(true);
+  const validationResponse = await AuthApi.getMembershipStatus();
+  expect(validationResponse).toBe(true);
+});
+
+test("get premium not a member", async () => {
+  const validationResponse = await AuthApi.getMembershipStatus();
+  expect(validationResponse).toBe(false);
+});
+
+const createAndSignInToVerifiedAccount = async (isMember: boolean = false) => {
+  const user: string = newRandomUser();
+  const password: string = newRandomPassword();
+  await signUpAndExpect(user, password, 200, true, isMember);
+  await signInAndExpect(user, password, 200);
+};
+
 const signUpAndExpect = async (
   user: string,
   password: string,
-  expectedCode: number
+  expectedCode: number,
+  isVerified?: boolean,
+  isMember?: boolean
 ) => {
-  const response = await AuthApi.signUp(user, password);
+  const response = await AuthApi.signUp(user, password, isVerified, isMember);
   return expectResponseOrPrint(response, expectedCode);
 };
 
