@@ -52,7 +52,7 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
       premiumStatusElement = <div>Active</div>;
       premiumInteractiveElement = (
         <button
-          className="bg-green-600 text-white rounded-md p-2 w-32"
+          className="bg-blue-600 text-white rounded-md p-2 w-32"
           onClick={onClickToPaymentPortal}
         >
           Manage
