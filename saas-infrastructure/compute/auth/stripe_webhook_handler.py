@@ -34,11 +34,7 @@ class StripeWebhookHandler(AuthHandlerBase):
             print("Attached")
         elif stripe_event.type == "checkout.session.completed":
             print(f"Checkout complete: {stripe_object}")
-            client_reference_id = (
-                stripe_object["client_reference_id"]
-                if "client_reference_id" in stripe_object
-                else "unknown"
-            )
+            client_reference_id = stripe_object.get("client_reference_id", "unknown")
             new_expiry_time = self.enable_client_subscription(client_reference_id)
 
         elif stripe_event.type == "payment_intent.succeeded":

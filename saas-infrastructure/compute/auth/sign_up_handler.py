@@ -1,6 +1,7 @@
 from auth_handler_base import AuthHandlerBase, AuthUser
 import bcrypt
 import uuid
+from create_stripe_customer import create_stripe_customer
 from return_message import new_return_message
 from request_account_verification_token import request_account_verification_token
 
@@ -32,8 +33,17 @@ class SignUpHandler(AuthHandlerBase):
         should_verify = "AUTO_VERIFY" in flags
         should_be_member = "AUTO_MEMBER" in flags
 
+        # Also create a Stripe customer to go with it.
+        stripe_customer_id = create_stripe_customer(key, user)
+
         self.put_user_credentials(
-            key, user, hashed_password_str, should_expire, should_verify, should_be_member
+            key=key,
+            user=user,
+            hashed_password=hashed_password_str,
+            stripe_customer_id=stripe_customer_id,
+            should_expire=should_expire,
+            should_verify=should_verify,
+            should_be_member=should_be_member,
         )
 
         auth_user = AuthUser(key, user, hashed_password_str, should_verify)

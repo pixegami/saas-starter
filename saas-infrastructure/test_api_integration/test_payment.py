@@ -12,6 +12,11 @@ def test_create_payment_session():
     create_payment_session(token, 200)
 
 
+def test_create_portal_session():
+    token = create_user_token()
+    create_payment_portal_session(token, 200)
+
+
 def test_unpaid_membership_validation_fails():
     token = create_user_token()
     validate_membership(token, 402)
@@ -55,6 +60,14 @@ def create_payment_session(
     token: str, expected_status: Union[int, Set[int], None] = 200
 ):
     response = post_request(operation="create_payment_session", token=token)
+    print(response)
+    return assert_status(response, expected_status)
+
+
+def create_payment_portal_session(
+    token: str, expected_status: Union[int, Set[int], None] = 200
+):
+    response = post_request(operation="create_payment_portal_session", token=token)
     print(response)
     return assert_status(response, expected_status)
 

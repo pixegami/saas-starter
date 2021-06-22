@@ -65,6 +65,7 @@ class AuthHandlerBase(HandlerBase):
         key: str,
         user: str,
         hashed_password: str,
+        stripe_customer_id: str,
         should_expire: bool,
         should_verify: bool = False,
         should_be_member: bool = False,
@@ -77,6 +78,7 @@ class AuthHandlerBase(HandlerBase):
             "sk": "CREDENTIALS",
             "user": user,
             "hashed_password": hashed_password,
+            "stripe_customer_id": stripe_customer_id,
             "verified": should_verify,
             "last_activity": int(time.time()),
             "membership_expiry_time": member_expiry,
@@ -180,6 +182,16 @@ class AuthHandlerBase(HandlerBase):
 
     def get_item(self, account_key: str):
         return self.get_item_with_sk(account_key, "CREDENTIALS")
+
+    def get_stripe_customer_id(self, account_key: str):
+        credentials = self.get_item(account_key)
+        customer_id = credentials.get("stripe_customer_id", None)
+
+        if customer_id is None:
+            raise HandlerException(
+                404, "Payment customer ID not found for this customer!"
+            )
+        return customer_id
 
     def get_item_with_sk(self, account_key: str, sk: str):
         table = self.get_user_table()

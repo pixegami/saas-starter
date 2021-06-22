@@ -36,23 +36,6 @@ def test_foo_member():
     assert response.payload["is_verified"] is True
 
 
-def test_foo_member_only():
-    token = create_user_token(is_member=True)
-    foo_request = {"operation": "foo_member"}
-    assert_status(post_request_to_foo(foo_request, token), 200)
-
-
-def test_foo_member_not_authorized():
-    foo_request = {"operation": "foo_member"}
-    assert_status(post_request_to_foo(foo_request), 403)
-
-
-def test_foo_member_not_subscribed():
-    token = create_user_token()
-    foo_request = {"operation": "foo_member"}
-    assert_status(post_request_to_foo(foo_request, token), 402)
-
-
 def test_foo_write_and_get_posts():
     token = create_user_token()
     random_content = f"Hello Random Content {uuid.uuid4().hex[:6]}"

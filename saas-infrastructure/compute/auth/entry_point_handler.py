@@ -1,6 +1,6 @@
+from create_payment_portal_handler import CreatePaymentPortalHandler
 from foo_get_post_handler import FooGetPostHandler
 from foo_get_posts_handler import FooGetPostsHandler
-from foo_member_handler import FooMemberHandler
 from foo_write_post_handler import FooWritePostHandler
 from handler_base import HandlerBase
 from foo_handler import FooHandler
@@ -35,11 +35,11 @@ class EntryPointHandler(HandlerBase):
             "validate_token": ValidateTokenHandler(),
             "create_test_account": CreateTestAccountHandler(),
             "create_payment_session": CreatePaymentSessionHandler(),
+            "create_payment_portal_session": CreatePaymentPortalHandler(),
             "validate_membership": ValidateMembershipHandler(),
             "foo": FooHandler(),
             "foo_write_post": FooWritePostHandler(),
             "foo_get_posts": FooGetPostsHandler(),
-            "foo_member": FooMemberHandler(),
             "foo_get_post": FooGetPostHandler(),
         }
 
