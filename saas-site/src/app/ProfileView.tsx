@@ -36,6 +36,11 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
     PaymentApi.requestCheckoutAndRedirect();
   };
 
+  const onClickToPaymentPortal = () => {
+    setLoadingPremium(true);
+    PaymentApi.requestPaymentPortalAndRedirect();
+  };
+
   let premiumStatusElement;
   let premiumInteractiveElement;
 
@@ -43,16 +48,27 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
     premiumStatusElement = <div className="text-gray-400">Loading</div>;
     premiumInteractiveElement = <div className="loader-dark"></div>;
   } else {
-    const premiumStatusText: string = isPremiumMember ? "Active" : "Inactive";
-    premiumStatusElement = <div>{premiumStatusText}</div>;
-    premiumInteractiveElement = (
-      <button
-        className="bg-blue-600 text-white rounded-md p-2 w-32"
-        onClick={onClickToSubscribe}
-      >
-        Subscribe
-      </button>
-    );
+    if (isPremiumMember) {
+      premiumStatusElement = <div>Active</div>;
+      premiumInteractiveElement = (
+        <button
+          className="bg-green-600 text-white rounded-md p-2 w-32"
+          onClick={onClickToPaymentPortal}
+        >
+          Manage
+        </button>
+      );
+    } else {
+      premiumStatusElement = <div>Inactive</div>;
+      premiumInteractiveElement = (
+        <button
+          className="bg-blue-600 text-white rounded-md p-2 w-32"
+          onClick={onClickToSubscribe}
+        >
+          Subscribe
+        </button>
+      );
+    }
   }
 
   const premiumElement = (

@@ -3,6 +3,7 @@ import BaseApi from "../base/BaseApi";
 import * as jwt from "jsonwebtoken";
 import AuthApi from "../auth/AuthApi";
 import { loadStripe } from "@stripe/stripe-js";
+import { navigate } from "gatsby";
 
 class PaymentApi extends BaseApi {
   private static ENDPOINT: string = "https://api.bonestack.com/auth";
@@ -30,10 +31,29 @@ class PaymentApi extends BaseApi {
     );
   }
 
+  public static requestPaymentPortal(): Promise<ApiResponse> {
+    console.log(
+      "Creating Payment Portal Session with token " +
+        AuthApi.getSession().getToken()
+    );
+    return this.getRequest(
+      "create_payment_portal_session",
+      {},
+      AuthApi.getSession().getToken()
+    );
+  }
+
   public static async requestCheckoutAndRedirect(): Promise<void> {
     const response = await this.requestCheckout();
     console.log("Payment session created: " + response.payload);
     await this.redirectToCheckout(response.payload["session_id"]);
+  }
+
+  public static async requestPaymentPortalAndRedirect(): Promise<void> {
+    const response = await this.requestPaymentPortal();
+    console.log("Payment portal created: " + response.payload);
+    const externalUrl = response.payload["session_url"];
+    navigate(externalUrl);
   }
 
   // TODO: Add response transformer for PaymentResponse.
