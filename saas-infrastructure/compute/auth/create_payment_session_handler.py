@@ -3,6 +3,7 @@ import os
 from validate_token import validate_token
 from auth_handler_base import AuthHandlerBase
 from return_message import new_return_message
+import urllib.parse
 
 
 class CreatePaymentSessionHandler(AuthHandlerBase):
@@ -23,9 +24,15 @@ class CreatePaymentSessionHandler(AuthHandlerBase):
         if return_endpoint is None:
             return_endpoint = self.frontend_url
 
+        # success_url = urllib.parse.urljoin(
+        #     return_endpoint, f"premium_success?session_id={'{CHECKOUT_SESSION_ID}'}"
+        # )
+
+        profile_url = urllib.parse.urljoin(return_endpoint, "profile")
+
         checkout_session = stripe.checkout.Session.create(
-            success_url=f"{return_endpoint}/success?session_id={'{CHECKOUT_SESSION_ID}'}",
-            cancel_url=f"{return_endpoint}/cancel",
+            success_url=profile_url,
+            cancel_url=profile_url,
             client_reference_id=account_key,
             customer_email=email,
             payment_method_types=["card"],
