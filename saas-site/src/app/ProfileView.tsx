@@ -1,11 +1,9 @@
 import { loadStripe } from "@stripe/stripe-js";
-import { Link } from "gatsby";
+import { Link, navigate } from "gatsby";
 import * as React from "react";
+import * as AuthURL from "../components/auth/route/AuthURL";
 import AuthApi from "../api/auth/AuthApi";
 import PaymentApi from "../api/payment/PaymentApi";
-import FooView from "../components/foo/FooView";
-import FooPostGallery from "../components/foo/posts/FooPostGallery";
-import FooWritePostView from "../components/foo/posts/FooWritePostView";
 import withBoxStyling from "../components/hoc/withBoxStyling";
 
 interface ProfileViewProps {
@@ -16,6 +14,12 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
   const [isLoadingPremium, setLoadingPremium] = React.useState(true);
   const [isPremiumMember, setPremiumMember] = React.useState(false);
 
+  const [
+    isLoadingVerificationStatus,
+    setLoadingVerificationStatus,
+  ] = React.useState(true);
+  const [isVerified, setVerified] = React.useState(false);
+
   React.useEffect(() => {
     let isMounted = true;
 
@@ -23,6 +27,13 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
       if (isMounted) {
         setPremiumMember(isMember);
         setLoadingPremium(false);
+      }
+    });
+
+    AuthApi.getVerificationStatusAsBoolean().then((isVerified) => {
+      if (isMounted) {
+        setVerified(isVerified);
+        setLoadingVerificationStatus(false);
       }
     });
 
@@ -71,6 +82,38 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
     }
   }
 
+  const onClickToVerify = () => {
+    setLoadingVerificationStatus(false);
+    navigate(AuthURL.VERIFY_ACCOUNT_REQUEST);
+  };
+
+  let verificationStatusElement;
+  let verificationInteractiveElement;
+
+  if (isLoadingVerificationStatus) {
+    verificationStatusElement = <div className="text-gray-400">Loading</div>;
+    verificationInteractiveElement = <div className="loader-dark"></div>;
+  } else {
+    if (isVerified) {
+      verificationStatusElement = (
+        <div className="text-green-700">Verified</div>
+      );
+      verificationInteractiveElement = null;
+    } else {
+      verificationStatusElement = (
+        <div className="text-red-700">Not Verified</div>
+      );
+      verificationInteractiveElement = (
+        <button
+          className="bg-blue-600 text-white rounded-md p-2 w-32"
+          onClick={onClickToVerify}
+        >
+          Verify
+        </button>
+      );
+    }
+  }
+
   const premiumElement = (
     <div className="bg-gray-50 p-4 rounded-md flex justify-between mb-2">
       <div className="my-auto">
@@ -86,14 +129,10 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
     <div className="bg-gray-50 p-4 rounded-md flex justify-between">
       <div className="my-auto">
         <div className="text-gray-600 text-sm">Verification Status</div>
-        <div className="text-lg font-light">Unverified</div>
+        <div className="text-lg font-light">{verificationStatusElement}</div>
       </div>
 
-      <div className="my-auto">
-        <button className="bg-blue-600 text-white rounded-md p-2 w-32">
-          Verify
-        </button>
-      </div>
+      <div className="my-auto">{verificationInteractiveElement}</div>
     </div>
   );
 

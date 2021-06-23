@@ -20,7 +20,7 @@ const AuthRegister: React.FC<SubComponentBaseProps> = (props) => {
     props.onApiResponse(result);
     if (result.status == 200) {
       console.log("Register succeeded");
-      navigate(AuthURL.VERIFY_ACCOUNT_REQUEST);
+      navigate(AuthURL.HOME);
     }
   };
 

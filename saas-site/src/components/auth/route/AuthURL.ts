@@ -1,3 +1,4 @@
+export const HOME: string = "/app/";
 export const VERIFY_ACCOUNT: string = "/app/verify_account";
 export const VERIFY_ACCOUNT_REQUEST: string = "/app/verify_account_request";
 export const SIGN_IN: string = "/app/sign_in";

@@ -144,9 +144,26 @@ class AuthApi extends BaseApi {
     );
   }
 
+  public static async getVerificationStatus(): Promise<ApiResponse> {
+    console.log("Get verification status with " + this.getSession().getToken());
+    return this.getRequest(
+      "get_verification_status",
+      {},
+      this.getSession().getToken()
+    );
+  }
+
   public static async getMembershipStatus(): Promise<boolean> {
     const validationResponse = await AuthApi.validateMembership();
     return validationResponse.status === 200;
+  }
+
+  public static async getVerificationStatusAsBoolean(): Promise<boolean> {
+    const validationResponse = await AuthApi.getVerificationStatus();
+    return (
+      validationResponse.status === 200 &&
+      validationResponse.payload["verified"]
+    );
   }
 
   public static signOut(): void {

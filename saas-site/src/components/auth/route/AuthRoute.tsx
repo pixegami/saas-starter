@@ -28,21 +28,10 @@ const AuthRoute: React.FC<AuthRouteProps> = (props) => {
     return <RouteElement {...props} />;
   }
 
-  // Is verified (and by definition, signed in).
-  if (AuthApi.isAccountVerified()) {
+  // Is signed in.
+  if (AuthApi.isSignedIn()) {
     console.log("AUTH GUARD: PASSED");
     return <RouteElement {...props} />;
-  }
-
-  // If signed in (not verified).
-  if (AuthApi.isSignedIn()) {
-    if (props.path == AuthURL.VERIFY_ACCOUNT_REQUEST) {
-      return <RouteElement {...props} />;
-    } else {
-      console.log("AUTH GUARD: DEFLECTED");
-      navigate(AuthURL.VERIFY_ACCOUNT_REQUEST);
-      return null;
-    }
   }
 
   console.log("AUTH GUARD: DEFLECTED");
