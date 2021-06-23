@@ -2,6 +2,7 @@ from create_payment_portal_handler import CreatePaymentPortalHandler
 from foo_get_post_handler import FooGetPostHandler
 from foo_get_posts_handler import FooGetPostsHandler
 from foo_write_post_handler import FooWritePostHandler
+from get_verification_status_handler import GetVerificationStatusHandler
 from handler_base import HandlerBase
 from foo_handler import FooHandler
 from sign_in_handler import SignInHandler
@@ -37,6 +38,7 @@ class EntryPointHandler(HandlerBase):
             "create_payment_session": CreatePaymentSessionHandler(),
             "create_payment_portal_session": CreatePaymentPortalHandler(),
             "validate_membership": ValidateMembershipHandler(),
+            "get_verification_status": GetVerificationStatusHandler(),
             "foo": FooHandler(),
             "foo_write_post": FooWritePostHandler(),
             "foo_get_posts": FooGetPostsHandler(),

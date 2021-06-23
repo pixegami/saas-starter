@@ -147,10 +147,14 @@ class AuthHandlerBase(HandlerBase):
             },
         )
 
+    def get_verification_status(self, key: str) -> bool:
+        auth_user = self.get_credentials_from_key(key)
+        return auth_user.verified
+
     def delete_key(self, key: str, sk: str):
         self.get_user_table().delete_item(Key={"pk": key, "sk": sk})
 
-    def get_user_credentials(self, user: str) -> Tuple[AuthUser, dict]:
+    def get_user_credentials(self, user: str) -> AuthUser:
         # User is not case sensitive.
         try:
             payload = self.get_item_from_gsi("user_index", "user", user.lower())
@@ -158,7 +162,7 @@ class AuthHandlerBase(HandlerBase):
         except HandlerException as e:
             raise AuthExceptions.USER_NOT_FOUND if e.status_code == 404 else e
 
-    def get_credentials_from_key(self, account_key: str) -> Tuple[AuthUser, dict]:
+    def get_credentials_from_key(self, account_key: str) -> AuthUser:
         payload = self.get_item(account_key)
         return AuthUser.from_payload(payload)
 

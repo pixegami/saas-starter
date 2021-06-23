@@ -90,6 +90,17 @@ def sign_in_max_attempt(
     return sign_in(user, password, expected_status, ["MAX_ATTEMPT"])
 
 
+def get_verification_status(
+    token: str,
+    expected_status: Union[int, Set[int], None] = 200,
+    flags: list = [],
+):
+    response = post_request(
+        operation="get_verification_status", payload={}, extra_flags=flags, token=token
+    )
+    return assert_status(response, expected_status)
+
+
 def assert_status(
     response: ApiResponse, expected_status: Union[int, Set[int], None] = 200
 ):

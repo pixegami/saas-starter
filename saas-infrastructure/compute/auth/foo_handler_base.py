@@ -14,6 +14,7 @@ class ApiResponse:
     def __init__(self, status: int, data: dict):
         self.status = status
         self.data = data
+        self.payload = data.get("payload", None)
 
 
 class FooHandlerBase(HandlerBase):
@@ -150,9 +151,15 @@ class FooHandlerBase(HandlerBase):
 
     def is_member(self, token: str):
         response = self.generic_request(
-            "POST", operation="validate_membership", token=token
+            "GET", operation="validate_membership", token=token
         )
         return response.status == 200
+
+    def is_verified(self, token: str):
+        response = self.generic_request(
+            "GET", operation="get_verification_status", token=token
+        )
+        return response.status == 200 and response.payload["verified"]
 
     def generic_request(
         self,

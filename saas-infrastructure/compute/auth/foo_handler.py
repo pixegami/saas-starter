@@ -17,7 +17,7 @@ class FooHandler(FooHandlerBase):
         # If not member, fail.
         if is_signed_in:
             token = self.token_from_header(event)
-            is_verified = self.payload_from_token(token)["verified"]
+            is_verified = self.is_verified(token)
             is_member = self.is_member(token)
         else:
             is_member = False

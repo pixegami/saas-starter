@@ -19,6 +19,22 @@ def test_sign_up():
     validate(token)
 
 
+def test_can_check_verification_status():
+    user = generate_random_email()
+    password = generate_random_password()
+    sign_up_response = sign_up(user, password)
+    token = sign_up_response.data["payload"]["token"]
+
+    # User hasn't verified, so this should return false.
+    verification_status_response = get_verification_status(token)
+    assert verification_status_response.data["payload"]["verified"] is False
+
+    # Now verify the account and check again.
+    verify_user(token)
+    verification_status_response = get_verification_status(token)
+    assert verification_status_response.data["payload"]["verified"] is True
+
+
 def test_verify_account():
     # A user can sign-up, and request account verification.
 
@@ -27,6 +43,10 @@ def test_verify_account():
     sign_up_response = sign_up(user, password, 200)
 
     token = sign_up_response.data["payload"]["token"]
+    verify_user(token)
+
+
+def verify_user(token: str):
     token_payload = jwt.decode(token, options={"verify_signature": False})
     account_key = token_payload["account_key"]
     response = request_account_verification(account_key, 200)
