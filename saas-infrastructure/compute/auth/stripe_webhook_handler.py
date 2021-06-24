@@ -37,6 +37,10 @@ class StripeWebhookHandler(AuthHandlerBase):
             client_reference_id = stripe_object.get("client_reference_id", "unknown")
             new_expiry_time = self.enable_client_subscription(client_reference_id)
 
+        elif stripe_event.type == "customer.subscription.updated":
+            customer_id = stripe_object.get("customer", "unknown")
+            self.cancel_user_membership(customer_id)
+
         elif stripe_event.type == "payment_intent.succeeded":
             print(f"Invoice Paid: {stripe_object}")
 

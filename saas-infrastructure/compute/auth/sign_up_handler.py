@@ -1,3 +1,4 @@
+from typing import List
 from auth_handler_base import AuthHandlerBase, AuthUser
 import bcrypt
 import uuid
@@ -16,7 +17,7 @@ class SignUpHandler(AuthHandlerBase):
         # Username/email should not be case sensitive.
         email = user = str(request_data["user"]).lower()
         password = request_data["password"]
-        flags = request_data["flags"] if "flags" in request_data else []
+        flags: List[str] = request_data["flags"] if "flags" in request_data else []
 
         # Validate at this user and password can be created.
         self.validator.email(user)
@@ -33,8 +34,16 @@ class SignUpHandler(AuthHandlerBase):
         should_verify = "AUTO_VERIFY" in flags
         should_be_member = "AUTO_MEMBER" in flags
 
+        override_customer_id = None
+        for flag in flags:
+            if flag.startswith("OVERRIDE_CUSTOMER_ID"):
+                override_customer_id = flag.split(":")[1]
+
         # Also create a Stripe customer to go with it.
-        stripe_customer_id = create_stripe_customer(key, user)
+        if override_customer_id:
+            stripe_customer_id = override_customer_id
+        else:
+            stripe_customer_id = create_stripe_customer(key, user)
 
         self.put_user_credentials(
             key=key,

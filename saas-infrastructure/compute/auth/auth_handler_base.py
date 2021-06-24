@@ -7,6 +7,7 @@ from handler_base import HandlerBase
 from handler_exception import HandlerException
 from input_validator import InputValidator
 from auth_exceptions import AuthExceptions
+from membership_status import MembershipStatus
 
 
 class AuthUser:
@@ -141,10 +142,19 @@ class AuthHandlerBase(HandlerBase):
     def update_user_membership(self, key: str, new_expiry_time: int):
         return self.get_user_table().update_item(
             Key={"pk": key, "sk": "CREDENTIALS"},
-            UpdateExpression="SET membership_expiry_time = :v1",
-            ExpressionAttributeValues={
-                ":v1": new_expiry_time,
-            },
+            UpdateExpression="SET membership_expiry_time = :v1, auto_renew = :v2",
+            ExpressionAttributeValues={":v1": new_expiry_time, ":v2": True},
+        )
+
+    def cancel_user_membership(self, customer_id: str):
+        item = self.get_item_from_gsi(
+            "stripe_customer_index", "stripe_customer_id", customer_id
+        )
+
+        return self.get_user_table().update_item(
+            Key={"pk": item["pk"], "sk": "CREDENTIALS"},
+            UpdateExpression="SET auto_renew = :v1",
+            ExpressionAttributeValues={":v1": False},
         )
 
     def get_verification_status(self, key: str) -> bool:
@@ -212,12 +222,18 @@ class AuthHandlerBase(HandlerBase):
                 return
         raise AuthExceptions.USER_ALREADY_EXISTS
 
-    def validate_membership_status(self, account_key: str) -> bool:
+    def get_membership_status(self, account_key: str) -> MembershipStatus:
         item = self.get_item(account_key)
         if "membership_expiry_time" in item:
             membership_expiry_time = int(item["membership_expiry_time"])
             if int(time.time()) > membership_expiry_time:
                 raise AuthExceptions.MEMBERSHIP_NOT_VALID
+
+            # Get auto-renew status.
+            membership_status = MembershipStatus()
+            membership_status.expiry_time = membership_expiry_time
+            membership_status.auto_renew = item.get("auto_renew", False)
+            return membership_status
         else:
             raise AuthExceptions.MEMBERSHIP_NOT_VALID
 

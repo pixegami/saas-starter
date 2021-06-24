@@ -14,6 +14,9 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
   const [isLoadingPremium, setLoadingPremium] = React.useState(true);
   const [isPremiumMember, setPremiumMember] = React.useState(false);
 
+  const [isAutoRenew, setAutoRenew] = React.useState(false);
+  const [expiryTime, setExpiryTime] = React.useState(0);
+
   const [
     isLoadingVerificationStatus,
     setLoadingVerificationStatus,
@@ -23,9 +26,12 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
   React.useEffect(() => {
     let isMounted = true;
 
-    AuthApi.getMembershipStatus().then((isMember) => {
+    AuthApi.getMembershipStatus().then((memberStatus) => {
       if (isMounted) {
-        setPremiumMember(isMember);
+        setPremiumMember(memberStatus.isMember);
+        setAutoRenew(memberStatus.autoRenew);
+        setExpiryTime(memberStatus.expiryTime);
+        console.log("Set Autorenew to: " + memberStatus.autoRenew);
         setLoadingPremium(false);
       }
     });
@@ -44,7 +50,10 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
 
   const onClickToSubscribe = () => {
     setLoadingPremium(true);
-    PaymentApi.requestCheckoutAndRedirect();
+    PaymentApi.requestCheckoutAndRedirect().catch((r) => {
+      setLoadingPremium(false);
+      console.log(r);
+    });
   };
 
   const onClickToPaymentPortal = () => {
@@ -60,7 +69,11 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
     premiumInteractiveElement = <div className="loader-dark"></div>;
   } else {
     if (isPremiumMember) {
-      premiumStatusElement = <div>Active</div>;
+      premiumStatusElement = (
+        <div>
+          Active [Expiry: {expiryTime} | Renew: {isAutoRenew ? "ON" : "OFF"}]
+        </div>
+      );
       premiumInteractiveElement = (
         <button
           className="bg-blue-600 text-white rounded-md p-2 w-32"
@@ -83,7 +96,7 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
   }
 
   const onClickToVerify = () => {
-    setLoadingVerificationStatus(false);
+    setLoadingVerificationStatus(true);
     navigate(AuthURL.VERIFY_ACCOUNT_REQUEST);
   };
 

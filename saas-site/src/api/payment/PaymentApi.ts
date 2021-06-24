@@ -44,9 +44,14 @@ class PaymentApi extends BaseApi {
   }
 
   public static async requestCheckoutAndRedirect(): Promise<void> {
-    const response = await this.requestCheckout();
-    console.log("Payment session created: " + response.payload);
-    await this.redirectToCheckout(response.payload["session_id"]);
+    try {
+      const response = await this.requestCheckout();
+      console.log("Payment session created: " + response.payload);
+      await this.redirectToCheckout(response.payload["session_id"]);
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
   }
 
   public static async requestPaymentPortalAndRedirect(): Promise<void> {

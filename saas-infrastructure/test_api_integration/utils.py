@@ -33,10 +33,10 @@ class ApiResponse:
 
 
 def sign_up(
-    user: str, password: str, expected_status: Union[int, Set[int], None] = 200
+    user: str, password: str, expected_status: Union[int, Set[int], None] = 200, extra_flags: list=[]
 ):
     response = post_request(
-        operation="sign_up", payload={"user": user, "password": password}
+        operation="sign_up", payload={"user": user, "password": password}, extra_flags=extra_flags
     )
     return assert_status(response, expected_status)
 
@@ -198,6 +198,9 @@ def generate_random_email(base_domain: str = "no-op-test-email.com"):
 
 def generate_random_password():
     return f"test-pass-1A-{uuid.uuid4().hex[:12]}"
+
+def generate_random_customer_id():
+    return f"cus_rand_{uuid.uuid4().hex[:12]}"
 
 
 def get_token_payload(token: str):

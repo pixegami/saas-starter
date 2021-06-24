@@ -12,9 +12,13 @@ class ValidateMembershipHandler(AuthHandlerBase):
 
         token_payload = validate_token(event)
         account_key = token_payload["account_key"]
-        self.validate_membership_status(account_key)
+        membership_status = self.get_membership_status(account_key)
 
-        response_payload = token_payload
+        response_payload = {
+            "token_payload": token_payload,
+            "expiry_time": membership_status.expiry_time,
+            "auto_renew": membership_status.auto_renew,
+        }
 
         return new_return_message(
             200,

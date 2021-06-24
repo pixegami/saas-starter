@@ -77,7 +77,7 @@ const AuthRequestAccountVerification: React.FC<SubComponentBaseProps> = (
       </div>
       {interactiveElement}
       <div className="mt-4">
-        <ApiTextLink linkPath={AuthURL.SIGN_IN} linkText="Back to Sign In" />
+        <ApiTextLink linkPath={AuthURL.HOME} linkText="Back" />
       </div>
     </AuthCommonComponent>
   );

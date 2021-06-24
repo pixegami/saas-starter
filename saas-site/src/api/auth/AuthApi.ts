@@ -3,6 +3,7 @@ import BaseApi from "../base/BaseApi";
 import AuthResponse from "./AuthResponse";
 import AuthSession from "./AuthSession";
 import * as jwt from "jsonwebtoken";
+import AuthMembershipStatus from "./AuthMembershipStatus";
 
 class AuthApi extends BaseApi {
   // Configurable fields.
@@ -153,9 +154,19 @@ class AuthApi extends BaseApi {
     );
   }
 
-  public static async getMembershipStatus(): Promise<boolean> {
+  public static async getMembershipStatus(): Promise<AuthMembershipStatus> {
     const validationResponse = await AuthApi.validateMembership();
-    return validationResponse.status === 200;
+    if (validationResponse.status === 200) {
+      console.log("Validate Member Response:");
+      console.log(validationResponse);
+      return {
+        isMember: true,
+        autoRenew: validationResponse.payload["auto_renew"],
+        expiryTime: validationResponse.payload["expiry_time"],
+      };
+    } else {
+      return { isMember: false, autoRenew: false, expiryTime: 0 };
+    }
   }
 
   public static async getVerificationStatusAsBoolean(): Promise<boolean> {

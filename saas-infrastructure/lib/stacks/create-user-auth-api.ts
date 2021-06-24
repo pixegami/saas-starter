@@ -56,8 +56,17 @@ const createUserAuthApi = (
     },
   };
 
+  const stripeCustomerIndex: ddb.GlobalSecondaryIndexProps = {
+    indexName: "stripe_customer_index",
+    partitionKey: {
+      name: "stripe_customer_id",
+      type: ddb.AttributeType.STRING,
+    },
+  };
+
   table.addGlobalSecondaryIndex(userIndex);
   table.addGlobalSecondaryIndex(tokenIndex);
+  table.addGlobalSecondaryIndex(stripeCustomerIndex);
 
   const authApiProps: AuthApiProps = {
     name: "auth",
