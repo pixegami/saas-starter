@@ -146,7 +146,7 @@ class AuthHandlerBase(HandlerBase):
             ExpressionAttributeValues={":v1": new_expiry_time, ":v2": True},
         )
 
-    def cancel_user_membership(self, customer_id: str):
+    def update_user_auto_renew(self, customer_id: str, active: bool):
         item = self.get_item_from_gsi(
             "stripe_customer_index", "stripe_customer_id", customer_id
         )
@@ -154,7 +154,7 @@ class AuthHandlerBase(HandlerBase):
         return self.get_user_table().update_item(
             Key={"pk": item["pk"], "sk": "CREDENTIALS"},
             UpdateExpression="SET auto_renew = :v1",
-            ExpressionAttributeValues={":v1": False},
+            ExpressionAttributeValues={":v1": active},
         )
 
     def get_verification_status(self, key: str) -> bool:

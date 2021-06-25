@@ -21,24 +21,31 @@ class PaymentApi extends BaseApi {
   }
 
   public static requestCheckout(): Promise<ApiResponse> {
+    const returnEndpoint: string = this.getReturnEndpoint();
     console.log(
-      "Creating Checkout Session with token " + AuthApi.getSession().getToken()
+      "Creating Checkout Session with token " +
+        AuthApi.getSession().getToken() +
+        " and return_endpoint: " +
+        returnEndpoint
     );
-    return this.getRequest(
+    return this.postRequest(
       "create_payment_session",
-      {},
+      { return_endpoint: returnEndpoint },
       AuthApi.getSession().getToken()
     );
   }
 
   public static requestPaymentPortal(): Promise<ApiResponse> {
+    const returnEndpoint: string = this.getReturnEndpoint();
     console.log(
       "Creating Payment Portal Session with token " +
-        AuthApi.getSession().getToken()
+        AuthApi.getSession().getToken() +
+        " and return_endpoint: " +
+        returnEndpoint
     );
-    return this.getRequest(
+    return this.postRequest(
       "create_payment_portal_session",
-      {},
+      { return_endpoint: returnEndpoint },
       AuthApi.getSession().getToken()
     );
   }
@@ -52,6 +59,10 @@ class PaymentApi extends BaseApi {
       console.log(e);
       throw e;
     }
+  }
+
+  public static getReturnEndpoint(): string {
+    return window.location.origin + "/app/";
   }
 
   public static async requestPaymentPortalAndRedirect(): Promise<void> {

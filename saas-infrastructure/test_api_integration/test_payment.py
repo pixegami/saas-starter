@@ -9,12 +9,12 @@ def setup():
 
 
 def test_create_payment_session():
-    token = create_user_token(generate_random_customer_id())
+    token = create_user_token()
     create_payment_session(token, 200)
 
 
 def test_create_portal_session():
-    token = create_user_token(generate_random_customer_id())
+    token = create_user_token()
     create_payment_portal_session(token, 200)
 
 
@@ -29,7 +29,14 @@ def test_paid_membership_validation():
 
 def test_paid_membership_cancellation():
     token, customer_id = setup_paid_membership()
-    trigger_cancel_auto_renew_event(customer_id)
+    trigger_subscription_cancel_at_end_event(customer_id)
+    response = validate_membership(token, 200)
+    assert response.payload["auto_renew"] is False
+
+
+def test_paid_membership_deletion():
+    token, customer_id = setup_paid_membership()
+    trigger_subscription_deleted_event(customer_id)
     response = validate_membership(token, 200)
     assert response.payload["auto_renew"] is False
 
@@ -61,11 +68,15 @@ def trigger_checkout_event(account_key: str):
     trigger_event(webhook_event)
 
 
-def trigger_cancel_subscription_event(customer_id: str):
+def trigger_subscription_deleted_event(customer_id: str):
+    webhook_event = get_event("customer.subscription.deleted.json")
+    webhook_event["data"]["object"]["cancel_at_period_end"] = True
+    webhook_event["data"]["object"]["customer"] = customer_id
+    trigger_event(webhook_event)
     pass
 
 
-def trigger_cancel_auto_renew_event(customer_id: str):
+def trigger_subscription_cancel_at_end_event(customer_id: str):
     webhook_event = get_event("customer.subscription.updated.json")
     webhook_event["data"]["object"]["cancel_at_period_end"] = True
     webhook_event["data"]["object"]["customer"] = customer_id
@@ -102,7 +113,11 @@ def create_user_token(override_customer_id: str = None):
 def create_payment_session(
     token: str, expected_status: Union[int, Set[int], None] = 200
 ):
-    response = post_request(operation="create_payment_session", token=token)
+    response = post_request(
+        operation="create_payment_session",
+        payload={"return_endpoint": "http://127.0.0.1:8000/app"},
+        token=token,
+    )
     print(response)
     return assert_status(response, expected_status)
 
@@ -110,7 +125,11 @@ def create_payment_session(
 def create_payment_portal_session(
     token: str, expected_status: Union[int, Set[int], None] = 200
 ):
-    response = post_request(operation="create_payment_portal_session", token=token)
+    response = post_request(
+        operation="create_payment_portal_session",
+        payload={"return_endpoint": "http://127.0.0.1:8000/app"},
+        token=token,
+    )
     print(response)
     return assert_status(response, expected_status)
 

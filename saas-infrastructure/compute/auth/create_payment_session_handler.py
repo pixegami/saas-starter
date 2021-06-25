@@ -9,7 +9,7 @@ import urllib.parse
 class CreatePaymentSessionHandler(AuthHandlerBase):
     def __init__(self):
         super().__init__()
-        self.schema = {"return_endpoint": False, "flags": False}
+        self.schema = {"return_endpoint": True, "flags": False}
         stripe.api_key = "sk_test_dVPxaaBuDLylUmztkCmomO0p00dyqHOvDf"
         self.frontend_url: str = os.getenv("FRONTEND_URL", "UNKNOWN")
 
@@ -21,6 +21,7 @@ class CreatePaymentSessionHandler(AuthHandlerBase):
         customer_id = self.get_stripe_customer_id(account_key)
 
         price_id = "price_1Ipw2ECCoJYujIqgPAGPkuYZ"
+
         return_endpoint = request_data.get("return_endpoint", None)
         if return_endpoint is None:
             return_endpoint = self.frontend_url
@@ -51,6 +52,7 @@ class CreatePaymentSessionHandler(AuthHandlerBase):
             "token_payload": token_payload,
             "account_key": account_key,
             "email": email,
+            "return_url": profile_url,
         }
 
         return new_return_message(

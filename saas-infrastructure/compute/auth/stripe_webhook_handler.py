@@ -38,8 +38,15 @@ class StripeWebhookHandler(AuthHandlerBase):
             new_expiry_time = self.enable_client_subscription(client_reference_id)
 
         elif stripe_event.type == "customer.subscription.updated":
+
             customer_id = stripe_object.get("customer", "unknown")
-            self.cancel_user_membership(customer_id)
+            cancel_at_period_end = stripe_object.get("cancel_at_period_end", False)
+            self.update_user_auto_renew(customer_id, not cancel_at_period_end)
+
+        elif stripe_event.type == "customer.subscription.deleted":
+
+            customer_id = stripe_object.get("customer", "unknown")
+            self.update_user_auto_renew(customer_id, False)
 
         elif stripe_event.type == "payment_intent.succeeded":
             print(f"Invoice Paid: {stripe_object}")
@@ -52,7 +59,6 @@ class StripeWebhookHandler(AuthHandlerBase):
             "event_type": stripe_event.type,
             "client_id": client_reference_id,
             "new_expiry_time": new_expiry_time,
-            "data.object": stripe_object,
         }
 
         return new_return_message(

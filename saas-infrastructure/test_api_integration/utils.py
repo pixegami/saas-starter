@@ -33,10 +33,15 @@ class ApiResponse:
 
 
 def sign_up(
-    user: str, password: str, expected_status: Union[int, Set[int], None] = 200, extra_flags: list=[]
+    user: str,
+    password: str,
+    expected_status: Union[int, Set[int], None] = 200,
+    extra_flags: list = [],
 ):
     response = post_request(
-        operation="sign_up", payload={"user": user, "password": password}, extra_flags=extra_flags
+        operation="sign_up",
+        payload={"user": user, "password": password},
+        extra_flags=extra_flags,
     )
     return assert_status(response, expected_status)
 
@@ -177,6 +182,7 @@ def generic_request(
         )
     else:
         encoded_request_data = json.dumps(request_data)
+        print(f"Sending request {method} with data {encoded_request_data}.")
         response = http.request(
             method, API_ENDPOINT, body=encoded_request_data, headers=headers
         )
@@ -198,6 +204,7 @@ def generate_random_email(base_domain: str = "no-op-test-email.com"):
 
 def generate_random_password():
     return f"test-pass-1A-{uuid.uuid4().hex[:12]}"
+
 
 def generate_random_customer_id():
     return f"cus_rand_{uuid.uuid4().hex[:12]}"
