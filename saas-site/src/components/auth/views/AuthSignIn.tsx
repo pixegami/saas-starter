@@ -6,12 +6,12 @@ import {
   ApiTextLink,
   withApiWrapper,
   SubComponentBaseProps,
-} from "../../api/ApiComponents";
-import AuthResponse from "../../../api/auth/AuthResponse";
+} from "../../util/base_api_components/ApiComponents";
 import { navigate } from "gatsby";
 import * as AuthURL from "../route/AuthURL";
 import { useContext } from "react";
-import AuthContext from "../../../api/auth/AuthContext";
+import AuthContext from "../api/AuthContext";
+import AuthResponse from "../api/AuthResponse";
 
 const AuthSignIn: React.FC<SubComponentBaseProps> = (props) => {
   const auth = useContext(AuthContext);

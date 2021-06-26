@@ -1,9 +1,9 @@
-import ApiResponse from "../base/ApiResponse";
-import BaseApi from "../base/BaseApi";
 import * as jwt from "jsonwebtoken";
-import AuthApi from "../auth/AuthApi";
+import AuthApi from "../../components/auth/api/AuthApi";
 import { loadStripe } from "@stripe/stripe-js";
 import { navigate } from "gatsby";
+import BaseApi from "../util/base_api/BaseApi";
+import ApiResponse from "../util/base_api/ApiResponse";
 
 class PaymentApi extends BaseApi {
   private static ENDPOINT: string = "https://api.bonestack.com/auth";

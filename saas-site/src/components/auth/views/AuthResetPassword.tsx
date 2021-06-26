@@ -1,17 +1,19 @@
 import * as React from "react";
-import AuthApi from "../../../api/auth/AuthApi";
+import AuthApi from "../api/AuthApi";
 import AuthCommonComponent from "./AuthCommonComponent";
 import * as AuthURL from "../route/AuthURL";
+
+import { navigate } from "gatsby";
+import { useLocation } from "@reach/router";
+
 import {
   ApiButton,
   ApiStringField,
   ApiTextLink,
-  withApiWrapper,
   SubComponentBaseProps,
-} from "../../api/ApiComponents";
-import { navigate } from "gatsby";
-import ApiResponse from "../../../api/base/ApiResponse";
-import { useLocation } from "@reach/router";
+  withApiWrapper,
+} from "../../util/base_api_components/ApiComponents";
+import ApiResponse from "../../util/base_api/ApiResponse";
 
 const AuthResetPassword: React.FC<SubComponentBaseProps> = (props) => {
   const query = new URLSearchParams(useLocation().search);

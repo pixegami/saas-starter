@@ -1,5 +1,5 @@
 import * as jwt from "jsonwebtoken";
-import { AuthContextState } from "./AuthContext";
+import { AuthContextState } from "../api/AuthContext";
 
 interface AuthSessionProps {
   authState: AuthContextState;

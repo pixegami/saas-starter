@@ -1,14 +1,14 @@
 import * as React from "react";
-import AuthApi from "../../../api/auth/AuthApi";
+import AuthApi from "../api/AuthApi";
 import AuthCommonComponent from "./AuthCommonComponent";
 import * as AuthURL from "../route/AuthURL";
 import {
   ApiButton,
   ApiTextLink,
-  withApiWrapper,
   SubComponentBaseProps,
-} from "../../api/ApiComponents";
-import ApiResponse from "../../../api/base/ApiResponse";
+  withApiWrapper,
+} from "../../util/base_api_components/ApiComponents";
+import ApiResponse from "../../util/base_api/ApiResponse";
 
 const AuthRequestAccountVerification: React.FC<SubComponentBaseProps> = (
   props

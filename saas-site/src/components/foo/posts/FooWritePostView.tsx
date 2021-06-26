@@ -1,17 +1,16 @@
-import { Link, navigate } from "gatsby";
+import { navigate } from "gatsby";
 import * as React from "react";
-import withBoxStyling from "../../hoc/withBoxStyling";
 import * as AuthURL from "../../auth/route/AuthURL";
-import AuthApi from "../../../api/auth/AuthApi";
 import { v4 as uuidv4 } from "uuid";
+import AuthContext from "../../auth/api/AuthContext";
+import { useContext } from "react";
 import {
   SubComponentBaseProps,
   withApiWrapper,
-} from "../../api/ApiComponentWrapper";
-import { FooResponse } from "../../../api/foo/FooResponse";
-import FooApi from "../../../api/foo/FooApi";
-import AuthContext from "../../../api/auth/AuthContext";
-import { useContext } from "react";
+} from "../../util/base_api_components/ApiComponents";
+import { FooResponse } from "../api/FooResponse";
+import FooApi from "../api/FooApi";
+import withBoxStyling from "../../util/functions/withBoxStyling";
 
 interface FooWritePostViewProps extends SubComponentBaseProps {
   setPostRefreshId?(x: string): void;

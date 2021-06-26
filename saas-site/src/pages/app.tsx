@@ -6,8 +6,10 @@ import AuthRoute from "../components/auth/route/AuthRoute";
 import * as AuthViews from "../components/auth/views/AuthViews";
 import * as AuthURL from "../components/auth/route/AuthURL";
 import ProfileView from "../app/ProfileView";
-import AuthContext, { AuthApiContext } from "../api/auth/AuthContext";
-import { AuthStateUtility } from "../api/auth/AuthState";
+import AuthContext, {
+  AuthApiContext,
+} from "../components/auth/api/AuthContext";
+import { AuthStateUtility } from "../components/auth/state/AuthState";
 
 interface FullAuthProps {
   children?: React.ReactNode;

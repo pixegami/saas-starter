@@ -1,5 +1,5 @@
 import * as React from "react";
-import AuthApi from "../../../api/auth/AuthApi";
+import AuthApi from "../api/AuthApi";
 import AuthCommonComponent from "./AuthCommonComponent";
 import * as AuthURL from "../route/AuthURL";
 import {
@@ -8,9 +8,9 @@ import {
   ApiTextLink,
   withApiWrapper,
   SubComponentBaseProps,
-} from "../../api/ApiComponents";
-import AuthResponse from "../../../api/auth/AuthResponse";
+} from "../../util/base_api_components/ApiComponents";
 import { navigate } from "gatsby";
+import AuthResponse from "../api/AuthResponse";
 
 const AuthRegister: React.FC<SubComponentBaseProps> = (props) => {
   const emailField = ApiStringField.fromHook("Email", React.useState(""));

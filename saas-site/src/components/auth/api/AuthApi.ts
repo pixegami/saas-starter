@@ -1,9 +1,8 @@
-import ApiResponse from "../base/ApiResponse";
-import BaseApi from "../base/BaseApi";
+import ApiResponse from "../../util/base_api/ApiResponse";
 import AuthResponse from "./AuthResponse";
-import AuthSession from "./AuthSession";
-import * as jwt from "jsonwebtoken";
+import AuthSession from "../state/AuthSession";
 import AuthMembershipStatus from "./AuthMembershipStatus";
+import BaseApi from "../../util/base_api/BaseApi";
 
 class AuthApi extends BaseApi {
   // Configurable fields.

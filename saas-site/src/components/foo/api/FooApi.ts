@@ -1,5 +1,4 @@
-import AuthApi from "../auth/AuthApi";
-import BaseApi from "../base/BaseApi";
+import BaseApi from "../../util/base_api/BaseApi";
 import { FooResponse, withFooResponse } from "./FooResponse";
 
 class FooApi extends BaseApi {

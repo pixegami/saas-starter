@@ -1,9 +1,8 @@
 import PaymentApi from "./PaymentApi";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
-import * as jwt from "jsonwebtoken";
-import ApiResponse from "../base/ApiResponse";
-import AuthApi from "../auth/AuthApi";
+import ApiResponse from "../util/base_api/ApiResponse";
+import AuthApi from "../auth/api/AuthApi";
 
 beforeEach(async () => {
   // HTTP Adapter required to solve CORS error.

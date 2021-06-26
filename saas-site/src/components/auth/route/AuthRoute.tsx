@@ -1,10 +1,9 @@
 import React from "react";
 import { navigate } from "gatsby";
-import AuthApi from "../../../api/auth/AuthApi";
 import AuthRouteLayout from "./AuthRouteLayout";
 import * as AuthURL from "./AuthURL";
 import { useContext } from "react";
-import AuthContext from "../../../api/auth/AuthContext";
+import AuthContext from "../api/AuthContext";
 
 interface AuthRouteProps {
   component: any;
@@ -32,7 +31,7 @@ const AuthRoute: React.FC<AuthRouteProps> = (props) => {
   }
 
   // Is signed in.
-  if (authContext.authStateUtility.hasToken) {
+  if (authContext.state.hasToken) {
     console.log("AUTH GUARD: PASSED");
     return <RouteElement {...props} />;
   }

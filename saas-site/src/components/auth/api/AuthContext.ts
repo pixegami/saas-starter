@@ -1,8 +1,8 @@
 import React from "react";
 import AuthApi from "./AuthApi";
 import AuthResponse from "./AuthResponse";
-import { AuthState, AuthStateUtility } from "./AuthState";
-import withSideEffect from "./withSideEffect";
+import { AuthState, AuthStateUtility } from "../state/AuthState";
+import withSideEffect from "../../util/functions/withSideEffect";
 
 export class AuthApiContext {
   public readonly stateUtil: AuthStateUtility;

@@ -5,11 +5,11 @@ import {
   withApiWrapper,
   SubComponentBaseProps,
   ApiTextLink,
-} from "../../api/ApiComponents";
+} from "../../util/base_api_components/ApiComponents";
 import * as AuthURL from "../route/AuthURL";
 import { navigate } from "gatsby";
 import { useLocation } from "@reach/router";
-import AuthApi from "../../../api/auth/AuthApi";
+import AuthApi from "../api/AuthApi";
 
 enum VerificationStatus {
   LOADING,

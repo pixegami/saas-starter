@@ -2,7 +2,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Link, navigate } from "gatsby";
 import * as React from "react";
 import * as AuthURL from "../components/auth/route/AuthURL";
-import AuthApi from "../api/auth/AuthApi";
+import AuthApi from "../components/auth/api/AuthApi";
 import PaymentApi from "../api/payment/PaymentApi";
 import withBoxStyling from "../components/hoc/withBoxStyling";
 

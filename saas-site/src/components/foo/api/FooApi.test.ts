@@ -1,10 +1,8 @@
 import FooApi from "./FooApi";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
-import * as jwt from "jsonwebtoken";
-import AuthApi from "../auth/AuthApi";
-import AuthResponse from "../auth/AuthResponse";
-import BaseApi from "../base/BaseApi";
+import AuthApi from "../../auth/api/AuthApi";
+import AuthResponse from "../../auth/api/AuthResponse";
 
 beforeEach(async () => {
   // HTTP Adapter required to solve CORS error.

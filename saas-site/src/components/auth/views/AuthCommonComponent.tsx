@@ -1,5 +1,5 @@
 import React from "react";
-import { ApiState } from "../../api/ApiState";
+import { ApiState } from "../../util/base_api/ApiState";
 
 const createErrorElement = (message: string) => {
   return (

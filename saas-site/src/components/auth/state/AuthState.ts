@@ -1,4 +1,4 @@
-import StateUtility from "./StateUtility";
+import StateUtility from "../../util/state/StateUtility";
 
 export interface AuthState {
   hasToken: boolean;

@@ -1,13 +1,13 @@
 import * as React from "react";
-import withBoxStyling from "../../hoc/withBoxStyling";
-import FooPostCard from "./FooPostCard";
 import {
   SubComponentBaseProps,
   withApiWrapper,
-} from "../../api/ApiComponentWrapper";
-import FooApi from "../../../api/foo/FooApi";
-import { FooPost } from "../../../api/foo/FooResponse";
-import ApiRefresher from "../../api/ApiRefresher";
+} from "../../util/base_api_components/ApiComponents";
+import ApiRefresher from "../../util/base_api_components/ApiRefresher";
+import withBoxStyling from "../../util/functions/withBoxStyling";
+import FooApi from "../api/FooApi";
+import { FooPost } from "../api/FooResponse";
+import FooPostCard from "./FooPostCard";
 
 interface FooPostGalleryProps extends SubComponentBaseProps {
   postRefreshId?: string;

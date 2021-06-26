@@ -1,6 +1,5 @@
 import * as React from "react";
-import AuthApi from "../../../api/auth/AuthApi";
-import ApiResponse from "../../../api/base/ApiResponse";
+import AuthApi from "../api/AuthApi";
 import * as AuthURL from "../route/AuthURL";
 import {
   ApiButton,
@@ -8,8 +7,9 @@ import {
   ApiTextLink,
   SubComponentBaseProps,
   withApiWrapper,
-} from "../../api/ApiComponents";
+} from "../../util/base_api_components/ApiComponents";
 import AuthCommonComponent from "./AuthCommonComponent";
+import ApiResponse from "../../util/base_api/ApiResponse";
 
 const AuthForgotPassword: React.FC<SubComponentBaseProps> = (props) => {
   const emailField = ApiStringField.fromHook("Email", React.useState(""));

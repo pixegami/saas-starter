@@ -1,17 +1,17 @@
 import * as React from "react";
-import withBoxStyling from "../hoc/withBoxStyling";
-import FooApi from "../../api/foo/FooApi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheckCircle,
   faTimesCircle,
   faQuestionCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import ApiRefresher from "../api/ApiRefresher";
 import {
   SubComponentBaseProps,
   withApiWrapper,
-} from "../api/ApiComponentWrapper";
+} from "../util/base_api_components/ApiComponents";
+import FooApi from "./api/FooApi";
+import withBoxStyling from "../util/functions/withBoxStyling";
+import ApiRefresher from "../util/base_api_components/ApiRefresher";
 
 interface ServiceResponseProps {
   fooIsSignedIn: boolean;
