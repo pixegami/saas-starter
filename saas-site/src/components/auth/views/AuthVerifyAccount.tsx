@@ -52,7 +52,7 @@ const AuthVerifyAccount: React.FC<SubComponentBaseProps> = (props) => {
   }, []);
 
   const actionButton = (
-    <ApiButton label="Sign In" onClick={() => navigate(AuthURL.SIGN_IN)} />
+    <ApiButton label="Back" onClick={() => navigate(AuthURL.HOME)} />
   );
 
   const pageLabel: string = "Account Verification";

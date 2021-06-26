@@ -38,7 +38,7 @@ export class AuthStateUtility extends StateUtility<AuthState> {
     const newState: AuthState = {
       ...this.newDefaultState(),
       token: x.token,
-      hasToken: true,
+      hasToken: x.token ? true : false,
     };
     return newState;
   }
@@ -50,7 +50,7 @@ export class AuthStateUtility extends StateUtility<AuthState> {
   public withToken(token: string): AuthStateUtility {
     const newRawState: AuthState = {
       ...this.state,
-      hasToken: true,
+      hasToken: token ? true : false,
       token: token,
     };
     return new AuthStateUtility(newRawState);

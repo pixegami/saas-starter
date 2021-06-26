@@ -13,8 +13,13 @@ import { navigate } from "gatsby";
 import AuthResponse from "../api/AuthResponse";
 
 const AuthRegister: React.FC<SubComponentBaseProps> = (props) => {
-  const emailField = ApiStringField.fromHook("Email", React.useState(""));
-  const passwordField = ApiStringField.fromHook("Password", React.useState(""));
+  const emailField = ApiStringField.emailFromHook(
+    React.useState(AuthApi.AUTO_TEST_USER)
+  );
+
+  const passwordField = ApiStringField.passwordFromHook(
+    React.useState(AuthApi.AUTO_TEST_PASS)
+  );
 
   const onRegisterSuccess = (result: AuthResponse) => {
     props.onApiResponse(result);

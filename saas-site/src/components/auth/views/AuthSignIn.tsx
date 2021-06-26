@@ -12,11 +12,17 @@ import * as AuthURL from "../route/AuthURL";
 import { useContext } from "react";
 import AuthContext from "../api/AuthContext";
 import AuthResponse from "../api/AuthResponse";
+import AuthApi from "../api/AuthApi";
 
 const AuthSignIn: React.FC<SubComponentBaseProps> = (props) => {
   const auth = useContext(AuthContext);
-  const emailField = ApiStringField.fromHook("Email", React.useState(""));
-  const passwordField = ApiStringField.fromHook("Password", React.useState(""));
+  const emailField = ApiStringField.emailFromHook(
+    React.useState(AuthApi.AUTO_TEST_USER)
+  );
+
+  const passwordField = ApiStringField.passwordFromHook(
+    React.useState(AuthApi.AUTO_TEST_PASS)
+  );
 
   const onSignInSuccess = (result: AuthResponse) => {
     props.onApiResponse(result);
@@ -59,19 +65,32 @@ const AuthSignIn: React.FC<SubComponentBaseProps> = (props) => {
     </div>
   );
 
-  return (
-    <AuthCommonComponent header="Sign in." apiState={props.apiState}>
-      {emailField.asComponent(isDisabled)}
-      {passwordField.asComponent(isDisabled)}
-      {linkToRecoverPassword}
-      <ApiButton
-        label="Sign In"
-        onClick={onSignIn}
+  const linkToHome = (
+    <div className="mt-4">
+      <ApiTextLink
         isDisabled={isDisabled}
-        isLoading={isDisabled}
+        linkText="Back"
+        linkPath={AuthURL.HOME}
       />
-      {linkToRegister}
-    </AuthCommonComponent>
+    </div>
+  );
+
+  return (
+    <div>
+      <AuthCommonComponent header="Sign in." apiState={props.apiState}>
+        {emailField.asComponent(isDisabled)}
+        {passwordField.asComponent(isDisabled)}
+        {linkToRecoverPassword}
+        <ApiButton
+          label="Sign In"
+          onClick={onSignIn}
+          isDisabled={isDisabled}
+          isLoading={isDisabled}
+        />
+        {linkToRegister}
+      </AuthCommonComponent>
+      {linkToHome}
+    </div>
   );
 };
 
