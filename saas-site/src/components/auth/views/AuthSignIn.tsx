@@ -1,5 +1,4 @@
 import * as React from "react";
-import AuthApi from "../../../api/auth/AuthApi";
 import AuthCommonComponent from "./AuthCommonComponent";
 import {
   ApiButton,
@@ -11,8 +10,11 @@ import {
 import AuthResponse from "../../../api/auth/AuthResponse";
 import { navigate } from "gatsby";
 import * as AuthURL from "../route/AuthURL";
+import { useContext } from "react";
+import AuthContext from "../../../api/auth/AuthContext";
 
 const AuthSignIn: React.FC<SubComponentBaseProps> = (props) => {
+  const authContext = useContext(AuthContext);
   const emailField = ApiStringField.fromHook("Email", React.useState(""));
   const passwordField = ApiStringField.fromHook("Password", React.useState(""));
 
@@ -27,7 +29,8 @@ const AuthSignIn: React.FC<SubComponentBaseProps> = (props) => {
   const onSignIn = () => {
     console.log("Sign in with ", emailField.value, passwordField.value);
     props.onApiRequest();
-    AuthApi.signIn(emailField.value, passwordField.value)
+    authContext.authApi
+      .signIn(emailField.value, passwordField.value)
       .then(onSignInSuccess)
       .catch(props.onApiFault);
   };

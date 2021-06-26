@@ -10,6 +10,8 @@ import {
 } from "../../api/ApiComponentWrapper";
 import { FooResponse } from "../../../api/foo/FooResponse";
 import FooApi from "../../../api/foo/FooApi";
+import AuthContext, { AuthContextState } from "../../../api/auth/AuthContext";
+import { useContext } from "react";
 
 interface FooWritePostViewProps extends SubComponentBaseProps {
   setPostRefreshId?(x: string): void;
@@ -119,13 +121,13 @@ const PostDisabledView: React.FC<FooWritePostViewProps> = (props) => {
     </div>
   );
 };
-
 const FooWritePostView: React.FC<FooWritePostViewProps> = (props) => {
-  const isSignedIn: boolean = AuthApi.isSignedIn();
+  const authContext = useContext(AuthContext);
+  const isSignedIn: boolean = authContext.authState.hasToken; //AuthApi.isSignedIn();
   const postView = isSignedIn ? (
-    <PostEnabledView {...props} />
+    <PostEnabledView {...props} key="postEnabledView" />
   ) : (
-    <PostDisabledView {...props} />
+    <PostDisabledView {...props} key="postDisabledView" />
   );
 
   return (

@@ -1,4 +1,10 @@
 import * as jwt from "jsonwebtoken";
+import { AuthContextState } from "./AuthContext";
+
+interface AuthSessionProps {
+  authState: AuthContextState;
+  setAuthState: (x: AuthContextState) => void;
+}
 
 class AuthSession {
   private static SESSION_STORAGE_NAME: string = "ss_pixegami_auth_session";
@@ -15,11 +21,41 @@ class AuthSession {
   private userAccountKey: string | undefined;
   private tokenPayload: any;
 
-  public setToken(token: string): AuthSession {
-    this.token = token;
-    this.setTokenPayloadFromToken(token);
-    return this;
+  private authState: AuthContextState;
+  private setAuthState: (x: AuthContextState) => void;
+
+  constructor(props: AuthSessionProps) {
+    this.authState = props.authState;
+    this.setAuthState = props.setAuthState;
   }
+
+  public static restoreOrNew(props: AuthSessionProps): AuthSession {
+    // Try loading it from storage.
+    const sessionString = this.IS_BROWSER
+      ? window.localStorage.getItem(AuthSession.SESSION_STORAGE_NAME)
+      : null;
+
+    const authSession: AuthSession = new AuthSession(props);
+
+    if (sessionString !== null && sessionString.length > 0) {
+      // Parse the session.
+      console.log(`Loading Session from Memory: ${sessionString}`);
+      const jsonObject = JSON.parse(sessionString);
+      // authSession.setToken(jsonObject.token);
+      return authSession;
+    } else {
+      // Create a new empty session.
+      console.log(`Creating new session.`);
+      return authSession;
+    }
+  }
+
+  // public setToken(token: string): AuthSession {
+  //   this.token = token;
+  //   this.setTokenPayloadFromToken(token);
+  //   this.setAuthState({ ...this.authState, token: token, hasToken: true });
+  //   return this;
+  // }
 
   public getToken(): string | undefined {
     return this.token;
@@ -75,23 +111,6 @@ class AuthSession {
     return payload.hasOwnProperty(key) ? payload[key] : defaultValue;
   }
 
-  public static restoreOrNew(): AuthSession {
-    // Try loading it from storage.
-    const sessionString = this.IS_BROWSER
-      ? window.localStorage.getItem(AuthSession.SESSION_STORAGE_NAME)
-      : null;
-
-    if (sessionString !== null && sessionString.length > 0) {
-      // Parse the session.
-      console.log(`Loading Session from Memory: ${sessionString}`);
-      return this.parse(sessionString);
-    } else {
-      // Create a new empty session.
-      console.log(`Creating a new session.`);
-      return new AuthSession();
-    }
-  }
-
   public static clear(): void {
     if (this.IS_BROWSER) {
       window.localStorage.removeItem(this.SESSION_STORAGE_NAME);
@@ -113,13 +132,6 @@ class AuthSession {
   private serialize(): string {
     const jsonObject = { token: this.token };
     return JSON.stringify(jsonObject);
-  }
-
-  private static parse(sessionString: string): AuthSession {
-    const jsonObject = JSON.parse(sessionString);
-    const authSession: AuthSession = new AuthSession();
-    authSession.setToken(jsonObject.token);
-    return authSession;
   }
 }
 

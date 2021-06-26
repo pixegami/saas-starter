@@ -33,7 +33,7 @@ class FooApi extends BaseApi {
     apiName: string,
     params: any
   ): Promise<FooResponse> {
-    const token = AuthApi.getSessionToken();
+    const token = null; // AuthApi.getSessionToken();
     console.log("Calling " + apiName + " with token " + token);
     const responsePromise = this.getRequest(apiName, params, token);
     return withFooResponse(responsePromise);

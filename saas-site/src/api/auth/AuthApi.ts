@@ -36,37 +36,9 @@ class AuthApi extends BaseApi {
 
     const sideEffectPromise = this.withSideEffect(signInPromise, (x) => {
       if (x.status == 200) {
-        this.getSession().setToken(x.payload.token).save();
+        // this.getSession().setToken(x.payload.token).save();
       }
     });
-
-    return this.withResponseTransformer(sideEffectPromise);
-  }
-
-  public static fakeSignIn(
-    email: string,
-    password: string
-  ): Promise<AuthResponse> {
-    console.log("Signing in!");
-
-    const fakeToken = jwt.sign(
-      { verified: false, user: "blah@fake.com" },
-      "myFakeSecret"
-    );
-
-    const response: ApiResponse = {
-      status: 200,
-      message: "Fake operation succeeded!",
-      payload: { token: fakeToken, email: email },
-    };
-
-    const fakePromise = this.genericFakePromise((resolve, _reject) =>
-      resolve(response)
-    );
-
-    const sideEffectPromise = this.withSideEffect(fakePromise, (x) =>
-      this.getSession().setToken(x.payload.token).save()
-    );
 
     return this.withResponseTransformer(sideEffectPromise);
   }
@@ -97,7 +69,7 @@ class AuthApi extends BaseApi {
 
     const sideEffectPromise = this.withSideEffect(signUpPromise, (x) => {
       if (x.status == 200) {
-        this.getSession().setToken(x.payload.token).save();
+        // this.getSession().setToken(x.payload.token).save();
       }
     });
 
@@ -186,10 +158,14 @@ class AuthApi extends BaseApi {
     return this.getRequest("validate_token", {}, this.getSession().getToken());
   }
 
+  public static setSession(session: AuthSession) {
+    this.SESSION = session;
+  }
+
   public static getSession() {
-    if (AuthApi.SESSION === null) {
-      this.SESSION = AuthSession.restoreOrNew();
-    }
+    // if (AuthApi.SESSION === null) {
+    //   this.SESSION = AuthSession.restoreOrNew();
+    // }
     return this.SESSION;
   }
 
@@ -210,8 +186,8 @@ class AuthApi extends BaseApi {
   }
 
   public static clearSession() {
-    AuthSession.clear();
-    this.SESSION = new AuthSession();
+    // AuthSession.clear();
+    // this.SESSION = new AuthSession();
   }
 
   public static getSessionToken(): string | undefined {
