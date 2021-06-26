@@ -32,7 +32,7 @@ const FullAuth: React.FunctionComponent<FullAuthProps> = (props) => {
     if (!authState.hasToken) {
       console.log("Loading state from browser.");
       const loadedAuthState = authApiContext.stateUtil.load();
-      setAuthState(loadedAuthState);
+      setAuthState({ ...loadedAuthState, firstLoad: false });
     }
   }, []);
 

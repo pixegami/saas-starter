@@ -1,6 +1,5 @@
 import ApiResponse from "../../util/base_api/ApiResponse";
 import AuthResponse from "./AuthResponse";
-import AuthSession from "../state/AuthSession";
 import AuthMembershipStatus from "./AuthMembershipStatus";
 import BaseApi from "../../util/base_api/BaseApi";
 
@@ -8,11 +7,8 @@ class AuthApi extends BaseApi {
   // Configurable fields.
   private static ENDPOINT: string = "https://api.bonestack.com/auth";
 
-  // Functional fields.
-  private static SESSION: AuthSession | null = null;
-
   // For testing easily.
-  private static AUTO_TEST: boolean = true;
+  private static AUTO_TEST: boolean = false;
   private static AUTO_TEST_USER: string = "autotest@auth.bonestack.com";
   private static AUTO_TEST_PASS: string = "Abcd123!";
 
@@ -33,13 +29,7 @@ class AuthApi extends BaseApi {
       password: password,
     });
 
-    const sideEffectPromise = this.withSideEffect(signInPromise, (x) => {
-      if (x.status == 200) {
-        // this.getSession().setToken(x.payload.token).save();
-      }
-    });
-
-    return this.withResponseTransformer(sideEffectPromise);
+    return this.withResponseTransformer(signInPromise);
   }
 
   public static signUp(
@@ -66,13 +56,7 @@ class AuthApi extends BaseApi {
       extraFlags
     );
 
-    const sideEffectPromise = this.withSideEffect(signUpPromise, (x) => {
-      if (x.status == 200) {
-        // this.getSession().setToken(x.payload.token).save();
-      }
-    });
-
-    return this.withResponseTransformer(sideEffectPromise);
+    return this.withResponseTransformer(signUpPromise);
   }
 
   public static requestAccountVerification(
@@ -107,26 +91,22 @@ class AuthApi extends BaseApi {
     });
   }
 
-  public static async validateMembership(): Promise<ApiResponse> {
-    console.log("Validating membership with " + this.getSession().getToken());
-    return this.getRequest(
-      "validate_membership",
-      {},
-      this.getSession().getToken()
-    );
+  public static async validateMembership(token: string): Promise<ApiResponse> {
+    console.log("Validating membership with " + token);
+    return this.getRequest("validate_membership", {}, token);
   }
 
-  public static async getVerificationStatus(): Promise<ApiResponse> {
-    console.log("Get verification status with " + this.getSession().getToken());
-    return this.getRequest(
-      "get_verification_status",
-      {},
-      this.getSession().getToken()
-    );
+  public static async getVerificationStatus(
+    token: string
+  ): Promise<ApiResponse> {
+    console.log("Get verification status with " + token);
+    return this.getRequest("get_verification_status", {}, token);
   }
 
-  public static async getMembershipStatus(): Promise<AuthMembershipStatus> {
-    const validationResponse = await AuthApi.validateMembership();
+  public static async getMembershipStatus(
+    token: string
+  ): Promise<AuthMembershipStatus> {
+    const validationResponse = await AuthApi.validateMembership(token);
     if (validationResponse.status === 200) {
       console.log("Validate Member Response:");
       console.log(validationResponse);
@@ -140,32 +120,19 @@ class AuthApi extends BaseApi {
     }
   }
 
-  public static async getVerificationStatusAsBoolean(): Promise<boolean> {
-    const validationResponse = await AuthApi.getVerificationStatus();
+  public static async getVerificationStatusAsBoolean(
+    token: string
+  ): Promise<boolean> {
+    const validationResponse = await AuthApi.getVerificationStatus(token);
     return (
       validationResponse.status === 200 &&
       validationResponse.payload["verified"]
     );
   }
 
-  public static signOut(): void {
-    this.clearSession();
-  }
-
-  public static validate(): Promise<ApiResponse> {
+  public static validate(token: string): Promise<ApiResponse> {
     console.log(`Validating With Token: ...`);
-    return this.getRequest("validate_token", {}, this.getSession().getToken());
-  }
-
-  public static setSession(session: AuthSession) {
-    this.SESSION = session;
-  }
-
-  public static getSession() {
-    // if (AuthApi.SESSION === null) {
-    //   this.SESSION = AuthSession.restoreOrNew();
-    // }
-    return this.SESSION;
+    return this.getRequest("validate_token", {}, token);
   }
 
   private static withResponseTransformer(
@@ -182,27 +149,6 @@ class AuthApi extends BaseApi {
         })
         .catch(reject);
     });
-  }
-
-  public static clearSession() {
-    // AuthSession.clear();
-    // this.SESSION = new AuthSession();
-  }
-
-  public static getSessionToken(): string | undefined {
-    return this.getSession().getToken();
-  }
-
-  public static hasSessionToken(): boolean {
-    return this.getSessionToken() ? true : false;
-  }
-
-  public static isSignedIn(): boolean {
-    return this.hasSessionToken();
-  }
-
-  public static isAccountVerified(): boolean {
-    return this.isSignedIn() && this.getSession().isVerified();
   }
 }
 

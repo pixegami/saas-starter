@@ -36,8 +36,11 @@ const AuthRoute: React.FC<AuthRouteProps> = (props) => {
     return <RouteElement {...props} />;
   }
 
-  console.log("AUTH GUARD: DEFLECTED");
-  navigate(AuthURL.SIGN_IN);
+  if (!authContext.state.firstLoad) {
+    console.log("AUTH GUARD: DEFLECTED");
+    navigate(AuthURL.SIGN_IN);
+  }
+
   return null;
 };
 

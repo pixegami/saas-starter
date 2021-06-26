@@ -9,6 +9,8 @@ import {
   withApiWrapper,
 } from "../../util/base_api_components/ApiComponents";
 import ApiResponse from "../../util/base_api/ApiResponse";
+import { useContext } from "react";
+import AuthContext from "../api/AuthContext";
 
 const AuthRequestAccountVerification: React.FC<SubComponentBaseProps> = (
   props
@@ -16,6 +18,7 @@ const AuthRequestAccountVerification: React.FC<SubComponentBaseProps> = (
   const [verificationEmailSent, setVerificationEmailSent] = React.useState(
     false
   );
+  const auth = useContext(AuthContext);
 
   const onSuccess = (response: ApiResponse) => {
     props.onApiResponse(response);
@@ -26,7 +29,7 @@ const AuthRequestAccountVerification: React.FC<SubComponentBaseProps> = (
 
   const onClick = () => {
     props.onApiRequest();
-    AuthApi.requestAccountVerification(AuthApi.getSession().getUserAccountKey())
+    AuthApi.requestAccountVerification(auth.stateUtil.payload.accountKey)
       .then(onSuccess)
       .catch(props.onApiFault);
   };

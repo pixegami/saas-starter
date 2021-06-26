@@ -19,6 +19,7 @@ interface FooWritePostViewProps extends SubComponentBaseProps {
 const PostEnabledView: React.FC<FooWritePostViewProps> = (props) => {
   const [postContent, setPostContent] = React.useState("");
   const [postSucceeded, setPostSucceeded] = React.useState(false);
+  const auth = useContext(AuthContext);
 
   const onPostSuccess = (result: FooResponse) => {
     props.onApiResponse(result);
@@ -30,10 +31,12 @@ const PostEnabledView: React.FC<FooWritePostViewProps> = (props) => {
     }
   };
 
+  console.log("Foo post writer reloaded with token: " + auth.state.token);
+
   const onClickPost = () => {
     console.log("Foo Post with Content ", postContent);
     props.onApiRequest();
-    FooApi.putPost("Untitled", postContent)
+    FooApi.putPost("Untitled", postContent, auth.state.token)
       .then(onPostSuccess)
       .catch(props.onApiFault);
   };

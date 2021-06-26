@@ -12,6 +12,8 @@ import {
 import FooApi from "./api/FooApi";
 import withBoxStyling from "../util/functions/withBoxStyling";
 import ApiRefresher from "../util/base_api_components/ApiRefresher";
+import { useContext } from "react";
+import AuthContext from "../auth/api/AuthContext";
 
 interface ServiceResponseProps {
   fooIsSignedIn: boolean;
@@ -69,11 +71,12 @@ const FooView: React.FC<SubComponentBaseProps> = (props) => {
   const [fooIsSignedIn, setFooIsSignedIn] = React.useState(false);
   const [fooIsIsVerified, setFooIsVerified] = React.useState(false);
   const [fooIsPremium, setFooIsPremium] = React.useState(false);
+  const auth = useContext(AuthContext);
 
   const refreshServiceStatus = () => {
     let isMounted: boolean = true;
     props.onApiRequest();
-    FooApi.foo()
+    FooApi.foo(auth.state.token)
       .then((r) => {
         if (isMounted) {
           props.onApiResponse(r);
@@ -101,7 +104,7 @@ const FooView: React.FC<SubComponentBaseProps> = (props) => {
   };
 
   // Hit the Foo API and get the response.
-  React.useEffect(refreshServiceStatus, []);
+  React.useEffect(refreshServiceStatus, [auth.state.token]);
 
   return (
     <div>

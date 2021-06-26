@@ -9,30 +9,38 @@ class FooApi extends BaseApi {
     return this.ENDPOINT;
   }
 
-  public static foo(): Promise<FooResponse> {
-    return this.callApiWithTokenAndWrappedResponse("foo", {});
+  public static foo(token: string): Promise<FooResponse> {
+    return this.callWithToken("foo", {}, token);
   }
 
-  public static putPost(title: string, content: string): Promise<FooResponse> {
-    return this.callApiWithTokenAndWrappedResponse("foo_write_post", {
-      title,
-      content,
-    });
-  }
-
-  public static getPosts(): Promise<FooResponse> {
-    return this.callApiWithTokenAndWrappedResponse("foo_get_posts", {});
-  }
-
-  public static getPost(key: string): Promise<FooResponse> {
-    return this.callApiWithTokenAndWrappedResponse("foo_get_post", { key });
-  }
-
-  private static callApiWithTokenAndWrappedResponse(
-    apiName: string,
-    params: any
+  public static putPost(
+    title: string,
+    content: string,
+    token?: string
   ): Promise<FooResponse> {
-    const token = null; // AuthApi.getSessionToken();
+    return this.callWithToken(
+      "foo_write_post",
+      {
+        title,
+        content,
+      },
+      token
+    );
+  }
+
+  public static getPosts(token?: string): Promise<FooResponse> {
+    return this.callWithToken("foo_get_posts", {}, token);
+  }
+
+  public static getPost(key: string, token?: string): Promise<FooResponse> {
+    return this.callWithToken("foo_get_post", { key }, token);
+  }
+
+  private static callWithToken(
+    apiName: string,
+    params: any,
+    token?: string
+  ): Promise<FooResponse> {
     console.log("Calling " + apiName + " with token " + token);
     const responsePromise = this.getRequest(apiName, params, token);
     return withFooResponse(responsePromise);

@@ -86,7 +86,7 @@ const getNavBarCommonAttributes = (
   setIsShowing,
   auth: AuthApiContext
 ) => {
-  const profileName = auth.state.token;
+  const profileName = auth.stateUtil.payload.userEmail;
   const { windowWidth, windowHeight } = useWindowDimensions();
   const isMobileSize = windowWidth <= 640;
   const navCommonProps: NavMenuCommonProps = {
@@ -102,7 +102,7 @@ const getNavBarCommonAttributes = (
         label: "Sign Out",
         action: () => {
           auth.signOut();
-          // navigate("/app/");
+          navigate("/app/");
         },
       },
     ],

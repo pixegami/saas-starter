@@ -1,10 +1,10 @@
-import { loadStripe } from "@stripe/stripe-js";
-import { Link, navigate } from "gatsby";
+import { navigate } from "gatsby";
 import * as React from "react";
-import * as AuthURL from "../components/auth/route/AuthURL";
 import AuthApi from "../components/auth/api/AuthApi";
-import PaymentApi from "../api/payment/PaymentApi";
-import withBoxStyling from "../components/hoc/withBoxStyling";
+import AuthContext from "../components/auth/api/AuthContext";
+import * as AuthURL from "../components/auth/route/AuthURL";
+import PaymentApi from "../components/payment/PaymentApi";
+import withBoxStyling from "../components/util/functions/withBoxStyling";
 
 interface ProfileViewProps {
   path: string;
@@ -13,9 +13,9 @@ interface ProfileViewProps {
 const ProfileView: React.FC<ProfileViewProps> = (props) => {
   const [isLoadingPremium, setLoadingPremium] = React.useState(true);
   const [isPremiumMember, setPremiumMember] = React.useState(false);
-
   const [isAutoRenew, setAutoRenew] = React.useState(false);
   const [expiryTime, setExpiryTime] = React.useState(0);
+  const auth = React.useContext(AuthContext);
 
   const [
     isLoadingVerificationStatus,
@@ -26,7 +26,7 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
   React.useEffect(() => {
     let isMounted = true;
 
-    AuthApi.getMembershipStatus().then((memberStatus) => {
+    AuthApi.getMembershipStatus(auth.state.token).then((memberStatus) => {
       if (isMounted) {
         setPremiumMember(memberStatus.isMember);
         setAutoRenew(memberStatus.autoRenew);
@@ -36,12 +36,14 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
       }
     });
 
-    AuthApi.getVerificationStatusAsBoolean().then((isVerified) => {
-      if (isMounted) {
-        setVerified(isVerified);
-        setLoadingVerificationStatus(false);
+    AuthApi.getVerificationStatusAsBoolean(auth.state.token).then(
+      (isVerified) => {
+        if (isMounted) {
+          setVerified(isVerified);
+          setLoadingVerificationStatus(false);
+        }
       }
-    });
+    );
 
     return () => {
       isMounted = false;
@@ -50,7 +52,7 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
 
   const onClickToSubscribe = () => {
     setLoadingPremium(true);
-    PaymentApi.requestCheckoutAndRedirect().catch((r) => {
+    PaymentApi.requestCheckoutAndRedirect(auth.state.token).catch((r) => {
       setLoadingPremium(false);
       console.log(r);
     });
@@ -58,7 +60,7 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
 
   const onClickToPaymentPortal = () => {
     setLoadingPremium(true);
-    PaymentApi.requestPaymentPortalAndRedirect();
+    PaymentApi.requestPaymentPortalAndRedirect(auth.state.token);
   };
 
   let premiumStatusElement;
