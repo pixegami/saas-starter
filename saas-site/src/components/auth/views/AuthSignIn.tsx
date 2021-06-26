@@ -29,7 +29,7 @@ const AuthSignIn: React.FC<SubComponentBaseProps> = (props) => {
   const onSignIn = () => {
     console.log("Sign in with ", emailField.value, passwordField.value);
     props.onApiRequest();
-    authContext.authApi
+    authContext.api
       .signIn(emailField.value, passwordField.value)
       .then(onSignInSuccess)
       .catch(props.onApiFault);

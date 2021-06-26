@@ -5,7 +5,7 @@ abstract class StateUtility<T> {
   protected readonly storage: StateStorage;
 
   public abstract serialize(): string;
-  public abstract deserialize(x: string): T;
+  public abstract deserialize(x: any): T;
   public abstract newDefaultState(): T;
 
   constructor(newState?: T) {

@@ -1,6 +1,6 @@
 import { Link, navigate } from "gatsby";
 import React, { useContext, useRef } from "react";
-import AuthContext from "../../api/auth/AuthContext";
+import AuthContext, { AuthContextProps } from "../../api/auth/AuthContext";
 import * as AuthURL from "../auth/route/AuthURL";
 import NavBarDropdown from "./NavBarDropdown";
 import { NavMenuCommonProps } from "./NavBarInterfaces";
@@ -40,7 +40,7 @@ function useWindowDimensions() {
 const NavBar: React.FC<NavBarProps> = (props) => {
   const authContext = useContext(AuthContext);
   const siteTitle = <div className="my-auto">SaaS</div>;
-  const isSignedIn = authContext.authState.hasToken; //AuthApi.isSignedIn();
+  const isSignedIn = authContext.api.getState().hasToken; //AuthApi.isSignedIn();
   const wrapperRef = useRef(null);
   const [isShowing, setIsShowing] = React.useState(false);
 
@@ -84,9 +84,9 @@ const getNavBarCommonAttributes = (
   wrapperRef,
   isShowing,
   setIsShowing,
-  authContext
+  authContext: AuthContextProps
 ) => {
-  const profileName = authContext.authState.token;
+  const profileName = authContext.api.getState().token;
   const { windowWidth, windowHeight } = useWindowDimensions();
   const isMobileSize = windowWidth <= 640;
   const navCommonProps: NavMenuCommonProps = {
@@ -101,7 +101,7 @@ const getNavBarCommonAttributes = (
       {
         label: "Sign Out",
         action: () => {
-          authContext.authApi.signOut();
+          authContext.api.signOut();
           // navigate("/app/");
         },
       },

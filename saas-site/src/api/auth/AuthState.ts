@@ -12,12 +12,12 @@ export class AuthStateUtility extends StateUtility<AuthState> {
     };
   }
 
-  public static fromState(x: AuthState) {
-    return new AuthStateUtility(x);
-  }
-
-  public deserialize(x: string): AuthState {
-    return this.newDefaultState();
+  public deserialize(x: any): AuthState {
+    const newState: AuthState = {
+      token: x.token,
+      hasToken: true,
+    };
+    return newState;
   }
 
   public serialize(): string {

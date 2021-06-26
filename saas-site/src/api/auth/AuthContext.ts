@@ -3,10 +3,7 @@ import AuthLocalApi from "./AuthLocalApi";
 import { AuthState, AuthStateUtility } from "./AuthState";
 
 export interface AuthContextProps {
-  authState: AuthState;
-  setAuthState(x: AuthState): void;
-  authApi: AuthLocalApi;
-  authStateUtility: AuthStateUtility;
+  api: AuthLocalApi;
 }
 
 const createDefaultContextProps = () => {
@@ -16,12 +13,11 @@ const createDefaultContextProps = () => {
     authStateUtility,
     setAuthState
   );
-  return {
-    authStateUtility,
-    authState: authStateUtility.state,
-    setAuthState,
-    authApi,
+  const context: AuthContextProps = {
+    api: authApi,
   };
+
+  return context;
 };
 
 const AuthContext = React.createContext<AuthContextProps>(

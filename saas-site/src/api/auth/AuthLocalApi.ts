@@ -3,21 +3,25 @@ import AuthApi from "./AuthApi";
 import { AuthState, AuthStateUtility } from "./AuthState";
 
 class AuthLocalApi {
-  private authState: AuthStateUtility;
+  private stateUtil: AuthStateUtility;
   private setAuthState: (x: AuthState) => void;
 
   constructor(
-    authState: AuthStateUtility,
+    stateUtil: AuthStateUtility,
     setAuthState: (x: AuthState) => void
   ) {
-    this.authState = authState;
+    this.stateUtil = stateUtil;
     this.setAuthState = setAuthState;
+  }
+
+  public getState(): AuthState {
+    return this.stateUtil.state;
   }
 
   public signIn(email: string, password: string): Promise<AuthResponse> {
     return this.withSideEffect(AuthApi.signIn(email, password), (x) => {
       console.log(x);
-      const newState = this.authState.withToken(x.token);
+      const newState = this.stateUtil.withToken(x.token);
       newState.save();
       console.log("Setting new Auth State...");
       console.log(newState.state);
@@ -26,8 +30,8 @@ class AuthLocalApi {
   }
 
   public signOut(): void {
-    this.authState.clear();
-    this.setAuthState(this.authState.newDefaultState());
+    this.stateUtil.clear();
+    this.setAuthState(this.stateUtil.newDefaultState());
   }
 
   protected withSideEffect<T>(

@@ -15,24 +15,27 @@ interface FullAuthProps {
 }
 
 const FullAuth: React.FunctionComponent<FullAuthProps> = (props) => {
-  const authStateUtil: AuthStateUtility = new AuthStateUtility();
-  const [authState, setAuthState] = React.useState(authStateUtil.state);
+  const [authState, setAuthState] = React.useState(
+    new AuthStateUtility().state
+  );
+
+  const authStateUtil: AuthStateUtility = new AuthStateUtility(authState);
   const authApi: AuthLocalApi = new AuthLocalApi(authStateUtil, setAuthState);
 
   console.log("Reloaded with new Auth State");
   console.log(authState);
 
-  React.useEffect(() => {
-    const loadedAuthState = authStateUtil.state;
-    setAuthState(loadedAuthState);
-  }, []);
-
   const authContextProps: AuthContextProps = {
-    authStateUtility: authStateUtil,
-    authState: authState,
-    setAuthState: setAuthState,
-    authApi,
+    api: authApi,
   };
+
+  React.useEffect(() => {
+    if (!authState.hasToken) {
+      console.log("Loading state from browser.");
+      const loadedAuthState = authStateUtil.load();
+      setAuthState(loadedAuthState);
+    }
+  }, []);
 
   return (
     <AuthContext.Provider value={authContextProps}>
