@@ -6,8 +6,7 @@ import AuthRoute from "../components/auth/route/AuthRoute";
 import * as AuthViews from "../components/auth/views/AuthViews";
 import * as AuthURL from "../components/auth/route/AuthURL";
 import ProfileView from "../app/ProfileView";
-import AuthContext, { AuthContextProps } from "../api/auth/AuthContext";
-import AuthLocalApi from "../api/auth/AuthLocalApi";
+import AuthContext, { AuthApiContext } from "../api/auth/AuthContext";
 import { AuthStateUtility } from "../api/auth/AuthState";
 
 interface FullAuthProps {
@@ -19,26 +18,24 @@ const FullAuth: React.FunctionComponent<FullAuthProps> = (props) => {
     new AuthStateUtility().state
   );
 
-  const authStateUtil: AuthStateUtility = new AuthStateUtility(authState);
-  const authApi: AuthLocalApi = new AuthLocalApi(authStateUtil, setAuthState);
+  const authApiContext: AuthApiContext = new AuthApiContext(
+    authState,
+    setAuthState
+  );
 
   console.log("Reloaded with new Auth State");
   console.log(authState);
 
-  const authContextProps: AuthContextProps = {
-    api: authApi,
-  };
-
   React.useEffect(() => {
     if (!authState.hasToken) {
       console.log("Loading state from browser.");
-      const loadedAuthState = authStateUtil.load();
+      const loadedAuthState = authApiContext.stateUtil.load();
       setAuthState(loadedAuthState);
     }
   }, []);
 
   return (
-    <AuthContext.Provider value={authContextProps}>
+    <AuthContext.Provider value={authApiContext}>
       <Router>
         <AuthRoute
           component={AuthViews.AuthRequestAccountVerification}

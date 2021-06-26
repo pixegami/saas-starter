@@ -13,8 +13,9 @@ abstract class StateUtility<T> {
     this.storage = new StateStorage("myKey");
   }
 
-  public save(): void {
+  public save(): T {
     this.storage.save(this.serialize());
+    return this.state;
   }
 
   public load(): T {

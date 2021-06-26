@@ -14,7 +14,7 @@ import { useContext } from "react";
 import AuthContext from "../../../api/auth/AuthContext";
 
 const AuthSignIn: React.FC<SubComponentBaseProps> = (props) => {
-  const authContext = useContext(AuthContext);
+  const auth = useContext(AuthContext);
   const emailField = ApiStringField.fromHook("Email", React.useState(""));
   const passwordField = ApiStringField.fromHook("Password", React.useState(""));
 
@@ -29,7 +29,7 @@ const AuthSignIn: React.FC<SubComponentBaseProps> = (props) => {
   const onSignIn = () => {
     console.log("Sign in with ", emailField.value, passwordField.value);
     props.onApiRequest();
-    authContext.api
+    auth
       .signIn(emailField.value, passwordField.value)
       .then(onSignInSuccess)
       .catch(props.onApiFault);

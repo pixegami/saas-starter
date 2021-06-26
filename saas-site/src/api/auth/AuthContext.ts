@@ -1,27 +1,36 @@
 import React from "react";
-import AuthLocalApi from "./AuthLocalApi";
+import AuthApi from "./AuthApi";
+import AuthResponse from "./AuthResponse";
 import { AuthState, AuthStateUtility } from "./AuthState";
+import withSideEffect from "./withSideEffect";
 
-export interface AuthContextProps {
-  api: AuthLocalApi;
+export class AuthApiContext {
+  public readonly stateUtil: AuthStateUtility;
+  private readonly setState: (x: AuthState) => void;
+  public readonly state: AuthState;
+
+  constructor(state?: AuthState, setState?: (x: AuthState) => void) {
+    this.stateUtil = new AuthStateUtility(state);
+    this.setState = setState;
+    this.state = state;
+  }
+
+  public getState(): AuthState {
+    return this.stateUtil.state;
+  }
+
+  public signIn(email: string, password: string): Promise<AuthResponse> {
+    return withSideEffect(AuthApi.signIn(email, password), (x) => {
+      const newState = this.stateUtil.withToken(x.token).save();
+      this.setState(newState);
+    });
+  }
+
+  public signOut(): void {
+    this.stateUtil.clear();
+    this.setState(this.stateUtil.newDefaultState());
+  }
 }
 
-const createDefaultContextProps = () => {
-  const authStateUtility: AuthStateUtility = new AuthStateUtility();
-  const setAuthState = (x: AuthState) => console.log(x);
-  const authApi: AuthLocalApi = new AuthLocalApi(
-    authStateUtility,
-    setAuthState
-  );
-  const context: AuthContextProps = {
-    api: authApi,
-  };
-
-  return context;
-};
-
-const AuthContext = React.createContext<AuthContextProps>(
-  createDefaultContextProps()
-);
-
+const AuthContext = React.createContext<AuthApiContext>(new AuthApiContext());
 export default AuthContext;

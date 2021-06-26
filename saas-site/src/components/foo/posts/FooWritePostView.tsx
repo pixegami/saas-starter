@@ -122,8 +122,8 @@ const PostDisabledView: React.FC<FooWritePostViewProps> = (props) => {
   );
 };
 const FooWritePostView: React.FC<FooWritePostViewProps> = (props) => {
-  const authContext = useContext(AuthContext);
-  const isSignedIn: boolean = authContext.api.getState().hasToken; //AuthApi.isSignedIn();
+  const auth = useContext(AuthContext);
+  const isSignedIn: boolean = auth.state.hasToken; //AuthApi.isSignedIn();
   const postView = isSignedIn ? (
     <PostEnabledView {...props} key="postEnabledView" />
   ) : (
