@@ -1,10 +1,6 @@
 import { Link, navigate } from "gatsby";
 import React, { useContext, useRef } from "react";
-import AuthApi from "../../api/auth/AuthApi";
-import AuthContext, {
-  AuthContextProps,
-  AuthContextState,
-} from "../../api/auth/AuthContext";
+import AuthContext from "../../api/auth/AuthContext";
 import * as AuthURL from "../auth/route/AuthURL";
 import NavBarDropdown from "./NavBarDropdown";
 import { NavMenuCommonProps } from "./NavBarInterfaces";

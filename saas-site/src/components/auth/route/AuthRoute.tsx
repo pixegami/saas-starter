@@ -32,7 +32,7 @@ const AuthRoute: React.FC<AuthRouteProps> = (props) => {
   }
 
   // Is signed in.
-  if (authContext.authState.hasToken) {
+  if (authContext.authStateUtility.hasToken) {
     console.log("AUTH GUARD: PASSED");
     return <RouteElement {...props} />;
   }

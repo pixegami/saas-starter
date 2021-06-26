@@ -10,7 +10,7 @@ import {
 } from "../../api/ApiComponentWrapper";
 import { FooResponse } from "../../../api/foo/FooResponse";
 import FooApi from "../../../api/foo/FooApi";
-import AuthContext, { AuthContextState } from "../../../api/auth/AuthContext";
+import AuthContext from "../../../api/auth/AuthContext";
 import { useContext } from "react";
 
 interface FooWritePostViewProps extends SubComponentBaseProps {

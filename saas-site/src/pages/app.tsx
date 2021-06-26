@@ -1,35 +1,36 @@
 import React from "react";
 import { Router } from "@reach/router";
-import Dashboard from "../app/dashboard";
 import Landing from "../app/landing";
 import NotFound from "../app/notFound";
 import AuthRoute from "../components/auth/route/AuthRoute";
 import * as AuthViews from "../components/auth/views/AuthViews";
 import * as AuthURL from "../components/auth/route/AuthURL";
 import ProfileView from "../app/ProfileView";
-import AuthContext, {
-  AuthContextProps,
-  createDefaultAuthContext,
-  loadLocalState,
-} from "../api/auth/AuthContext";
+import AuthContext, { AuthContextProps } from "../api/auth/AuthContext";
 import AuthLocalApi from "../api/auth/AuthLocalApi";
+import { AuthStateUtility } from "../api/auth/AuthState";
 
 interface FullAuthProps {
   children?: React.ReactNode;
 }
 
 const FullAuth: React.FunctionComponent<FullAuthProps> = (props) => {
-  const [authState, setAuthState] = React.useState(createDefaultAuthContext());
-  const authApi: AuthLocalApi = new AuthLocalApi(authState, setAuthState);
+  const authStateUtil: AuthStateUtility = new AuthStateUtility();
+  const [authState, setAuthState] = React.useState(authStateUtil.state);
+  const authApi: AuthLocalApi = new AuthLocalApi(authStateUtil, setAuthState);
+
+  console.log("Reloaded with new Auth State");
+  console.log(authState);
 
   React.useEffect(() => {
-    const loadedAuthState = loadLocalState();
+    const loadedAuthState = authStateUtil.state;
     setAuthState(loadedAuthState);
   }, []);
 
   const authContextProps: AuthContextProps = {
-    authState,
-    setAuthState,
+    authStateUtility: authStateUtil,
+    authState: authState,
+    setAuthState: setAuthState,
     authApi,
   };
 
