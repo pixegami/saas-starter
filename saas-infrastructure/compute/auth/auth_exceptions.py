@@ -3,17 +3,17 @@ from handler_exception import HandlerException
 
 class AuthExceptions:
 
+    # 401
+    AUTH_FAILURE = HandlerException(401, "Incorrect password or email.")
+    INVALID_TOKEN = HandlerException(
+        401, "Authentication token is invalid or has expired. Please sign in again."
+    )
+    MISSING_HEADER = HandlerException(401, "Missing authentication header.")
+
     # 402
     MEMBERSHIP_NOT_VALID = HandlerException(402, "Not a member.")
 
     MEMBERSHIP_EXPIRED = HandlerException(402, "Membership has expired.")
-
-    # 403
-    AUTH_FAILURE = HandlerException(403, "Incorrect password or email.")
-    INVALID_TOKEN = HandlerException(
-        403, "Authentication token is invalid or has expired. Please sign in again."
-    )
-    MISSING_HEADER = HandlerException(403, "Missing authentication header.")
 
     # 404
 

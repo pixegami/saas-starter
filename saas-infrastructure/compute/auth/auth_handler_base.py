@@ -11,6 +11,10 @@ from membership_status import MembershipStatus
 
 
 class AuthUser:
+
+    TOKEN_DURATION_IN_HOURS = 24
+    TOKEN_DURATION_SECONDS = TOKEN_DURATION_IN_HOURS * 3600
+
     def __init__(
         self,
         key,
@@ -28,7 +32,12 @@ class AuthUser:
 
     def get_token(self, hash_key: str):
         token = jwt.encode(
-            {"account_key": self.key, "user": self.user, "verified": self.verified},
+            {
+                "account_key": self.key,
+                "user": self.user,
+                "verified": self.verified,
+                "exp": time.time() + AuthUser.TOKEN_DURATION_SECONDS,
+            },
             hash_key,
             algorithm="HS256",
         )

@@ -22,10 +22,10 @@ def test_sign_in_cooldown():
 
         if i < attempts_before_locking:
             # At this point, we expect it to fail sign-in attempt normally (wrong password).
-            expected_code = 403
+            expected_code = 401
         elif i < max_attempts_until_locking - 1:
             # At this point, it can either fail or be on cooldown.
-            expected_code = [403, 429]
+            expected_code = [401, 429]
         else:
             # At this point, it MUST be on cooldown.
             expected_code = 429
@@ -41,7 +41,7 @@ def test_sign_in_cooldown_recovery():
     sign_up_test_user(user, password)
 
     # Max out the attempts.
-    sign_in_max_attempt(user, generate_random_password(), 403)
+    sign_in_max_attempt(user, generate_random_password(), 401)
 
     # Validate that it is rejected.
     sign_in(user, generate_random_password(), 429)
@@ -51,14 +51,14 @@ def test_sign_in_cooldown_recovery():
 
 
 def test_successful_sign_in_resets_cooldown():
-    # After waiting long enough, I should be able to sign in again.
+
     user = generate_random_email()
     password = generate_random_password()
     sign_up_test_user(user, password)
 
     # Sign in a few times.
     for _ in range(3):
-        response = sign_in(user, generate_random_password(), 403)
+        response = sign_in(user, generate_random_password(), 401)
 
     # Sign in with the right password. This should show a non-zero attempt.
     response = sign_in(user, password)
@@ -67,3 +67,16 @@ def test_successful_sign_in_resets_cooldown():
     # Sign in again. Attempt should be back at 0.
     response = sign_in(user, password)
     assert response.data["payload"]["attempt"] == 0
+
+
+def test_token_expiry():
+    # A token should expire within X days.
+
+    user = generate_random_email()
+    password = generate_random_password()
+    sign_up_test_user(user, password)
+
+    response = sign_in(user, password)
+    token = response.payload["token"]
+    future_time = 2 * 24 * 3600
+    validate(token, 401, future_time)

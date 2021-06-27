@@ -9,4 +9,4 @@ def test_negative_sign_in():
     sign_up(user, password, 200)
 
     # Sign-in should fail.
-    sign_in(user, other_password, 403)
+    sign_in(user, other_password, 401)

@@ -120,8 +120,12 @@ def assert_status(
     return response
 
 
-def validate(token: str, expected_status: Union[int, Set[int], None] = 200):
-    response = get_request(operation="validate_token", token=token)
+def validate(
+    token: str, expected_status: Union[int, Set[int], None] = 200, future_time: int = 0
+):
+    response = get_request(
+        operation="validate_token", token=token, payload={"future_time": future_time}
+    )
     return assert_status(response, expected_status)
 
 
