@@ -25,7 +25,7 @@ export class StaticSite extends Construct {
     const siteBucket = new s3.Bucket(this, "SiteBucket", {
       bucketName: siteDomain,
       websiteIndexDocument: "index.html",
-      websiteErrorDocument: "index.html",
+      websiteErrorDocument: "404.html",
       publicReadAccess: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });

@@ -1,7 +1,7 @@
 module.exports = {
   siteMetadata: {
-    title: "Saas Starter",
-    siteUrl: "https://ss.pixegami.com",
+    title: "Bonestack",
+    siteUrl: "https://bonestack.com",
   },
   plugins: [
     "gatsby-plugin-postcss",
@@ -13,14 +13,6 @@ module.exports = {
       resolve: "gatsby-plugin-manifest",
       options: {
         icon: "src/images/icon.png",
-      },
-    },
-    {
-      resolve: `gatsby-source-stripe`,
-      options: {
-        objects: ["Price"],
-        secretKey: "sk_test_dVPxaaBuDLylUmztkCmomO0p00dyqHOvDf",
-        downloadFiles: false,
       },
     },
     "gatsby-transformer-remark",

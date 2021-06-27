@@ -7,7 +7,9 @@ import { NavMenuCommonProps } from "./NavBarInterfaces";
 import NavBarPopupMenu from "./NavBarPopupMenu";
 import NavMobileMenu from "./NavMobileMenu";
 
-interface NavBarProps {}
+interface NavBarProps {
+  location?: any;
+}
 
 function getWindowDimensions() {
   const { innerWidth: width, innerHeight: height } =
@@ -54,6 +56,9 @@ const NavBar: React.FC<NavBarProps> = (props) => {
     auth
   );
 
+  console.log("Wrapping API at " + props.location);
+  console.log(props.location);
+
   const navProfileElement = <NavBarProfileElement {...navCommonProps} />;
   const navMobileElement = <NavMobileMenu {...navCommonProps} />;
   const navSignInElement = <NavBarSignInElement />;
@@ -65,19 +70,42 @@ const NavBar: React.FC<NavBarProps> = (props) => {
     interactiveNavElement = navSignInElement;
   }
 
-  return (
-    <div className="mb-2 border-b border-gray-300">
-      <div className="bg-white p-4 pt-4 pb-4 md:p-4 flex w-full">
-        <div className="flex justify-between m-auto w-full max-w-4xl">
-          {siteTitle}
-          <div className="relative" ref={wrapperRef}>
-            {interactiveNavElement}
+  let shouldExcludeNavBar = false;
+
+  AuthURL.EXCLUDE_NAV_BAR.forEach((excludePath) => {
+    const matchResult = props.location.pathname.match(excludePath);
+    console.log(
+      "Matching " +
+        props.location.pathname +
+        " with " +
+        excludePath +
+        ": " +
+        matchResult
+    );
+    if (matchResult) {
+      shouldExcludeNavBar = true;
+    }
+  });
+
+  console.log("Should exclude: " + shouldExcludeNavBar);
+
+  if (shouldExcludeNavBar) {
+    return <div></div>;
+  } else {
+    return (
+      <div className="mb-2 border-b border-gray-300">
+        <div className="bg-white p-4 pt-4 pb-4 md:p-4 flex w-full">
+          <div className="flex justify-between m-auto w-full max-w-4xl">
+            {siteTitle}
+            <div className="relative" ref={wrapperRef}>
+              {interactiveNavElement}
+            </div>
           </div>
         </div>
+        {mobileNavElement}
       </div>
-      {mobileNavElement}
-    </div>
-  );
+    );
+  }
 };
 
 const getNavBarCommonAttributes = (
