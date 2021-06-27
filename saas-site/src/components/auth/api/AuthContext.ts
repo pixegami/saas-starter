@@ -26,6 +26,13 @@ export class AuthApiContext {
     });
   }
 
+  public signUp(email: string, password: string): Promise<AuthResponse> {
+    return withSideEffect(AuthApi.signUp(email, password), (x) => {
+      const newState = this.stateUtil.withToken(x.token).save();
+      this.setState(newState);
+    });
+  }
+
   public signOut(): void {
     this.stateUtil.clear();
     this.setState(this.stateUtil.newDefaultState());

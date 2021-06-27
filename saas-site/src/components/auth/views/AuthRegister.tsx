@@ -11,6 +11,7 @@ import {
 } from "../../util/base_api_components/ApiComponents";
 import { navigate } from "gatsby";
 import AuthResponse from "../api/AuthResponse";
+import AuthContext from "../api/AuthContext";
 
 const AuthRegister: React.FC<SubComponentBaseProps> = (props) => {
   const emailField = ApiStringField.emailFromHook(
@@ -20,6 +21,8 @@ const AuthRegister: React.FC<SubComponentBaseProps> = (props) => {
   const passwordField = ApiStringField.passwordFromHook(
     React.useState(AuthApi.AUTO_TEST_PASS)
   );
+
+  const auth = React.useContext(AuthContext);
 
   const onRegisterSuccess = (result: AuthResponse) => {
     props.onApiResponse(result);
@@ -32,7 +35,8 @@ const AuthRegister: React.FC<SubComponentBaseProps> = (props) => {
   const onRegister = () => {
     console.log("Register with ", emailField.value, passwordField.value);
     props.onApiRequest();
-    AuthApi.signUp(emailField.value, passwordField.value)
+    auth
+      .signUp(emailField.value, passwordField.value)
       .then(onRegisterSuccess)
       .catch(props.onApiFault);
   };
