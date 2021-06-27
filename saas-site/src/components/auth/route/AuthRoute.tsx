@@ -1,9 +1,9 @@
 import React from "react";
 import { navigate } from "gatsby";
-import AuthRouteLayout from "./AuthRouteLayout";
 import * as AuthURL from "./AuthURL";
 import { useContext } from "react";
 import AuthContext from "../api/AuthContext";
+import NavBar from "../../navbar/NavBar";
 
 interface AuthRouteProps {
   component: any;
@@ -14,9 +14,8 @@ interface AuthRouteProps {
 const RouteElement: React.FC<AuthRouteProps> = (props) => {
   return (
     <div>
-      <AuthRouteLayout>
-        <props.component {...props} />
-      </AuthRouteLayout>
+      <NavBar {...props} />
+      <props.component {...props} />
     </div>
   );
 };

@@ -17,8 +17,9 @@ const NavMobileMenu: React.FC<NavMenuCommonProps> = (props) => {
       >
         <button
           onClick={() => {
-            props.setIsShowing(false);
+            props.wrapperRef.current.scrollTo(0, 0);
             item.action();
+            props.setIsShowing(false);
           }}
           className="block py-3 text-gray-700 hover:bg-gray-100 w-full text-left"
         >

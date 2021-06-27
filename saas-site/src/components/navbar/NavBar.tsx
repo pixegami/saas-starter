@@ -2,6 +2,7 @@ import { Link, navigate } from "gatsby";
 import React, { useContext, useRef } from "react";
 import AuthContext, { AuthApiContext } from "../auth/api/AuthContext";
 import * as AuthURL from "../auth/route/AuthURL";
+import useRenderKey from "../util/functions/useRenderKey";
 import NavBarDropdown from "./NavBarDropdown";
 import { NavMenuCommonProps } from "./NavBarInterfaces";
 import NavBarPopupMenu from "./NavBarPopupMenu";
@@ -40,6 +41,7 @@ function useWindowDimensions() {
 }
 
 const NavBar: React.FC<NavBarProps> = (props) => {
+  const renderKey = useRenderKey();
   const auth = useContext(AuthContext);
   const siteTitle = <div className="my-auto">SaaS</div>;
   const isSignedIn = auth.state.hasToken; //AuthApi.isSignedIn();
@@ -69,29 +71,33 @@ const NavBar: React.FC<NavBarProps> = (props) => {
 
   let shouldExcludeNavBar = false;
 
-  AuthURL.EXCLUDE_NAV_BAR.forEach((excludePath) => {
-    const matchResult = props.location.pathname.match(excludePath);
-    if (matchResult) {
-      shouldExcludeNavBar = true;
-    }
-  });
+  if (props.location) {
+    AuthURL.EXCLUDE_NAV_BAR.forEach((excludePath) => {
+      const matchResult = props.location.pathname.match(excludePath);
+      if (matchResult) {
+        shouldExcludeNavBar = true;
+      }
+    });
+  }
 
   console.log("Should exclude: " + shouldExcludeNavBar);
 
   if (shouldExcludeNavBar) {
-    return <div></div>;
+    return <div key={renderKey.key}></div>;
   } else {
     return (
-      <div className="mb-2 border-b border-gray-300">
-        <div className="bg-white p-4 pt-4 pb-4 md:p-4 flex w-full">
-          <div className="flex justify-between m-auto w-full max-w-4xl">
-            {siteTitle}
-            <div className="relative" ref={wrapperRef}>
-              {interactiveNavElement}
+      <div key={renderKey.key}>
+        <div className="mb-2 md:mb-4">
+          <div className="rounded-md  bg-white p-4 pt-4 pb-4 md:p-4 flex w-full">
+            <div className="flex justify-between m-auto w-full max-w-4xl">
+              {siteTitle}
+              <div className="relative" ref={wrapperRef}>
+                {interactiveNavElement}
+              </div>
             </div>
           </div>
+          {mobileNavElement}
         </div>
-        {mobileNavElement}
       </div>
     );
   }

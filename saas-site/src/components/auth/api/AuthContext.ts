@@ -32,5 +32,7 @@ export class AuthApiContext {
   }
 }
 
-const AuthContext = React.createContext<AuthApiContext>(new AuthApiContext());
+const AuthContext = React.createContext<AuthApiContext>(
+  new AuthApiContext(new AuthStateUtility().newDefaultState())
+);
 export default AuthContext;
