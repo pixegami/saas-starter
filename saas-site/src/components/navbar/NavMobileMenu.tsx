@@ -16,7 +16,10 @@ const NavMobileMenu: React.FC<NavMenuCommonProps> = (props) => {
         className="first:border-t-0 border-t border-gray-200"
       >
         <button
-          onClick={item.action}
+          onClick={() => {
+            props.setIsShowing(false);
+            item.action();
+          }}
           className="block py-3 text-gray-700 hover:bg-gray-100 w-full text-left"
         >
           {item.label}

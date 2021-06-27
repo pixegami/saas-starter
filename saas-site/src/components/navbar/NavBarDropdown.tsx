@@ -30,7 +30,10 @@ const NavBarDropdown: React.FC<NavMenuCommonProps> = (props) => {
     const element = (
       <div key={`navMenuItem${i}`}>
         <button
-          onClick={item.action}
+          onClick={() => {
+            props.setIsShowing(false);
+            item.action();
+          }}
           className="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left"
         >
           {item.label}

@@ -56,9 +56,6 @@ const NavBar: React.FC<NavBarProps> = (props) => {
     auth
   );
 
-  console.log("Wrapping API at " + props.location);
-  console.log(props.location);
-
   const navProfileElement = <NavBarProfileElement {...navCommonProps} />;
   const navMobileElement = <NavMobileMenu {...navCommonProps} />;
   const navSignInElement = <NavBarSignInElement />;
@@ -74,14 +71,6 @@ const NavBar: React.FC<NavBarProps> = (props) => {
 
   AuthURL.EXCLUDE_NAV_BAR.forEach((excludePath) => {
     const matchResult = props.location.pathname.match(excludePath);
-    console.log(
-      "Matching " +
-        props.location.pathname +
-        " with " +
-        excludePath +
-        ": " +
-        matchResult
-    );
     if (matchResult) {
       shouldExcludeNavBar = true;
     }
