@@ -32,6 +32,7 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
         setAutoRenew(memberStatus.autoRenew);
         setExpiryTime(memberStatus.expiryTime);
         console.log("Set Autorenew to: " + memberStatus.autoRenew);
+        console.log("Set expiryTime Time to: " + memberStatus.expiryTime);
         setLoadingPremium(false);
       }
     });
@@ -71,18 +72,44 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
     premiumInteractiveElement = <div className="loader-dark"></div>;
   } else {
     if (isPremiumMember) {
+      const expiryDate = new Date(expiryTime * 1000);
+      const expiryElement = (
+        <div className="text-xs text-gray-500 mb-1">
+          Until {expiryDate.toLocaleDateString()}
+        </div>
+      );
+
+      const autoRenewColors: string = isAutoRenew
+        ? "bg-green-100 text-green-600"
+        : "bg-gray-200 text-gray-600";
+
+      const autoRenewElement = (
+        <div
+          className={
+            "mt-2 text-center text-xs font-bold p-1 rounded-md px-2 " +
+            autoRenewColors
+          }
+        >
+          AUTO RENEW {isAutoRenew ? "ON" : "OFF"}
+        </div>
+      );
+
       premiumStatusElement = (
         <div>
-          Active [Expiry: {expiryTime} | Renew: {isAutoRenew ? "ON" : "OFF"}]
+          <div className="text-green-600">Active </div>
+          {expiryElement}
         </div>
       );
       premiumInteractiveElement = (
-        <button
-          className="bg-blue-600 text-white rounded-md p-2 w-32"
-          onClick={onClickToPaymentPortal}
-        >
-          Manage
-        </button>
+        <div>
+          <button
+            className="bg-blue-600 text-white rounded-md p-2 w-32"
+            onClick={onClickToPaymentPortal}
+          >
+            Manage
+          </button>
+          {autoRenewElement}
+        </div>
       );
     } else {
       premiumStatusElement = <div>Inactive</div>;
@@ -111,7 +138,7 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
   } else {
     if (isVerified) {
       verificationStatusElement = (
-        <div className="text-green-700">Verified</div>
+        <div className="text-green-600">Verified</div>
       );
       verificationInteractiveElement = null;
     } else {
