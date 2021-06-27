@@ -1,5 +1,6 @@
 import { Link } from "gatsby";
 import * as React from "react";
+import useRenderKey from "../components/util/functions/useRenderKey";
 import Layout from "../layout/Layout";
 
 interface PageNotFoundProps {
@@ -8,13 +9,14 @@ interface PageNotFoundProps {
 
 const PageNotFound: React.FC<PageNotFoundProps> = (props) => {
   const [isMounted, setIsMounted] = React.useState(false);
+  // const renderKey = useRenderKey();
 
   React.useEffect(() => {
     setIsMounted(true);
   }, []);
 
   if (!isMounted) {
-    return <div>Loading</div>;
+    return null;
   } else {
     return (
       <div>

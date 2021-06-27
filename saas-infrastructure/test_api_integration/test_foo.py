@@ -65,7 +65,7 @@ def test_foo_write_and_get_posts():
 def test_foo_non_member_cannot_post():
     random_content = f"Hello Random Content {uuid.uuid4().hex[:6]}"
     foo_request = {"operation": "foo_write_post", "content": random_content}
-    assert_status(post_request_to_foo(foo_request), 403)
+    assert_status(post_request_to_foo(foo_request), 401)
 
 
 # =================================================

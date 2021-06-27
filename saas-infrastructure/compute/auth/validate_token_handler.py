@@ -9,7 +9,7 @@ class ValidateTokenHandler(AuthHandlerBase):
         self.schema = {"future_time": False}
 
     def handle_action(self, request_data: dict, event: dict, context: dict):
-        future_time = request_data.get("future_time", 0)
+        future_time = int(request_data.get("future_time", 0))
         response_payload = validate_token(event, future_time)
         return new_return_message(
             200,

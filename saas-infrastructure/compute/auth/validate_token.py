@@ -25,18 +25,20 @@ def validate_token(event, future_time: int = 0):
 
         # Additional check if token has expired: also code to simulate future times.
         if "exp" in decoded_token:
-            exp_time = decoded_token["exp"]
+            exp_time = int(decoded_token["exp"])
             future_time = max(0, future_time)
             current_time = time.time() + future_time
             if exp_time < current_time:
-                raise jwt.ExpiredSignatureError("Token has expired!")
+                raise AuthExceptions.INVALID_TOKEN.override_message(
+                    f"Token has expired. exp time: {exp_time} and current time: {current_time}."
+                )
 
     except jwt.ExpiredSignatureError as e:
         print(f"Caught Exception: {str(e)}")
         traceback.print_exc()
-        raise AuthExceptions.INVALID_TOKEN
+        raise AuthExceptions.INVALID_TOKEN.append_message(str(e))
     except Exception as e:
-        raise AuthExceptions.INVALID_TOKEN
+        raise AuthExceptions.INVALID_TOKEN.append_message(str(e))
 
     return decoded_token
 
