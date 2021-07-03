@@ -8,14 +8,15 @@ from create_stripe_customer import create_stripe_customer
 #     request_account_verification_token,
 # )
 from api_utils import api_response, ApiException
-from base.auth_handler_base import AuthHandler, User
+from base.auth_handler import AuthHandler, User
 from base.auth_exceptions import AuthExceptions
 
 
 class SignUpHandler(AuthHandler):
     def __init__(self):
         super().__init__()
-        self.schema = {"email": True, "password": True, "flags": False}
+        self.operation_name = "sign_up"
+        self.schema = {"email", "password"}
 
     def handle_action(self, request_data: dict, event: dict, context: dict):
 

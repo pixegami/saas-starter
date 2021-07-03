@@ -12,7 +12,7 @@ def test_sign_up():
     sign_up(email, password, 200)
 
     # # Sign-in should succeed.
-    # sign_in_response = sign_in(user, password, 200)
+    sign_in_response = sign_in(email, password, 200)
 
     # # Validation should succeed.
     # token = sign_in_response.data["payload"]["token"]

@@ -19,6 +19,9 @@ class User(ApiItem):
         self.stripe_customer_id: str = ""
         self.membership_expiry_time: int = 0
 
+    def is_temp(self):
+        return self.expiry_time is not None
+
     def serialize(self) -> dict:
         item = {
             "email": self.email,
@@ -52,13 +55,3 @@ class User(ApiItem):
             algorithm="HS256",
         )
         return token
-
-    # @staticmethod
-    # def from_payload(payload: dict):
-    #     return User(
-    #         payload["pk"],
-    #         payload["user"],
-    #         payload["hashed_password"],
-    #         payload["verified"],
-    #         payload["expiry_time"] if "expiry_time" in payload else None,
-    #     )

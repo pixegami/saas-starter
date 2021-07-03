@@ -5,16 +5,12 @@ from api_utils import ApiHandler, ApiException, ApiDatabase
 from base.input_validator import InputValidator
 from base.membership_status import MembershipStatus
 from base.auth_exceptions import AuthExceptions
-from base.user import User
+from model.user import User
 
 
 class AuthHandler(ApiHandler):
 
     EXPIRY_MINUTES = 60
-    EXPIRY_24_HOURS = 86400
-    MAX_SIGN_IN_ATTEMPTS = 5
-
-    SK_CONSECUTIVE_FAILED_SIGN_IN_ATTEMPTS = "CONSECUTIVE_FAILED_SIGN_IN_ATTEMPTS"
 
     def __init__(self):
         super()
@@ -31,36 +27,14 @@ class AuthHandler(ApiHandler):
             "email_index", "email"
         )
 
-    def put_sign_in_attempt_failure(self, key: str, user: str, attempt: int):
+    def get_user(self, email: str) -> User:
+        try:
+            payload = self.user_database_email_index.get_item(email.lower())
+            return User().deserialize(payload)
+        except ApiException as e:
+            raise AuthExceptions.USER_NOT_FOUND if e.status_code == 404 else e
 
-        item = {
-            "pk": key,
-            "sk": self.SK_CONSECUTIVE_FAILED_SIGN_IN_ATTEMPTS,
-            "attempt": int(attempt),
-            "last_activity": int(time.time()),
-            "next_attempt_time": int(time.time())
-            + self._get_sign_in_cooldown_expiry_seconds(attempt),
-        }
-
-        item["expiry_time"] = int(time.time() + self.EXPIRY_24_HOURS)
-        return self.get_user_table().put_item(Item=item)
-
-    def get_sign_in_attempt_failures(self, key: str):
-        table = self.get_user_table()
-        response = table.get_item(
-            Key={"pk": key, "sk": self.SK_CONSECUTIVE_FAILED_SIGN_IN_ATTEMPTS}
-        )
-
-        if "Item" not in response:
-            return 0, 0
-
-        item = response["Item"]
-        return int(item["attempt"]), int(item["next_attempt_time"])
-
-    def _get_sign_in_cooldown_expiry_seconds(self, attempts: int):
-        if attempts < self.MAX_SIGN_IN_ATTEMPTS:
-            return 0
-        return self.EXPIRY_24_HOURS
+    # OLD ========
 
     def update_user_verification(self, key: str):
         return self.get_user_table().update_item(
@@ -104,13 +78,6 @@ class AuthHandler(ApiHandler):
 
     def delete_key(self, key: str, sk: str):
         self.get_user_table().delete_item(Key={"pk": key, "sk": sk})
-
-    def get_user(self, email: str) -> User:
-        try:
-            payload = self.user_database_email_index.get_item(email.lower())
-            return User().deserialize(payload)
-        except ApiException as e:
-            raise AuthExceptions.USER_NOT_FOUND if e.status_code == 404 else e
 
     def get_credentials_from_key(self, account_key: str) -> User:
         item = self.get_item(account_key)
@@ -166,35 +133,6 @@ class AuthHandler(ApiHandler):
             return membership_status
         else:
             raise AuthExceptions.MEMBERSHIP_NOT_VALID
-
-    def get_item_from_gsi(self, gsi_index: str, gsi_key: str, gsi_value: str):
-        print(f"Getting GSI Items for {gsi_key}.")
-        table = self.get_user_table()
-        response = table.query(
-            IndexName=gsi_index,
-            KeyConditionExpression="#K = :v1",
-            ExpressionAttributeValues={
-                ":v1": gsi_value,
-            },
-            ExpressionAttributeNames={
-                "#K": gsi_key,
-            },
-        )
-
-        if "Items" not in response:
-            raise AuthExceptions.KEY_NOT_FOUND
-
-        items = response["Items"]
-
-        if len(items) == 0:
-            raise AuthExceptions.KEY_NOT_FOUND
-
-        if len(items) > 1:
-            raise AuthExceptions.DUPLICATE_ENTRIES_FOUND.with_message(
-                f"Unexpected duplicate entries were found for index {gsi_index} and key {gsi_key}.",
-            )
-
-        return items[0]
 
     def get_user_table(self):
         return self.user_database.table

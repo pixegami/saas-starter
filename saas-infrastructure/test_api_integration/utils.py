@@ -68,24 +68,24 @@ def sign_up_test_user_as_member(
 
 
 def sign_in(
-    user: str,
+    email: str,
     password: str,
     expected_status: Union[int, Set[int], None] = 200,
     flags: list = [],
 ):
     response = post_request(
         operation="sign_in",
-        payload={"user": user, "password": password},
+        payload={"email": email, "password": password},
         extra_flags=flags,
     )
     return assert_status(response, expected_status)
 
 
 def sign_in_future(
-    user: str, password: str, expected_status: Union[int, Set[int], None] = 200
+    email: str, password: str, expected_status: Union[int, Set[int], None] = 200
 ):
     # Sign in, but X days into the future (to test lock-out cooldown).
-    return sign_in(user, password, expected_status, ["FUTURE"])
+    return sign_in(email, password, expected_status, ["FUTURE"])
 
 
 def sign_in_max_attempt(

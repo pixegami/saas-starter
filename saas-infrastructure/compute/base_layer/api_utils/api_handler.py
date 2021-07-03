@@ -5,7 +5,7 @@ from api_utils.api_response import api_response
 
 class ApiHandler:
     def __init__(self):
-        self.schema = {}
+        self.schema: set = set()
         self.operation_name: str = "api_handler"
 
     def handle_action(self, request_data: dict, event: dict, context: dict):
@@ -27,11 +27,11 @@ class ApiHandler:
         else:
             request_data = self._extract_json_body(event)
 
-        for k, v in self.schema.items():
-            if v is True and (request_data is None or k not in request_data):
+        for key in self.schema:
+            if request_data is None or key not in request_data:
                 raise ApiException(
                     400,
-                    f"Invalid Request. Required key {k} not found in request body.",
+                    f"Invalid Request. Required key {key} not found in request body.",
                 )
 
         return request_data

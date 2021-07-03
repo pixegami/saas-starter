@@ -27,6 +27,10 @@ class ApiItem(ABC):
         self.expiry_time = int(time.time() + 3600)
         return self
 
+    def with_24_hour_expiry(self):
+        self.expiry_time = int(time.time() + 24 * 3600)
+        return self
+
     def basic_keys(self) -> dict:
         basic_keys = {"pk": self.pk, "sk": self.sk, "last_activity": int(time.time())}
         if self.expiry_time is not None:
