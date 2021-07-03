@@ -1,7 +1,7 @@
 import json
 
 
-def new_return_message(status_code: int, message: str, payload: dict = None):
+def api_response(status_code: int, message: str, payload: dict = None):
 
     response_body = {"message": message}
     if payload is not None:

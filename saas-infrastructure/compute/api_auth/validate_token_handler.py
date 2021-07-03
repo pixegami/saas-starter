@@ -1,9 +1,9 @@
-from auth_handler_base import AuthHandlerBase
+from auth_handler_base import AuthHandler
 from return_message import new_return_message
 from validate_token import validate_token
 
 
-class ValidateTokenHandler(AuthHandlerBase):
+class ValidateTokenHandler(AuthHandler):
     def __init__(self):
         super().__init__()
         self.schema = {"future_time": False}

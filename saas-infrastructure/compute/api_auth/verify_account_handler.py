@@ -1,8 +1,8 @@
-from auth_handler_base import AuthHandlerBase
+from auth_handler_base import AuthHandler
 from return_message import new_return_message
 
 
-class VerifyAccountHandler(AuthHandlerBase):
+class VerifyAccountHandler(AuthHandler):
     def __init__(self):
         super().__init__()
         self.schema = {"verification_token": True}

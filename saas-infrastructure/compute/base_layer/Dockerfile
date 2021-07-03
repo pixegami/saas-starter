@@ -14,11 +14,6 @@ RUN source base/bin/activate
 RUN pip install bcrypt cryptography pyjwt -t ./python
 RUN pip install cffi -t ./python
 RUN pip install stripe -t ./python
+COPY ./api_utils/* ./python/api_utils/
 
 RUN zip -r layer.zip ./python/
-
-# Run these commands to create a 'layer.zip' for the base layer.
-# docker rm layer-container
-# docker build -t base-layer .
-# docker run --name layer-container base-layer
-# docker cp layer-container:layer.zip .

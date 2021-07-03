@@ -1,103 +1,35 @@
 import time
 import os
-from typing import Tuple, Union
 
-import jwt
-from handler_base import HandlerBase
-from handler_exception import HandlerException
-from input_validator import InputValidator
-from auth_exceptions import AuthExceptions
-from membership_status import MembershipStatus
+from api_utils import ApiHandler, ApiException, ApiDatabase
+from base.input_validator import InputValidator
+from base.membership_status import MembershipStatus
+from base.auth_exceptions import AuthExceptions
+from base.user import User
 
 
-class AuthUser:
-
-    TOKEN_DURATION_IN_HOURS = 24
-    TOKEN_DURATION_SECONDS = TOKEN_DURATION_IN_HOURS * 3600
-
-    def __init__(
-        self,
-        key,
-        user,
-        hashed_password_str,
-        verified: bool = False,
-        expiry_time: Union[int, None] = None,
-    ):
-        self.key: str = key
-        self.user: str = user
-        self.hashed_password_str: str = hashed_password_str
-        self.verified: bool = verified
-        self.expiry_time: int = expiry_time
-        self.is_temp: bool = expiry_time is not None
-
-    def get_token(self, hash_key: str):
-        token = jwt.encode(
-            {
-                "account_key": self.key,
-                "user": self.user,
-                "verified": self.verified,
-                "exp": time.time() + AuthUser.TOKEN_DURATION_SECONDS,
-            },
-            hash_key,
-            algorithm="HS256",
-        )
-        return token
-
-    @staticmethod
-    def from_payload(payload: dict):
-        return AuthUser(
-            payload["pk"],
-            payload["user"],
-            payload["hashed_password"],
-            payload["verified"],
-            payload["expiry_time"] if "expiry_time" in payload else None,
-        )
-
-
-class AuthHandlerBase(HandlerBase):
+class AuthHandler(ApiHandler):
 
     EXPIRY_MINUTES = 60
     EXPIRY_24_HOURS = 86400
     MAX_SIGN_IN_ATTEMPTS = 5
 
-    JWT_HASH_KEY = os.getenv("AUTH_SECRET")
     SK_CONSECUTIVE_FAILED_SIGN_IN_ATTEMPTS = "CONSECUTIVE_FAILED_SIGN_IN_ATTEMPTS"
 
     def __init__(self):
-        self.schema = {}
-        self.action = None
-        self.user_table = None
-        self.session_table = None
+        super()
+
+        # Environment load once.
+        self.jwt_hash_key = os.getenv("AUTH_SECRET", "")
+
+        # Validators.
         self.validator: InputValidator = InputValidator()
 
-    def put_user_credentials(
-        self,
-        key: str,
-        user: str,
-        hashed_password: str,
-        stripe_customer_id: str,
-        should_expire: bool,
-        should_verify: bool = False,
-        should_be_member: bool = False,
-    ):
-
-        member_expiry = int(time.time() + 3000) if should_be_member else int(0)
-
-        item = {
-            "pk": key,
-            "sk": "CREDENTIALS",
-            "user": user,
-            "hashed_password": hashed_password,
-            "stripe_customer_id": stripe_customer_id,
-            "verified": should_verify,
-            "last_activity": int(time.time()),
-            "membership_expiry_time": member_expiry,
-        }
-
-        if should_expire:
-            item["expiry_time"] = int(time.time() + self.EXPIRY_MINUTES * 60)
-
-        return self.get_user_table().put_item(Item=item)
+        # Set up the user database table.
+        self.user_database: ApiDatabase = ApiDatabase.from_env("TABLE_NAME")
+        self.user_database_email_index = self.user_database.from_index(
+            "email_index", "email"
+        )
 
     def put_sign_in_attempt_failure(self, key: str, user: str, attempt: int):
 
@@ -173,17 +105,16 @@ class AuthHandlerBase(HandlerBase):
     def delete_key(self, key: str, sk: str):
         self.get_user_table().delete_item(Key={"pk": key, "sk": sk})
 
-    def get_user_credentials(self, user: str) -> AuthUser:
-        # User is not case sensitive.
+    def get_user(self, email: str) -> User:
         try:
-            payload = self.get_item_from_gsi("user_index", "user", user.lower())
-            return AuthUser.from_payload(payload)
-        except HandlerException as e:
+            payload = self.user_database_email_index.get_item(email.lower())
+            return User().deserialize(payload)
+        except ApiException as e:
             raise AuthExceptions.USER_NOT_FOUND if e.status_code == 404 else e
 
-    def get_credentials_from_key(self, account_key: str) -> AuthUser:
-        payload = self.get_item(account_key)
-        return AuthUser.from_payload(payload)
+    def get_credentials_from_key(self, account_key: str) -> User:
+        item = self.get_item(account_key)
+        return User().deserialize(item)
 
     def put_token(self, key: str, token_type: str, token: str, expiry_hours: int = 1):
         item = {
@@ -200,7 +131,7 @@ class AuthHandlerBase(HandlerBase):
             payload = self.get_item_from_gsi("token_index", "token", token)
             key = payload["pk"]
             return key
-        except HandlerException as e:
+        except ApiException as e:
             raise AuthExceptions.TOKEN_NOT_FOUND if e.status_code == 404 else e
 
     def get_item(self, account_key: str):
@@ -211,9 +142,7 @@ class AuthHandlerBase(HandlerBase):
         customer_id = credentials.get("stripe_customer_id", None)
 
         if customer_id is None:
-            raise HandlerException(
-                404, "Payment customer ID not found for this customer!"
-            )
+            raise ApiException(404, "Payment customer ID not found for this customer!")
         return customer_id
 
     def get_item_with_sk(self, account_key: str, sk: str):
@@ -222,14 +151,6 @@ class AuthHandlerBase(HandlerBase):
         if "Item" not in response:
             raise AuthExceptions.USER_NOT_FOUND
         return response["Item"]
-
-    def validate_user_does_not_exist(self, user: str) -> bool:
-        try:
-            self.get_user_credentials(user)
-        except HandlerException as e:
-            if e.status_code == 404:
-                return
-        raise AuthExceptions.USER_ALREADY_EXISTS
 
     def get_membership_status(self, account_key: str) -> MembershipStatus:
         item = self.get_item(account_key)
@@ -269,16 +190,14 @@ class AuthHandlerBase(HandlerBase):
             raise AuthExceptions.KEY_NOT_FOUND
 
         if len(items) > 1:
-            raise AuthExceptions.DUPLICATE_ENTRIES_FOUND.override_message(
+            raise AuthExceptions.DUPLICATE_ENTRIES_FOUND.with_message(
                 f"Unexpected duplicate entries were found for index {gsi_index} and key {gsi_key}.",
             )
 
         return items[0]
 
     def get_user_table(self):
-        if self.user_table is None:
-            self.user_table = self.get_default_table()
-        return self.user_table
+        return self.user_database.table
 
     def get_timestamp_int(self):
         return int(time.time())

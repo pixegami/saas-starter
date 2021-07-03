@@ -1,4 +1,4 @@
-from auth_handler_base import AuthHandlerBase, AuthUser
+from auth_handler_base import AuthHandler, AuthUser
 import stripe
 from return_message import new_return_message
 from request_account_verification_token import request_account_verification_token
@@ -9,7 +9,7 @@ def handle(event, context):
     return StripeWebhookHandler().handle(event, context)
 
 
-class StripeWebhookHandler(AuthHandlerBase):
+class StripeWebhookHandler(AuthHandler):
     def __init__(self):
         super().__init__()
         self.schema = {}

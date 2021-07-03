@@ -1,9 +1,9 @@
-from auth_handler_base import AuthHandlerBase
+from auth_handler_base import AuthHandler
 from return_message import new_return_message
 from validate_token import validate_token
 
 
-class ValidateMembershipHandler(AuthHandlerBase):
+class GetVerificationStatusHandler(AuthHandler):
     def __init__(self):
         super().__init__()
         self.schema = {}
@@ -12,16 +12,11 @@ class ValidateMembershipHandler(AuthHandlerBase):
 
         token_payload = validate_token(event)
         account_key = token_payload["account_key"]
-        membership_status = self.get_membership_status(account_key)
-
-        response_payload = {
-            "token_payload": token_payload,
-            "expiry_time": membership_status.expiry_time,
-            "auto_renew": membership_status.auto_renew,
-        }
+        is_verified = self.get_verification_status(account_key)
+        response_payload = {"key": account_key, "verified": is_verified}
 
         return new_return_message(
             200,
-            f"Successfully verified membership: {response_payload}",
+            f"Verification Status for account key {account_key}",
             response_payload,
         )

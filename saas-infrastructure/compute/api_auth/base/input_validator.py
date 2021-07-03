@@ -1,5 +1,5 @@
-from handler_exception import HandlerException
 import re
+from api_utils import ApiException
 
 
 class InputValidator:
@@ -51,4 +51,4 @@ class InputValidator:
             self._fail(f"Email cannot be greater than {max_length} characters.")
 
     def _fail(self, reason: str):
-        raise HandlerException(400, reason)
+        raise ApiException(400, reason)

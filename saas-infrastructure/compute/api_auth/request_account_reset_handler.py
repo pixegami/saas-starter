@@ -1,13 +1,13 @@
 import secrets
 import os
 
-from auth_handler_base import AuthHandlerBase
+from auth_handler_base import AuthHandler
 from email_sender import EmailSender, EmailProps
 from return_message import new_return_message
 from token_keys import TokenKeys
 
 
-class RequestAccountResetHandler(AuthHandlerBase):
+class RequestAccountResetHandler(AuthHandler):
     def __init__(self):
         super().__init__()
         self.schema = {"user": True}

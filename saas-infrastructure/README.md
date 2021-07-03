@@ -12,6 +12,17 @@
 You will need a base layer `.zip` file for the API stack's base Lambda layer. Follow instructions
 in `compute/base_layer/Dockerfile` to create one.
 
+### Add the base layer and auth to Python IDE paths
+
+In VSCode, you can use:
+
+```json
+"python.analysis.extraPaths": [
+    "./compute/auth",
+    "./compute/base_layer"
+]
+```
+
 ## Testing
 
 The Python files will test the API integration of the SaaS. Run it from the base directory:

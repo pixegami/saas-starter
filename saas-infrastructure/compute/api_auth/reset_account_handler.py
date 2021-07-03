@@ -1,10 +1,10 @@
-from auth_handler_base import AuthHandlerBase
+from auth_handler_base import AuthHandler
 import bcrypt
 from return_message import new_return_message
 from token_keys import TokenKeys
 
 
-class ResetAccountHandler(AuthHandlerBase):
+class ResetAccountHandler(AuthHandler):
     def __init__(self):
         super().__init__()
         self.schema = {"reset_token": True, "new_password": True}

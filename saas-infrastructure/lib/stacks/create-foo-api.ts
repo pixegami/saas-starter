@@ -82,7 +82,7 @@ const createFooApi = (
   };
 
   const functionProps: lambda.FunctionProps = {
-    code: Code.fromAsset("compute/auth"),
+    code: Code.fromAsset("compute/api_foo"),
     runtime: Runtime.PYTHON_3_7,
     timeout: Duration.seconds(10),
     layers: [layer],

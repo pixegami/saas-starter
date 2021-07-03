@@ -1,10 +1,10 @@
-from auth_handler_base import AuthHandlerBase
+from auth_handler_base import AuthHandler
 from handler_exception import HandlerException
 from return_message import new_return_message
 from request_account_verification_token import request_account_verification_token
 
 
-class RequestAccountVerificationHandler(AuthHandlerBase):
+class RequestAccountVerificationHandler(AuthHandler):
     def __init__(self):
         super().__init__()
         self.schema = {"account_key": True}

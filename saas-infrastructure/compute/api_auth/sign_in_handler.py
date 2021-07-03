@@ -1,11 +1,11 @@
-from auth_handler_base import AuthHandlerBase
+from auth_handler_base import AuthHandler
 import bcrypt
 from auth_exceptions import AuthExceptions
 from return_message import new_return_message
 import time
 
 
-class SignInHandler(AuthHandlerBase):
+class SignInHandler(AuthHandler):
     def __init__(self):
         super().__init__()
         self.schema = {"user": True, "password": True, "flags": False}

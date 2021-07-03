@@ -17,7 +17,7 @@ const createUserAuthApi = (
   layer: LayerVersion,
   serviceProps: ServiceProps
 ) => {
-  const tableName: string = `${serviceProps.servicePrefix}.user.auth`;
+  const tableName: string = `${serviceProps.servicePrefix}.auth`;
   const authEmailSource: string = `auth.${serviceProps.servicePrefix}@${serviceProps.serviceRootDomain}`;
   const authEndpoint: string = `https://${apiEndpoint}/auth`;
 
@@ -36,10 +36,10 @@ const createUserAuthApi = (
     removalPolicy: cdk.RemovalPolicy.DESTROY,
   });
 
-  const userIndex: ddb.GlobalSecondaryIndexProps = {
-    indexName: "user_index",
+  const emailIndex: ddb.GlobalSecondaryIndexProps = {
+    indexName: "email_index",
     partitionKey: {
-      name: "user",
+      name: "email",
       type: ddb.AttributeType.STRING,
     },
     sortKey: {
@@ -64,7 +64,7 @@ const createUserAuthApi = (
     },
   };
 
-  table.addGlobalSecondaryIndex(userIndex);
+  table.addGlobalSecondaryIndex(emailIndex);
   table.addGlobalSecondaryIndex(tokenIndex);
   table.addGlobalSecondaryIndex(stripeCustomerIndex);
 
@@ -83,10 +83,10 @@ const createUserAuthApi = (
   const secret = new secretsmanager.Secret(scope, "AuthSecret");
 
   const authFunctionProps: lambda.FunctionProps = {
-    code: Code.fromAsset("compute/auth"),
+    code: Code.fromAsset("compute/api_auth"),
     runtime: Runtime.PYTHON_3_7,
     timeout: Duration.seconds(10),
-    handler: "entry_point_handler.handler",
+    handler: "auth_entrypoint.handler",
     memorySize: 256,
     layers: [layer],
     environment: {
@@ -112,7 +112,7 @@ const createUserAuthApi = (
   });
 
   const stripeWebhookFunctionProps: lambda.FunctionProps = {
-    code: Code.fromAsset("compute/auth"),
+    code: Code.fromAsset("compute/api_auth"),
     runtime: Runtime.PYTHON_3_7,
     timeout: Duration.seconds(10),
     handler: "stripe_webhook_handler.handle",

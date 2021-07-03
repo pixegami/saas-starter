@@ -1,11 +1,11 @@
 import json
 import time
-from auth_handler_base import AuthHandlerBase, AuthUser
+from auth_handler_base import AuthHandler, AuthUser
 from sign_up_handler import SignUpHandler
 import uuid
 
 
-class CreateTestAccountHandler(AuthHandlerBase):
+class CreateTestAccountHandler(AuthHandler):
     def __init__(self):
         super().__init__()
         self.schema = {"user": True, "password": True, "flags": False}

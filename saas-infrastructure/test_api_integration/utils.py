@@ -33,14 +33,14 @@ class ApiResponse:
 
 
 def sign_up(
-    user: str,
+    email: str,
     password: str,
     expected_status: Union[int, Set[int], None] = 200,
     extra_flags: list = [],
 ):
     response = post_request(
         operation="sign_up",
-        payload={"user": user, "password": password},
+        payload={"email": email, "password": password},
         extra_flags=extra_flags,
     )
     return assert_status(response, expected_status)
