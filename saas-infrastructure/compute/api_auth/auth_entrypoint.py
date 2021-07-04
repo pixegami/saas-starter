@@ -1,5 +1,6 @@
 from account import *
 from validation import *
+from verification import *
 from api_utils import ApiEntrypoint
 
 
@@ -10,6 +11,9 @@ def handler(event, context=None):
         .with_handler(SignUpHandler())
         .with_handler(SignInHandler())
         .with_handler(ValidateTokenHandler())
+        .with_handler(GetVerificationStatusHandler())
+        .with_handler(VerifyAccountHandler())
+        .with_handler(RequestAccountVerificationHandler())
         # .with_operation("sign_in", SignInHandler())
         # .with_operation(
         #     "request_account_verification", RequestAccountVerificationHandler()

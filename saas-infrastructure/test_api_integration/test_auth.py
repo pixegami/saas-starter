@@ -48,10 +48,10 @@ def test_verify_account():
 
 def verify_user(token: str):
     token_payload = jwt.decode(token, options={"verify_signature": False})
-    account_key = token_payload["account_key"]
-    response = request_account_verification(account_key, 200)
+    account_id = token_payload["account_id"]
+    response = request_account_verification(account_id, 200)
 
-    verification_url = response.data["payload"]["verification_url"]
+    verification_url = response.from_payload("verification_url")
     http = urllib3.PoolManager()
     response = http.request("GET", verification_url)
     print(response.status, response.data)

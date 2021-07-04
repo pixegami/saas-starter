@@ -143,9 +143,9 @@ def validate(
 
 
 def request_account_verification(
-    account_key: str, expected_status: Union[int, Set[int], None] = 200
+    account_id: str, expected_status: Union[int, Set[int], None] = 200
 ):
-    payload = {"account_key": account_key}
+    payload = {"account_id": account_id}
     response = post_request(operation="request_account_verification", payload=payload)
     return assert_status(response, expected_status)
 

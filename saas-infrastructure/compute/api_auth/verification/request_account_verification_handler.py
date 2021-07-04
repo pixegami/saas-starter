@@ -9,12 +9,13 @@ from api_utils import ApiException, api_response
 class RequestAccountVerificationHandler(AuthHandler):
     def __init__(self):
         super().__init__()
-        self.schema = {"account_key"}
+        self.operation_name = "request_account_verification"
+        self.schema = {"account_id"}
 
     def handle_action(self, request_data: dict, event: dict, context: dict):
 
-        account_key = request_data["account_key"]
-        user = self.get_user_by_key(account_key)
+        account_id = request_data["account_id"]
+        user = self.get_user_by_id(account_id)
         should_return_verification_tokens = self.is_test_user(user.email)
 
         # Validation.
@@ -25,7 +26,7 @@ class RequestAccountVerificationHandler(AuthHandler):
             raise ApiException(400, "This user has already been verified.")
 
         verification_token, verification_url = request_account_verification_token(
-            self, user.email, account_key
+            self, user.email, account_id
         )
 
         # Return a response.
@@ -39,6 +40,6 @@ class RequestAccountVerificationHandler(AuthHandler):
 
         return api_response(
             200,
-            f"Verification token created for account. [{account_key}]",
+            f"Verification token created for account. [{account_id}]",
             response_payload,
         )

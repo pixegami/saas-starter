@@ -6,6 +6,7 @@ from base.input_validator import InputValidator
 from base.membership_status import MembershipStatus
 from base.auth_exceptions import AuthExceptions
 from model.user import User
+from model.verification_token import VerificationToken
 
 
 class AuthHandler(ApiHandler):
@@ -26,6 +27,9 @@ class AuthHandler(ApiHandler):
         self.user_database_email_index = self.user_database.from_index(
             "email_index", "email"
         )
+        self.user_database_token_index = self.user_database.from_index(
+            "token_index", "token"
+        )
 
     def get_user_by_email(self, email: str) -> User:
         try:
@@ -34,20 +38,31 @@ class AuthHandler(ApiHandler):
         except ApiException as e:
             raise AuthExceptions.USER_NOT_FOUND if e.status_code == 404 else e
 
-    def get_user_by_key(self, account_key: str) -> User:
-        item = self.user_database.get_item_with_keys(account_key, "CREDENTIALS")
+    def get_user_by_id(self, account_id: str) -> User:
+        item = self.user_database.get_item_with_keys(account_id, "CREDENTIALS")
         return User().deserialize(item)
 
-    # OLD ========
+    def get_verification_status(self, account_id: str) -> bool:
+        auth_user = self.get_user_by_id(account_id)
+        return auth_user.verified
+
+    def get_key_for_token(self, token: str):
+        item = self.user_database_token_index.get_item(token)
+        return item["pk"]
+
+    def put_verification_token(self, key: str, token: str, expiry_hours: int = 1):
+        verification_token = VerificationToken()
+        verification_token.pk = key
+        verification_token.token = token
+        verification_token.with_x_hour_expiry(expiry_hours)
+        self.user_database.put_item(verification_token)
 
     def update_user_verification(self, key: str):
-        return self.get_user_table().update_item(
-            Key={"pk": key, "sk": "CREDENTIALS"},
-            UpdateExpression="SET verified = :v1",
-            ExpressionAttributeValues={
-                ":v1": True,
-            },
+        return self.user_database.update_item(
+            pk=key, sk=User().sk, updated_values={"verified": True}
         )
+
+    # OLD ========
 
     def update_user_password(self, key: str, hashed_password: str):
         return self.get_user_table().update_item(
@@ -76,30 +91,8 @@ class AuthHandler(ApiHandler):
             ExpressionAttributeValues={":v1": active},
         )
 
-    def get_verification_status(self, key: str) -> bool:
-        auth_user = self.get_credentials_from_key(key)
-        return auth_user.verified
-
     def delete_key(self, key: str, sk: str):
         self.get_user_table().delete_item(Key={"pk": key, "sk": sk})
-
-    def put_token(self, key: str, token_type: str, token: str, expiry_hours: int = 1):
-        item = {
-            "pk": key,
-            "sk": token_type,
-            "token": token,
-            "last_activity": self.get_timestamp_int(),
-            "expiry_time": self.get_timestamp_int() + (expiry_hours * 3600),
-        }
-        return self.get_user_table().put_item(Item=item)
-
-    def get_key_for_token(self, token: str):
-        try:
-            payload = self.get_item_from_gsi("token_index", "token", token)
-            key = payload["pk"]
-            return key
-        except ApiException as e:
-            raise AuthExceptions.TOKEN_NOT_FOUND if e.status_code == 404 else e
 
     def get_item(self, account_key: str):
         return self.get_item_with_sk(account_key, "CREDENTIALS")

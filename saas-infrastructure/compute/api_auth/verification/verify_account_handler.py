@@ -1,11 +1,12 @@
-from auth_handler_base import AuthHandler
-from return_message import new_return_message
+from base.auth_handler import AuthHandler
+from api_utils import api_response
 
 
 class VerifyAccountHandler(AuthHandler):
     def __init__(self):
         super().__init__()
-        self.schema = {"verification_token": True}
+        self.operation_name = "verify_account"
+        self.schema = {"verification_token"}
 
     def handle_action(self, request_data: dict, event: dict, context: dict):
 
@@ -18,7 +19,7 @@ class VerifyAccountHandler(AuthHandler):
         # To prevent inconsistent read, set "verified" to True.
         response_payload = {"key": account_key, "verified": True}
 
-        return new_return_message(
+        return api_response(
             200,
             f"Verification Success for account key {account_key}",
             response_payload,

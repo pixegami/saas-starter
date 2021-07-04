@@ -24,11 +24,13 @@ class ApiItem(ABC):
         return self
 
     def with_1_hour_expiry(self):
-        self.expiry_time = int(time.time() + 3600)
-        return self
+        return self.with_x_hour_expiry(1)
 
     def with_24_hour_expiry(self):
-        self.expiry_time = int(time.time() + 24 * 3600)
+        return self.with_x_hour_expiry(24)
+
+    def with_x_hour_expiry(self, hours: int):
+        self.expiry_time = int(time.time() + hours * 3600)
         return self
 
     def basic_keys(self) -> dict:

@@ -1,10 +1,12 @@
+from base.auth_handler import AuthHandler
 import os
 import secrets
-from base.token_keys import TokenKeys
-from email_sender import EmailProps, EmailSender
+from verification.email_sender import EmailProps, EmailSender
 
 
-def request_account_verification_token(auth_handler, email: str, account_key: str):
+def request_account_verification_token(
+    auth_handler: AuthHandler, email: str, account_key: str
+):
 
     # Get the ENDPOINTS.
     endpoint: str = os.getenv("ENDPOINT", "UNKNOWN")
@@ -12,7 +14,7 @@ def request_account_verification_token(auth_handler, email: str, account_key: st
 
     # Operation
     token = secrets.token_hex()
-    auth_handler.put_token(account_key, TokenKeys.TOKEN_VERIFY, token)
+    auth_handler.put_verification_token(account_key, token)
     confirm_url: str = f"{endpoint}?operation=verify_account&verification_token={token}"
     confirm_frontend_url: str = f"{frontend_url}verify_account?key={token}"
 
