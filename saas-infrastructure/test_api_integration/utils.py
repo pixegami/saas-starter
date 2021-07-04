@@ -2,7 +2,6 @@ import json
 import uuid
 import urllib3
 import jwt
-import time
 from typing import Union, Set
 
 # Load the config JSON from root directory.
@@ -29,7 +28,21 @@ class ApiResponse:
     def __init__(self, status: int, data: dict):
         self.status = status
         self.data = data
-        self.payload = data.get("payload", None)
+        self._payload = data.get("payload", None)
+        self._token = (
+            None if self._payload is None else self._payload.get("token", None)
+        )
+
+    def get_token(self) -> str:
+        assert self._token is not None
+        return self._token
+
+    def get_payload(self) -> dict:
+        assert self._payload is not None
+        return self._payload
+
+    def from_payload(self, key: str):
+        return self.get_payload().get(key)
 
 
 def sign_up(
@@ -114,7 +127,7 @@ def assert_status(
 
     if type(expected_status) is int:
         assert response.status == expected_status
-    else:
+    elif type(expected_status) is Set:
         assert response.status in expected_status
 
     return response

@@ -1,4 +1,5 @@
 from utils import *
+import time
 
 
 def setup():
@@ -11,28 +12,27 @@ def test_sign_up():
     password = generate_random_password()
     sign_up(email, password, 200)
 
-    # # Sign-in should succeed.
+    # Sign-in should succeed.
     sign_in_response = sign_in(email, password, 200)
 
-    # # Validation should succeed.
-    # token = sign_in_response.data["payload"]["token"]
-    # validate(token)
+    # Validation should succeed.
+    validate(sign_in_response.get_token())
 
 
 def test_can_check_verification_status():
     user = generate_random_email()
     password = generate_random_password()
     sign_up_response = sign_up(user, password)
-    token = sign_up_response.data["payload"]["token"]
+    token = sign_up_response.get_token()
 
     # User hasn't verified, so this should return false.
     verification_status_response = get_verification_status(token)
-    assert verification_status_response.data["payload"]["verified"] is False
+    assert verification_status_response.from_payload("verified") is False
 
     # Now verify the account and check again.
     verify_user(token)
     verification_status_response = get_verification_status(token)
-    assert verification_status_response.data["payload"]["verified"] is True
+    assert verification_status_response.from_payload("verified") is True
 
 
 def test_verify_account():

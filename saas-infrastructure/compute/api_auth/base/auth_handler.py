@@ -13,7 +13,7 @@ class AuthHandler(ApiHandler):
     EXPIRY_MINUTES = 60
 
     def __init__(self):
-        super()
+        super().__init__()
 
         # Environment load once.
         self.jwt_hash_key = os.getenv("AUTH_SECRET", "")
@@ -27,12 +27,16 @@ class AuthHandler(ApiHandler):
             "email_index", "email"
         )
 
-    def get_user(self, email: str) -> User:
+    def get_user_by_email(self, email: str) -> User:
         try:
             payload = self.user_database_email_index.get_item(email.lower())
             return User().deserialize(payload)
         except ApiException as e:
             raise AuthExceptions.USER_NOT_FOUND if e.status_code == 404 else e
+
+    def get_user_by_key(self, account_key: str) -> User:
+        item = self.user_database.get_item_with_keys(account_key, "CREDENTIALS")
+        return User().deserialize(item)
 
     # OLD ========
 
@@ -78,10 +82,6 @@ class AuthHandler(ApiHandler):
 
     def delete_key(self, key: str, sk: str):
         self.get_user_table().delete_item(Key={"pk": key, "sk": sk})
-
-    def get_credentials_from_key(self, account_key: str) -> User:
-        item = self.get_item(account_key)
-        return User().deserialize(item)
 
     def put_token(self, key: str, token_type: str, token: str, expiry_hours: int = 1):
         item = {

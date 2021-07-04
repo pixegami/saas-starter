@@ -27,7 +27,7 @@ class SignInHandler(AuthHandler):
         flags = request_data["flags"] if "flags" in request_data else []
 
         # Check if user exists.
-        user = self.get_user(email)
+        user = self.get_user_by_email(email)
 
         # Check if the future flag is enabled and usable by a tmp user.
         is_future = "FUTURE" in flags and user.is_temp()

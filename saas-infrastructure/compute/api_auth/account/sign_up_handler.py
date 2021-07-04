@@ -81,7 +81,7 @@ class SignUpHandler(AuthHandler):
 
     def _validate_user_does_not_exist(self, email: str):
         try:
-            self.get_user(email)
+            self.get_user_by_email(email)
         except ApiException as e:
             if e.status_code == 404:
                 return

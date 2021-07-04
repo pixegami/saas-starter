@@ -1,6 +1,7 @@
-import json
 from api_utils.api_exception import ApiException
 from api_utils.api_response import api_response
+from api_utils.handler_event_extractor import *
+import traceback
 
 
 class ApiHandler:
@@ -18,14 +19,17 @@ class ApiHandler:
         except ApiException as e:
             return e.as_api_response()
         except Exception as e:
-            return api_response(502, f"Unknown server error: {type(e)}: {e}")
+            trackback_message = traceback.format_exc(limit=5)
+            return api_response(
+                502, f"Unknown server error: {type(e)}: {e} \n\n {trackback_message}"
+            )
 
     def _validate_request(self, event) -> dict:
 
         if "httpMethod" in event and event["httpMethod"].lower() == "get":
-            request_data = self._extract_query_parameters(event)
+            request_data = extract_query_parameters(event)
         else:
-            request_data = self._extract_json_body(event)
+            request_data = extract_json_body(event)
 
         for key in self.schema:
             if request_data is None or key not in request_data:
@@ -35,23 +39,3 @@ class ApiHandler:
                 )
 
         return request_data
-
-    def _extract_json_body(self, event):
-        return self._extract_json(event, "body")
-
-    def _extract_json(self, event, key: str):
-        try:
-            event_body = event[key]
-            json_body = (
-                json.loads(event_body) if type(event_body) is str else event_body
-            )
-        except Exception as e:
-            raise ApiException(400, f"Unable to parse JSON data of {key}: {e}")
-        return json_body
-
-    def _extract_query_parameters(self, event):
-        try:
-            query_params = event["queryStringParameters"]
-        except Exception as e:
-            raise ApiException(400, f"Unable to parse query params: {e}")
-        return query_params

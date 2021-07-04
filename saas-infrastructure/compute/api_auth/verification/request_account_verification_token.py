@@ -1,6 +1,6 @@
 import os
 import secrets
-from token_keys import TokenKeys
+from base.token_keys import TokenKeys
 from email_sender import EmailProps, EmailSender
 
 
