@@ -7,6 +7,7 @@ from base.membership_status import MembershipStatus
 from base.auth_exceptions import AuthExceptions
 from model.user import User
 from model.verification_token import VerificationToken
+from model.account_reset_token import AccountResetToken
 
 
 class AuthHandler(ApiHandler):
@@ -46,9 +47,17 @@ class AuthHandler(ApiHandler):
         auth_user = self.get_user_by_id(account_id)
         return auth_user.verified
 
-    def get_key_for_token(self, token: str):
-        item = self.user_database_token_index.get_item(token)
+    def get_account_id_for_otp_token(self, otp_token: str):
+        item = self.user_database_token_index.get_item(otp_token)
         return item["pk"]
+
+    def update_user_verification(self, key: str):
+        return self.user_database.update_item(
+            pk=key, sk=User().sk, updated_values={"verified": True}
+        )
+
+    def is_test_user(self, email: str):
+        return email.startswith("test-user")
 
     def put_verification_token(self, key: str, token: str, expiry_hours: int = 1):
         verification_token = VerificationToken()
@@ -57,21 +66,7 @@ class AuthHandler(ApiHandler):
         verification_token.with_x_hour_expiry(expiry_hours)
         self.user_database.put_item(verification_token)
 
-    def update_user_verification(self, key: str):
-        return self.user_database.update_item(
-            pk=key, sk=User().sk, updated_values={"verified": True}
-        )
-
-    # OLD ========
-
-    def update_user_password(self, key: str, hashed_password: str):
-        return self.get_user_table().update_item(
-            Key={"pk": key, "sk": "CREDENTIALS"},
-            UpdateExpression="SET hashed_password = :v1",
-            ExpressionAttributeValues={
-                ":v1": hashed_password,
-            },
-        )
+    # OLD ===========================
 
     def update_user_membership(self, key: str, new_expiry_time: int):
         return self.get_user_table().update_item(
@@ -90,9 +85,6 @@ class AuthHandler(ApiHandler):
             UpdateExpression="SET auto_renew = :v1",
             ExpressionAttributeValues={":v1": active},
         )
-
-    def delete_key(self, key: str, sk: str):
-        self.get_user_table().delete_item(Key={"pk": key, "sk": sk})
 
     def get_item(self, account_key: str):
         return self.get_item_with_sk(account_key, "CREDENTIALS")
@@ -132,6 +124,3 @@ class AuthHandler(ApiHandler):
 
     def get_timestamp_int(self):
         return int(time.time())
-
-    def is_test_user(self, email: str):
-        return email.startswith("test-user")

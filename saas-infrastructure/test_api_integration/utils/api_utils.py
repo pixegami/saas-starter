@@ -1,9 +1,7 @@
 import json
-from os import stat
 import uuid
-import urllib3
 import jwt
-from typing import List, Union, Set
+from typing import Union, Set
 from utils.api_response import ApiResponse
 from utils.api_call import ApiCall
 
@@ -18,9 +16,6 @@ API_ENDPOINT = f"https://api.{DOMAIN}/auth"
 STRIPE_WEBHOOK_ENDPOINT = f"https://api.{DOMAIN}/stripe"
 
 VALIDATION_EMAIL = f"auth.{DOMAIN}"  # Emails sent here get auto-validated.
-AUTO_RESET_PASSWORD = (
-    "myAutoResetPasswordAB12!"  # The email validator will reset the password to this.
-)
 JWT_KEY = "SOME_KEY"
 
 ############################################
@@ -136,8 +131,10 @@ def request_account_verification(
     return assert_status(response, expected_status)
 
 
-def request_account_reset(user: str, expected_status: Union[int, Set[int], None] = 200):
-    payload = {"user": user}
+def request_account_reset(
+    email: str, expected_status: Union[int, Set[int], None] = 200
+):
+    payload = {"email": email}
     response = post_request(operation="request_account_reset", payload=payload)
     return assert_status(response, expected_status)
 

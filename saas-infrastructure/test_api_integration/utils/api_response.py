@@ -18,8 +18,11 @@ class ApiResponse:
         assert self._payload is not None
         return self._payload
 
-    def from_payload(self, key: str):
-        return self.get_payload().get(key)
+    def from_payload(self, key: str) -> str:
+        assert key in self.get_payload()
+        value = self.get_payload().get(key)
+        assert value is not None
+        return value
 
     def get_token_payload(self) -> dict:
         return jwt.decode(self.get_token(), options={"verify_signature": False})

@@ -1,5 +1,5 @@
-from verification.request_account_verification_token import (
-    request_account_verification_token,
+from verification.request_account_verification import (
+    request_account_verification,
 )
 
 from base.auth_handler import AuthHandler
@@ -25,7 +25,7 @@ class RequestAccountVerificationHandler(AuthHandler):
         if user.verified:
             raise ApiException(400, "This user has already been verified.")
 
-        verification_token, verification_url = request_account_verification_token(
+        verification_token, verification_url = request_account_verification(
             self, user.email, account_id
         )
 

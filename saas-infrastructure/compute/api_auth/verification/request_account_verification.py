@@ -4,7 +4,7 @@ import secrets
 from verification.email_sender import EmailProps, EmailSender
 
 
-def request_account_verification_token(
+def request_account_verification(
     auth_handler: AuthHandler, email: str, account_key: str
 ):
 

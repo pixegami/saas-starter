@@ -1,5 +1,9 @@
 from utils.api_utils import *
 import time
+import urllib3
+
+
+AUTO_RESET_PASSWORD = "myAutoResetPasswordAB12!"
 
 
 def setup():
@@ -50,7 +54,7 @@ def test_can_reset_account():
     sign_up_test_user(user, password)
     response = request_account_reset(user, 200)
 
-    reset_token = response.data["payload"]["reset_token"]
+    reset_token = response.from_payload("reset_token")
     reset_account(reset_token, new_password, 200)
 
     # Wait a second or two before signing in again.
@@ -64,31 +68,31 @@ def test_can_reset_account():
 
 
 def test_can_verify_via_email():
-
     user = generate_random_email(VALIDATION_EMAIL)
     password = generate_random_password()
-    sign_up(user, password, 200)
+    sign_up(user, password)
 
     # Verification email should be sent on sign-up.
     # Wait for the email receiver to resolve.
     time.sleep(5)
-    sign_in_response = sign_in(user, password, 200)
-    token_payload = token_payload_from_response(sign_in_response)
-    print("Token Payload: ", token_payload)
-    assert token_payload["verified"]
+    sign_in_response = sign_in(user, password)
+    is_verified(sign_in_response.get_token())
 
 
 def test_can_reset_account_via_email():
-
     user = generate_random_email(VALIDATION_EMAIL)
     password = generate_random_password()
-
-    sign_up_test_user(user, password, 200)
-    request_account_reset(user, 200)
+    sign_up_test_user(user, password)
+    request_account_reset(user)
 
     # Give SES time to process the email.
     time.sleep(5)
     sign_in(user, AUTO_RESET_PASSWORD)
+
+
+############################################
+# Other helper functions.
+############################################
 
 
 def verify_user(token: str):

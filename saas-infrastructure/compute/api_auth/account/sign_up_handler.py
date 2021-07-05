@@ -3,10 +3,7 @@ import time
 
 from typing import List
 from create_stripe_customer import create_stripe_customer
-
-# from verification.request_account_verification_token import (
-#     request_account_verification_token,
-# )
+from verification.request_account_verification import request_account_verification
 from api_utils import api_response, ApiException
 from base.auth_handler import AuthHandler, User
 from base.auth_exceptions import AuthExceptions
@@ -52,8 +49,8 @@ class SignUpHandler(AuthHandler):
         self.user_database.put_item(user)
 
         # Create verification token (if it's not auto-verified).
-        # if not should_verify:
-        #     request_account_verification_token(self, email, user.pk)
+        if not should_verify:
+            request_account_verification(self, email, user.pk)
 
         # Prepare the response.
         token = user.get_token(self.jwt_hash_key)
