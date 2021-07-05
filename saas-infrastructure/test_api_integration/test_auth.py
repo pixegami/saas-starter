@@ -1,4 +1,4 @@
-from utils import *
+from utils.api_utils import *
 import time
 
 
@@ -19,7 +19,7 @@ def test_sign_up():
     validate(sign_in_response.get_token())
 
 
-def test_can_check_verification_status():
+def test_verify_account():
     user = generate_random_email()
     password = generate_random_password()
     sign_up_response = sign_up(user, password)
@@ -27,46 +27,19 @@ def test_can_check_verification_status():
 
     # User hasn't verified, so this should return false.
     verification_status_response = get_verification_status(token)
-    assert verification_status_response.from_payload("verified") is False
+    is_verified(token, False)
 
     # Now verify the account and check again.
     verify_user(token)
-    verification_status_response = get_verification_status(token)
-    assert verification_status_response.from_payload("verified") is True
-
-
-def test_verify_account():
-    # A user can sign-up, and request account verification.
-
-    user = generate_random_email()
-    password = generate_random_password()
-    sign_up_response = sign_up(user, password, 200)
-
-    token = sign_up_response.data["payload"]["token"]
-    verify_user(token)
-
-
-def verify_user(token: str):
-    token_payload = jwt.decode(token, options={"verify_signature": False})
-    account_id = token_payload["account_id"]
-    response = request_account_verification(account_id, 200)
-
-    verification_url = response.from_payload("verification_url")
-    http = urllib3.PoolManager()
-    response = http.request("GET", verification_url)
-    print(response.status, response.data)
-    assert response.status == 200
+    is_verified(token)
 
 
 def test_can_create_test_user():
     # Can use the 'test user' endpoint to create one with pre-confirmed status.
     user = generate_random_email()
     password = generate_random_password()
-    response = sign_up_test_user(user, password, 200)
-
-    token_payload = token_payload_from_response(response)
-    print(token_payload)
-    assert token_payload["verified"]
+    response = sign_up_test_user(user, password)
+    is_verified(response.get_token())
 
 
 def test_can_reset_account():
@@ -74,7 +47,7 @@ def test_can_reset_account():
     password = generate_random_password()
     new_password = generate_random_password()
 
-    sign_up_test_user(user, password, 200)
+    sign_up_test_user(user, password)
     response = request_account_reset(user, 200)
 
     reset_token = response.data["payload"]["reset_token"]
@@ -116,3 +89,20 @@ def test_can_reset_account_via_email():
     # Give SES time to process the email.
     time.sleep(5)
     sign_in(user, AUTO_RESET_PASSWORD)
+
+
+def verify_user(token: str):
+    token_payload = jwt.decode(token, options={"verify_signature": False})
+    account_id = token_payload["account_id"]
+    response = request_account_verification(account_id, 200)
+
+    verification_url = response.from_payload("verification_url")
+    http = urllib3.PoolManager()
+    response = http.request("GET", verification_url)
+    print(response.status, response.data)
+    assert response.status == 200
+
+
+def is_verified(token: str, should_be_verified: bool = True):
+    verification_status_response = get_verification_status(token)
+    assert verification_status_response.from_payload("verified") is should_be_verified

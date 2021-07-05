@@ -1,8 +1,12 @@
 import json
+from os import stat
 import uuid
 import urllib3
 import jwt
-from typing import Union, Set
+from typing import List, Union, Set
+from utils.api_response import ApiResponse
+from utils.api_call import ApiCall
+
 
 # Load the config JSON from root directory.
 with open("./service.config.json", "r") as f:
@@ -24,25 +28,8 @@ JWT_KEY = "SOME_KEY"
 ############################################
 
 
-class ApiResponse:
-    def __init__(self, status: int, data: dict):
-        self.status = status
-        self.data = data
-        self._payload = data.get("payload", None)
-        self._token = (
-            None if self._payload is None else self._payload.get("token", None)
-        )
-
-    def get_token(self) -> str:
-        assert self._token is not None
-        return self._token
-
-    def get_payload(self) -> dict:
-        assert self._payload is not None
-        return self._payload
-
-    def from_payload(self, key: str):
-        return self.get_payload().get(key)
+def new_api_call():
+    return ApiCall(API_ENDPOINT)
 
 
 def sign_up(
@@ -59,27 +46,6 @@ def sign_up(
     return assert_status(response, expected_status)
 
 
-def sign_up_test_user(
-    user: str, password: str, expected_status: Union[int, Set[int], None] = 200
-):
-    response = post_request(
-        operation="create_test_account",
-        payload={"user": user, "password": password},
-    )
-    return assert_status(response, expected_status)
-
-
-def sign_up_test_user_as_member(
-    user: str, password: str, expected_status: Union[int, Set[int], None] = 200
-):
-    response = post_request(
-        operation="create_test_account",
-        payload={"user": user, "password": password},
-        extra_flags=["AUTO_MEMBER"],
-    )
-    return assert_status(response, expected_status)
-
-
 def sign_in(
     email: str,
     password: str,
@@ -90,6 +56,26 @@ def sign_in(
         operation="sign_in",
         payload={"email": email, "password": password},
         extra_flags=flags,
+    )
+    return assert_status(response, expected_status)
+
+
+def sign_up_test_user(user: str, password: str):
+    return (
+        new_api_call()
+        .with_operation("sign_up_test_user")
+        .with_payload({"email": user, "password": password})
+        .post()
+    )
+
+
+def sign_up_test_user_as_member(
+    user: str, password: str, expected_status: Union[int, Set[int], None] = 200
+):
+    response = post_request(
+        operation="create_test_account",
+        payload={"user": user, "password": password},
+        extra_flags=["AUTO_MEMBER"],
     )
     return assert_status(response, expected_status)
 
@@ -169,50 +155,17 @@ def reset_account(
 def get_request(
     operation: str, payload: dict = {}, token: str = None, extra_flags: list = []
 ):
-    return generic_request("GET", operation, payload, token, extra_flags)
+    return ApiCall.generic_request(
+        API_ENDPOINT, "GET", operation, payload, token, extra_flags
+    )
 
 
 def post_request(
     operation: str, payload: dict = {}, token: str = None, extra_flags: list = []
 ):
-    return generic_request("POST", operation, payload, token, extra_flags)
-
-
-def generic_request(
-    method: str,
-    operation: str,
-    payload: dict = {},
-    token: str = None,
-    extra_flags: list = [],
-):
-    request_data = {"operation": operation, **payload, "flags": ["TMP"] + extra_flags}
-
-    if token:
-        headers = {"Authorization": f"Bearer {token}"}
-    else:
-        headers = None
-
-    http = urllib3.PoolManager()
-    if method == "GET":
-        response = http.request(
-            method, API_ENDPOINT, fields=request_data, headers=headers
-        )
-    else:
-        encoded_request_data = json.dumps(request_data)
-        print(f"Sending request {method} with data {encoded_request_data}.")
-        response = http.request(
-            method, API_ENDPOINT, body=encoded_request_data, headers=headers
-        )
-
-    status = response.status
-    response_data = json.loads(response.data.decode("utf-8"))
-    print("Response:", status, response_data)
-    return ApiResponse(status, response_data)
-
-
-def token_payload_from_response(response: ApiResponse):
-    token = response.data["payload"]["token"]
-    return jwt.decode(token, options={"verify_signature": False})
+    return ApiCall.generic_request(
+        API_ENDPOINT, "POST", operation, payload, token, extra_flags
+    )
 
 
 def generate_random_email(base_domain: str = "no-op-test-email.com"):

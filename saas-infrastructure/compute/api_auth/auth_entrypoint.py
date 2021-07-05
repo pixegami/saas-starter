@@ -9,6 +9,7 @@ def handler(event, context=None):
     entry_point = (
         ApiEntrypoint()
         .with_handler(SignUpHandler())
+        .with_handler(SignUpTestUserHandler())
         .with_handler(SignInHandler())
         .with_handler(ValidateTokenHandler())
         .with_handler(GetVerificationStatusHandler())

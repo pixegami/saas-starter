@@ -1,14 +1,12 @@
-import json
-import time
-from auth_handler_base import AuthHandler, AuthUser
-from sign_up_handler import SignUpHandler
-import uuid
+from base.auth_handler import AuthHandler
+from account.sign_up_handler import SignUpHandler
 
 
-class CreateTestAccountHandler(AuthHandler):
+class SignUpTestUserHandler(AuthHandler):
     def __init__(self):
         super().__init__()
-        self.schema = {"user": True, "password": True, "flags": False}
+        self.operation_name = "sign_up_test_user"
+        self.schema = {"email", "password"}
 
     def handle_action(self, request_data: dict, event: dict, context: dict):
         sign_up_handler = SignUpHandler()
