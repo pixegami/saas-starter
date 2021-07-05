@@ -3,8 +3,6 @@ import time
 import urllib3
 
 
-AUTO_RESET_PASSWORD = "myAutoResetPasswordAB12!"
-
 
 def setup():
     pass

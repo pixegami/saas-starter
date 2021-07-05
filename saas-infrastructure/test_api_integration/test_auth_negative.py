@@ -1,4 +1,4 @@
-from utils import *
+from utils.api_utils import *
 
 
 def test_negative_sign_in():

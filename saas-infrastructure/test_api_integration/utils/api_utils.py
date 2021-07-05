@@ -16,7 +16,8 @@ API_ENDPOINT = f"https://api.{DOMAIN}/auth"
 STRIPE_WEBHOOK_ENDPOINT = f"https://api.{DOMAIN}/stripe"
 
 VALIDATION_EMAIL = f"auth.{DOMAIN}"  # Emails sent here get auto-validated.
-JWT_KEY = "SOME_KEY"
+# JWT_KEY = "SOME_KEY"
+AUTO_RESET_PASSWORD = "myAutoResetPasswordAB12!"
 
 ############################################
 # API/Supporting functions
@@ -55,11 +56,12 @@ def sign_in(
     return assert_status(response, expected_status)
 
 
-def sign_up_test_user(user: str, password: str):
+def sign_up_test_user(user: str, password: str, expected_status: int = 200):
     return (
         new_api_call()
         .with_operation("sign_up_test_user")
         .with_payload({"email": user, "password": password})
+        .expect_status(expected_status)
         .post()
     )
 

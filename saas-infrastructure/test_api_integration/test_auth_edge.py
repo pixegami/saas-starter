@@ -1,4 +1,6 @@
-from utils import *
+from utils.api_utils import *
+import time
+
 
 ############################################
 # Test authentication edge cases.
@@ -9,14 +11,14 @@ def test_sign_diff_case():
     # I can sign up and reset password with non-case-sensitive emails.
     user = generate_random_email(VALIDATION_EMAIL)
     password = generate_random_password()
-    sign_up_test_user(user, password, 200)
+    sign_up_test_user(user, password)
 
     # Sign-in should succeed.
-    sign_in(user.upper(), password, 200)
+    sign_in(user.upper(), password)
 
     # Request account reset with upper-case user name.
     # Our email validator SES should automatically process the email.
-    request_account_reset(user.upper(), 200)
+    request_account_reset(user.upper())
 
     # Give SES time to process the email.
     time.sleep(7)

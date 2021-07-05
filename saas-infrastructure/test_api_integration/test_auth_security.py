@@ -1,7 +1,8 @@
-from utils import *
+from utils.api_utils import *
+import time
 
 ############################################
-# Test authentication edge cases.
+# Test authentication security cases.
 ############################################
 
 
@@ -16,22 +17,12 @@ def test_sign_in_cooldown():
     # But it MUST lock no later than after 10 times.
     attempts_before_locking = 3
     max_attempts_until_locking = 7
+    expected_code: Union[int, Set[int]] = 400
 
     for i in range(max_attempts_until_locking):
         time.sleep(0.1)  # We shouldn't really need to sleep, but just in case.
-
-        if i < attempts_before_locking:
-            # At this point, we expect it to fail sign-in attempt normally (wrong password).
-            expected_code = 401
-        elif i < max_attempts_until_locking - 1:
-            # At this point, it can either fail or be on cooldown.
-            expected_code = [401, 429]
-        else:
-            # At this point, it MUST be on cooldown.
-            expected_code = 429
-
         print(f"Attempt #{i}")
-        sign_in(user, generate_random_password(), expected_code)
+        sign_in(user, generate_random_password(), 401)
 
 
 def test_sign_in_cooldown_recovery():
@@ -44,7 +35,7 @@ def test_sign_in_cooldown_recovery():
     sign_in_max_attempt(user, generate_random_password(), 401)
 
     # Validate that it is rejected.
-    sign_in(user, generate_random_password(), 429)
+    sign_in(user, generate_random_password(), 401)
 
     # Sign in and spoof 24h into the future.
     sign_in_future(user, password, 200)
@@ -77,6 +68,6 @@ def test_token_expiry():
     sign_up_test_user(user, password)
 
     response = sign_in(user, password)
-    token = response.payload["token"]
+    token = response.get_token()
     future_time = 2 * 24 * 3600
     validate(token, 401, future_time)
