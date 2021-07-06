@@ -1,24 +1,24 @@
 import stripe
 import os
-from validate_token import validate_token
-from auth_handler_base import AuthHandler
-from return_message import new_return_message
+from base.auth_handler import AuthHandler
+from api_utils import api_response
 import urllib.parse
 
 
 class CreatePaymentSessionHandler(AuthHandler):
     def __init__(self):
         super().__init__()
-        self.schema = {"return_endpoint": True, "flags": False}
+        self.operation_name = "create_payment_session"
+        self.schema = {"return_endpoint", "flags"}
         stripe.api_key = "sk_test_dVPxaaBuDLylUmztkCmomO0p00dyqHOvDf"
         self.frontend_url: str = os.getenv("FRONTEND_URL", "UNKNOWN")
 
     def handle_action(self, request_data: dict, event: dict, context: dict):
 
-        token_payload = validate_token(event)
-        account_key = token_payload["account_key"]
-        email = token_payload["user"]
-        customer_id = self.get_stripe_customer_id(account_key)
+        token = self.verify_token(event)
+        account_id = token.account_id
+        email = token.email
+        customer_id = self.get_stripe_customer_id(account_id)
 
         price_id = "price_1Ipw2ECCoJYujIqgPAGPkuYZ"
 
@@ -35,7 +35,7 @@ class CreatePaymentSessionHandler(AuthHandler):
         checkout_session = stripe.checkout.Session.create(
             success_url=profile_url,
             cancel_url=profile_url,
-            client_reference_id=account_key,
+            client_reference_id=account_id,
             customer=customer_id,
             payment_method_types=["card"],
             mode="subscription",
@@ -49,13 +49,13 @@ class CreatePaymentSessionHandler(AuthHandler):
 
         response_payload = {
             "session_id": checkout_session["id"],
-            "token_payload": token_payload,
-            "account_key": account_key,
+            "token_payload": token.serialize(),
+            "account_id": account_id,
             "email": email,
             "return_url": profile_url,
         }
 
-        return new_return_message(
+        return api_response(
             200,
             "Successfully created payment session.",
             response_payload,

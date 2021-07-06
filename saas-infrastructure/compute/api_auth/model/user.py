@@ -1,14 +1,9 @@
-import jwt
-import time
 import uuid
 from api_utils import ApiItem
+from model.token import Token
 
 
 class User(ApiItem):
-
-    TOKEN_DURATION_IN_HOURS = 24
-    TOKEN_DURATION_SECONDS = TOKEN_DURATION_IN_HOURS * 3600
-
     def __init__(self):
         super().__init__()
         self.pk = uuid.uuid4().hex
@@ -17,7 +12,8 @@ class User(ApiItem):
         self.hashed_password: str = ""
         self.verified: bool = False
         self.stripe_customer_id: str = ""
-        self.membership_expiry_time: int = 0
+        self.premium_expiry_time: int = 0
+        self.auto_renew: bool = False
 
     def is_temp(self):
         return self.expiry_time is not None
@@ -28,7 +24,8 @@ class User(ApiItem):
             "hashed_password": self.hashed_password,
             "stripe_customer_id": self.stripe_customer_id,
             "verified": self.verified,
-            "membership_expiry_time": self.membership_expiry_time,
+            "premium_expiry_time": self.premium_expiry_time,
+            "auto_renew": self.auto_renew,
         }
         item.update(self.basic_keys())
         return item
@@ -39,19 +36,12 @@ class User(ApiItem):
         self.hashed_password = str(item.get("hashed_password"))
         self.verified = bool(item.get("verified"))
         self.stripe_customer_id = str(item.get("stripe_customer_id"))
-        self.membership_expiry_time = item.get("membership_expiry_time", None)
+        self.premium_expiry_time = item.get("premium_expiry_time", None)
+        self.auto_renew = item.get("auto_renew", False)
         return self
 
-    def get_token(self, hash_key: str):
-        token = jwt.encode(
-            {
-                "account_id": self.pk,
-                "email": self.email,
-                "exp": int(
-                    time.time() + User.TOKEN_DURATION_SECONDS,
-                ),
-            },
-            hash_key,
-            algorithm="HS256",
-        )
-        return token
+    def get_token(self, hash_key: str) -> str:
+        token = Token(hash_key)
+        token.account_id = self.pk
+        token.email = self.email
+        return token.encode()

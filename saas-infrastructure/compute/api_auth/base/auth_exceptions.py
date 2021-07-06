@@ -11,7 +11,7 @@ class AuthExceptions:
     MISSING_HEADER = ApiException(401, "Missing authentication header.")
 
     # 402
-    MEMBERSHIP_NOT_VALID = ApiException(402, "Not a member.")
+    MEMBERSHIP_NOT_VALID = ApiException(402, "Is not a premium member.")
 
     MEMBERSHIP_EXPIRED = ApiException(402, "Membership has expired.")
 

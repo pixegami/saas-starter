@@ -3,7 +3,6 @@ import time
 import urllib3
 
 
-
 def setup():
     pass
 
@@ -18,7 +17,7 @@ def test_sign_up():
     sign_in_response = sign_in(email, password, 200)
 
     # Validation should succeed.
-    validate(sign_in_response.get_token())
+    verify_token(sign_in_response.get_token())
 
 
 def test_verify_account():

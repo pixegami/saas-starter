@@ -70,4 +70,4 @@ def test_token_expiry():
     response = sign_in(user, password)
     token = response.get_token()
     future_time = 2 * 24 * 3600
-    validate(token, 401, future_time)
+    verify_token(token, 401, future_time)

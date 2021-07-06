@@ -4,7 +4,7 @@ import os
 from base.auth_handler import AuthHandler
 from verification.email_sender import EmailSender, EmailProps
 from api_utils import api_response
-from model.account_reset_token import AccountResetToken
+from model.otp_token import AccountResetToken
 
 
 class RequestAccountResetHandler(AuthHandler):

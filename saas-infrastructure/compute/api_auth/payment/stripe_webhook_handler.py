@@ -1,7 +1,6 @@
-from auth_handler_base import AuthHandler, AuthUser
+from base.auth_handler import AuthHandler
 import stripe
-from return_message import new_return_message
-from request_account_verification_token import request_account_verification_token
+from api_utils import api_response
 import time
 
 
@@ -12,7 +11,6 @@ def handle(event, context):
 class StripeWebhookHandler(AuthHandler):
     def __init__(self):
         super().__init__()
-        self.schema = {}
         stripe.api_key = "sk_test_dVPxaaBuDLylUmztkCmomO0p00dyqHOvDf"
 
     def handle_action(self, request_data: dict, event: dict, context: dict):
@@ -21,7 +19,7 @@ class StripeWebhookHandler(AuthHandler):
             stripe_event = stripe.Event.construct_from(request_data, stripe.api_key)
         except ValueError as e:
             # Invalid payload
-            return new_return_message(400, f"Stripe Webhook Failed: {e}")
+            return api_response(400, f"Stripe Webhook Failed: {e}")
 
         print(f"Handling event: {stripe_event.type }")
         stripe_object = stripe_event.data.object
@@ -61,7 +59,7 @@ class StripeWebhookHandler(AuthHandler):
             "new_expiry_time": new_expiry_time,
         }
 
-        return new_return_message(
+        return api_response(
             200,
             "Stripe Webhook Success",
             response_payload,

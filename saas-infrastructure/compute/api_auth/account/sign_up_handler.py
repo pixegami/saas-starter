@@ -2,7 +2,7 @@ import bcrypt
 import time
 
 from typing import List
-from create_stripe_customer import create_stripe_customer
+from payment.create_stripe_customer import create_stripe_customer
 from verification.request_account_verification import request_account_verification
 from api_utils import api_response, ApiException
 from base.auth_handler import AuthHandler, User
@@ -37,7 +37,7 @@ class SignUpHandler(AuthHandler):
         user.hashed_password = self._hashed_password(password)
         user.verified = should_verify
         user.stripe_customer_id = self._get_stripe_customer_id(user.pk, email, flags)
-        user.membership_expiry_time = (
+        user.premium_expiry_time = (
             int(time.time() + 3000) if should_be_member else int(0)
         )
 

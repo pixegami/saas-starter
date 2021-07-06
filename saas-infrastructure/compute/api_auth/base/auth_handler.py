@@ -1,13 +1,13 @@
 import time
+import jwt
 import os
 
-from api_utils import ApiHandler, ApiException, ApiDatabase
+from api_utils import ApiHandler, ApiException, ApiDatabase, extract_json
 from base.input_validator import InputValidator
-from base.membership_status import MembershipStatus
 from base.auth_exceptions import AuthExceptions
 from model.user import User
-from model.verification_token import VerificationToken
-from model.account_reset_token import AccountResetToken
+from model.otp_token import VerificationToken
+from model.token import Token
 
 
 class AuthHandler(ApiHandler):
@@ -66,6 +66,34 @@ class AuthHandler(ApiHandler):
         verification_token.with_x_hour_expiry(expiry_hours)
         self.user_database.put_item(verification_token)
 
+    def verify_token(self, event, future_time: int = 0) -> Token:
+        try:
+            headers = extract_json(event, "headers")
+            auth_header = headers["Authorization"]
+            token_str = auth_header.split(" ")[1]
+        except Exception as e:
+            raise AuthExceptions.MISSING_HEADER
+
+        try:
+            token = Token.decode(token_str, self.jwt_hash_key)
+            self._validate_future_expiry(token, future_time)
+
+        except jwt.ExpiredSignatureError as e:
+            raise AuthExceptions.INVALID_TOKEN
+
+        except Exception as e:
+            raise AuthExceptions.INVALID_TOKEN
+
+        return token
+
+    def _validate_future_expiry(self, token: Token, future_time: int):
+        # Additional check if token has expired: also code to simulate future times.
+        if token.expiry_time is not None:
+            future_time = max(0, future_time)
+            comparison_time = time.time() + future_time
+            if token.expiry_time < comparison_time:
+                raise AuthExceptions.INVALID_TOKEN
+
     # OLD ===========================
 
     def update_user_membership(self, key: str, new_expiry_time: int):
@@ -103,24 +131,3 @@ class AuthHandler(ApiHandler):
         if "Item" not in response:
             raise AuthExceptions.USER_NOT_FOUND
         return response["Item"]
-
-    def get_membership_status(self, account_key: str) -> MembershipStatus:
-        item = self.get_item(account_key)
-        if "membership_expiry_time" in item:
-            membership_expiry_time = int(item["membership_expiry_time"])
-            if int(time.time()) > membership_expiry_time:
-                raise AuthExceptions.MEMBERSHIP_NOT_VALID
-
-            # Get auto-renew status.
-            membership_status = MembershipStatus()
-            membership_status.expiry_time = membership_expiry_time
-            membership_status.auto_renew = item.get("auto_renew", False)
-            return membership_status
-        else:
-            raise AuthExceptions.MEMBERSHIP_NOT_VALID
-
-    def get_user_table(self):
-        return self.user_database.table
-
-    def get_timestamp_int(self):
-        return int(time.time())

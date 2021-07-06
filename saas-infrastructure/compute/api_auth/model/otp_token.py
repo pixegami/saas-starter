@@ -20,3 +20,15 @@ class OTPToken(ApiItem):
         self.pk = str(item.get("pk"))
         self.token = str(item.get("token"))
         return self
+
+
+class AccountResetToken(OTPToken):
+    def __init__(self):
+        super().__init__()
+        self.sk = "TOKEN.RESET"
+
+
+class VerificationToken(OTPToken):
+    def __init__(self):
+        super().__init__()
+        self.sk = "TOKEN.VERIFY"

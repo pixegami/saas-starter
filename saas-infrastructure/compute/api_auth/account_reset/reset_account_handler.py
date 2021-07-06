@@ -2,7 +2,7 @@ import bcrypt
 from base.auth_handler import AuthHandler
 from api_utils import api_response
 from model.user import User
-from model.account_reset_token import AccountResetToken
+from model.otp_token import AccountResetToken
 
 
 class ResetAccountHandler(AuthHandler):
