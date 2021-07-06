@@ -177,7 +177,3 @@ def generate_random_password():
 
 def generate_random_customer_id():
     return f"cus_rand_{uuid.uuid4().hex[:12]}"
-
-
-def get_token_payload(token: str):
-    return jwt.decode(token, options={"verify_signature": False})

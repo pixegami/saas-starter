@@ -17,7 +17,7 @@ class VerifyPremiumStatus(AuthHandler):
         self._verify_premium_status(user)
 
         response_payload = {
-            "expiry_time": user.expiry_time,
+            "expiry_time": user.premium_expiry_time,
             "auto_renew": user.auto_renew,
         }
 

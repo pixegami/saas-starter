@@ -21,8 +21,7 @@ def handler(event, context=None):
         .with_handler(RequestAccountResetHandler())
         .with_handler(VerifyPremiumStatus())
         .with_handler(CreatePaymentSessionHandler())
-        # .with_handler(CreatePaymentPortalHandler())
-        # .with_handler(StripeWebhookHandler())
+        .with_handler(CreatePaymentPortalHandler())
     )
 
     # "foo": FooHandler(),

@@ -1,3 +1,4 @@
+from typing import Union
 import jwt
 
 
@@ -18,7 +19,7 @@ class ApiResponse:
         assert self._payload is not None
         return self._payload
 
-    def from_payload(self, key: str) -> str:
+    def from_payload(self, key: str) -> Union[str, float, int, bool]:
         assert key in self.get_payload()
         value = self.get_payload().get(key)
         assert value is not None

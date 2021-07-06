@@ -16,8 +16,9 @@ class CreatePaymentPortalHandler(AuthHandler):
     def handle_action(self, request_data: dict, event: dict, context: dict):
 
         token = self.verify_token(event)
-        account_key = token.account_id
-        customer_id = self.get_stripe_customer_id(account_key)
+        account_id = token.account_id
+        user = self.get_user_by_id(account_id)
+        customer_id = user.stripe_customer_id
 
         return_endpoint = request_data.get("return_endpoint", None)
         if return_endpoint is None:
@@ -32,7 +33,7 @@ class CreatePaymentPortalHandler(AuthHandler):
         response_payload = {
             "session_url": session["url"],
             "token_payload": token.serialize(),
-            "account_key": account_key,
+            "account_id": account_id,
             "customer_id": customer_id,
         }
 

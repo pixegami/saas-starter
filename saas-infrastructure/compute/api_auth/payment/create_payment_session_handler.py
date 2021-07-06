@@ -1,7 +1,7 @@
 import stripe
 import os
 from base.auth_handler import AuthHandler
-from api_utils import api_response
+from api_utils import api_response, ApiException
 import urllib.parse
 
 
@@ -18,7 +18,10 @@ class CreatePaymentSessionHandler(AuthHandler):
         token = self.verify_token(event)
         account_id = token.account_id
         email = token.email
-        customer_id = self.get_stripe_customer_id(account_id)
+        user = self.get_user_by_id(account_id)
+
+        if user.stripe_customer_id is None:
+            raise ApiException(404, "Payment customer ID not found for this customer!")
 
         price_id = "price_1Ipw2ECCoJYujIqgPAGPkuYZ"
 
@@ -36,7 +39,7 @@ class CreatePaymentSessionHandler(AuthHandler):
             success_url=profile_url,
             cancel_url=profile_url,
             client_reference_id=account_id,
-            customer=customer_id,
+            customer=user.stripe_customer_id,
             payment_method_types=["card"],
             mode="subscription",
             line_items=[

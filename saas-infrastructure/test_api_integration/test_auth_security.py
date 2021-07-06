@@ -1,10 +1,6 @@
 from utils.api_utils import *
 import time
 
-############################################
-# Test authentication security cases.
-############################################
-
 
 def test_sign_in_cooldown():
 

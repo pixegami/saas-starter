@@ -2,11 +2,6 @@ from utils.api_utils import *
 import time
 
 
-############################################
-# Test authentication edge cases.
-############################################
-
-
 def test_sign_diff_case():
     # I can sign up and reset password with non-case-sensitive emails.
     user = generate_random_email(VALIDATION_EMAIL)

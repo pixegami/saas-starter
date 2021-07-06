@@ -13,11 +13,15 @@ class ApiCall:
         self.expected_status_codes: Set[int] = {200}
         self.payload = {}
         self.extra_flags = []
-        self.token: Union[None, str]
+        self.token: Union[None, str] = None
         self.endpoint: str = endpoint
 
     def with_operation(self, operation: str) -> "ApiCall":
         self.operation = operation
+        return self
+
+    def with_token(self, token: str) -> "ApiCall":
+        self.token = token
         return self
 
     def with_payload(self, payload: dict) -> "ApiCall":
@@ -44,7 +48,7 @@ class ApiCall:
             method=method,
             operation=self.operation,
             payload=self.payload,
-            token=None,
+            token=self.token,
             extra_flags=self.extra_flags,
         )
         assert response.status in self.expected_status_codes

@@ -115,7 +115,7 @@ const createUserAuthApi = (
     code: Code.fromAsset("compute/api_auth"),
     runtime: Runtime.PYTHON_3_7,
     timeout: Duration.seconds(10),
-    handler: "stripe_webhook_handler.handle",
+    handler: "payment.stripe_webhook_handler.handle",
     memorySize: 256,
     layers: [layer],
     environment: {

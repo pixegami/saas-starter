@@ -1,3 +1,4 @@
+from typing import Union
 import uuid
 from api_utils import ApiItem
 from model.token import Token
@@ -11,7 +12,7 @@ class User(ApiItem):
         self.email: str = ""
         self.hashed_password: str = ""
         self.verified: bool = False
-        self.stripe_customer_id: str = ""
+        self.stripe_customer_id: Union[str, None] = None
         self.premium_expiry_time: int = 0
         self.auto_renew: bool = False
 
@@ -35,8 +36,8 @@ class User(ApiItem):
         self.email = str(item.get("email"))
         self.hashed_password = str(item.get("hashed_password"))
         self.verified = bool(item.get("verified"))
-        self.stripe_customer_id = str(item.get("stripe_customer_id"))
-        self.premium_expiry_time = item.get("premium_expiry_time", None)
+        self.stripe_customer_id = item.get("stripe_customer_id")
+        self.premium_expiry_time = int(item.get("premium_expiry_time", 0))
         self.auto_renew = item.get("auto_renew", False)
         return self
 

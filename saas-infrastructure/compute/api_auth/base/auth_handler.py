@@ -31,6 +31,9 @@ class AuthHandler(ApiHandler):
         self.user_database_token_index = self.user_database.from_index(
             "token_index", "token"
         )
+        self.user_database_stripe_customer_index = self.user_database.from_index(
+            "stripe_customer_index", "stripe_customer_id"
+        )
 
     def get_user_by_email(self, email: str) -> User:
         try:
@@ -93,41 +96,3 @@ class AuthHandler(ApiHandler):
             comparison_time = time.time() + future_time
             if token.expiry_time < comparison_time:
                 raise AuthExceptions.INVALID_TOKEN
-
-    # OLD ===========================
-
-    def update_user_membership(self, key: str, new_expiry_time: int):
-        return self.get_user_table().update_item(
-            Key={"pk": key, "sk": "CREDENTIALS"},
-            UpdateExpression="SET membership_expiry_time = :v1, auto_renew = :v2",
-            ExpressionAttributeValues={":v1": new_expiry_time, ":v2": True},
-        )
-
-    def update_user_auto_renew(self, customer_id: str, active: bool):
-        item = self.get_item_from_gsi(
-            "stripe_customer_index", "stripe_customer_id", customer_id
-        )
-
-        return self.get_user_table().update_item(
-            Key={"pk": item["pk"], "sk": "CREDENTIALS"},
-            UpdateExpression="SET auto_renew = :v1",
-            ExpressionAttributeValues={":v1": active},
-        )
-
-    def get_item(self, account_key: str):
-        return self.get_item_with_sk(account_key, "CREDENTIALS")
-
-    def get_stripe_customer_id(self, account_key: str):
-        credentials = self.get_item(account_key)
-        customer_id = credentials.get("stripe_customer_id", None)
-
-        if customer_id is None:
-            raise ApiException(404, "Payment customer ID not found for this customer!")
-        return customer_id
-
-    def get_item_with_sk(self, account_key: str, sk: str):
-        table = self.get_user_table()
-        response = table.get_item(Key={"pk": account_key, "sk": sk})
-        if "Item" not in response:
-            raise AuthExceptions.USER_NOT_FOUND
-        return response["Item"]

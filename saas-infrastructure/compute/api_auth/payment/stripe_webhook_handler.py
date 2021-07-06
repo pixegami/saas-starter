@@ -2,6 +2,7 @@ from base.auth_handler import AuthHandler
 import stripe
 from api_utils import api_response
 import time
+from model.user import User
 
 
 def handle(event, context):
@@ -11,6 +12,7 @@ def handle(event, context):
 class StripeWebhookHandler(AuthHandler):
     def __init__(self):
         super().__init__()
+        self.operation_name = "stripe_webhook"
         stripe.api_key = "sk_test_dVPxaaBuDLylUmztkCmomO0p00dyqHOvDf"
 
     def handle_action(self, request_data: dict, event: dict, context: dict):
@@ -71,3 +73,16 @@ class StripeWebhookHandler(AuthHandler):
         new_expiry_time = int(time.time() + membership_days * days_to_seconds)
         self.update_user_membership(client_reference_id, new_expiry_time)
         return new_expiry_time
+
+    def update_user_membership(self, key: str, new_expiry_time: int):
+        return self.user_database.update_item(
+            pk=key,
+            sk=User().sk,
+            updated_values={"premium_expiry_time": new_expiry_time, "auto_renew": True},
+        )
+
+    def update_user_auto_renew(self, customer_id: str, active: bool):
+        item = self.user_database_stripe_customer_index.get_item(customer_id, True)
+        return self.user_database.update_item(
+            pk=item["pk"], sk=User().sk, updated_values={"auto_renew": active}
+        )
