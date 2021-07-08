@@ -1,6 +1,5 @@
 import json
 import uuid
-import jwt
 from typing import Union, Set
 from utils.api_response import ApiResponse
 from utils.api_call import ApiCall
@@ -16,7 +15,6 @@ API_ENDPOINT = f"https://api.{DOMAIN}/auth"
 STRIPE_WEBHOOK_ENDPOINT = f"https://api.{DOMAIN}/stripe"
 
 VALIDATION_EMAIL = f"auth.{DOMAIN}"  # Emails sent here get auto-validated.
-# JWT_KEY = "SOME_KEY"
 AUTO_RESET_PASSWORD = "myAutoResetPasswordAB12!"
 
 ############################################

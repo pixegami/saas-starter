@@ -1,13 +1,11 @@
-from auth_handler_base import AuthHandlerBase
 from foo_handler_base import FooHandlerBase
-from handler_base import HandlerBase
-from return_message import new_return_message
+from api_utils import api_response, extract_token
 
 
 class FooHandler(FooHandlerBase):
     def __init__(self):
         super().__init__()
-        self.schema = {}
+        self.operation_name = "foo"
 
     def handle_action(self, request_data: dict, event: dict, context: dict):
 
@@ -16,21 +14,21 @@ class FooHandler(FooHandlerBase):
 
         # If not member, fail.
         if is_signed_in:
-            token = self.token_from_header(event)
-            is_verified = self.is_verified(token)
-            is_member = self.is_member(token)
+            token = extract_token(event)
+            is_account_verified = self.is_account_verified(token)
+            is_premium = self.is_premium_member(token)
         else:
-            is_member = False
-            is_verified = False
+            is_premium = False
+            is_account_verified = False
 
         response_payload = {
             "is_signed_in": is_signed_in,
-            "is_member": is_member,
-            "is_verified": is_verified,
+            "is_premium": is_premium,
+            "is_account_verified": is_account_verified,
         }
 
-        return new_return_message(
+        return api_response(
             200,
-            f"Successfully ran my foo: {response_payload}",
+            f"Successfully ran foo: {response_payload}",
             response_payload,
         )

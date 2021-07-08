@@ -71,7 +71,9 @@ class ApiDatabaseProjection:
         self.index_name: str = index_name
         self.index_pk: str = index_pk
 
-    def get_items(self, key: str, limit: int = 10, must_exist: bool = True):
+    def get_items(
+        self, key: str, limit: int = 10, must_exist: bool = True, reverse: bool = False
+    ):
         response = self.table.query(
             IndexName=self.index_name,
             KeyConditionExpression="#K = :v1",
@@ -81,6 +83,8 @@ class ApiDatabaseProjection:
             ExpressionAttributeNames={
                 "#K": self.index_pk,
             },
+            Limit=limit,
+            ScanIndexForward=not reverse,
         )
 
         # Look for the item in the response.
@@ -94,6 +98,8 @@ class ApiDatabaseProjection:
 
         return items
 
-    def get_item(self, key: str, must_exist: bool = True):
-        items = self.get_items(key, must_exist)
+    def get_item(
+        self, key: str, limit: int = 10, must_exist: bool = True, reverse: bool = False
+    ):
+        items = self.get_items(key, limit=limit, must_exist=must_exist, reverse=reverse)
         return items[0]

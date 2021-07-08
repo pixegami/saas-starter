@@ -21,3 +21,12 @@ def extract_query_parameters(event):
     except Exception as e:
         raise ApiException(400, f"Unable to parse query params: {e}")
     return query_params
+
+
+def extract_token(event):
+    try:
+        headers = extract_json(event, "headers")
+        auth_header = headers["Authorization"]
+        return auth_header.split(" ")[1]
+    except Exception as e:
+        raise ApiException(401, "Missing Authorization header.")

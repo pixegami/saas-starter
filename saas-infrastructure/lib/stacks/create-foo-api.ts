@@ -17,7 +17,7 @@ const createFooApi = (
   layer: LayerVersion,
   serviceProps: ServiceProps
 ) => {
-  const tableName: string = `${serviceProps.servicePrefix}.foo.items`;
+  const tableName: string = `${serviceProps.servicePrefix}.foo`;
   const endpoint: string = `https://${apiEndpoint}/foo`;
   const authEndpoint: string = `https://${apiEndpoint}/auth`;
 
@@ -27,7 +27,7 @@ const createFooApi = (
       type: ddb.AttributeType.STRING,
     },
     sortKey: {
-      name: "type",
+      name: "sk",
       type: ddb.AttributeType.STRING,
     },
     timeToLiveAttribute: "expiry_time",
@@ -37,9 +37,9 @@ const createFooApi = (
   });
 
   const userIndex: ddb.GlobalSecondaryIndexProps = {
-    indexName: "user_index",
+    indexName: "account_index",
     partitionKey: {
-      name: "user_key",
+      name: "account_id",
       type: ddb.AttributeType.STRING,
     },
     sortKey: {
@@ -49,9 +49,9 @@ const createFooApi = (
   };
 
   const typeIndex: ddb.GlobalSecondaryIndexProps = {
-    indexName: "type_index",
+    indexName: "sk_index",
     partitionKey: {
-      name: "type",
+      name: "sk",
       type: ddb.AttributeType.STRING,
     },
     sortKey: {
@@ -86,7 +86,7 @@ const createFooApi = (
     runtime: Runtime.PYTHON_3_7,
     timeout: Duration.seconds(10),
     layers: [layer],
-    handler: "entry_point_handler.handler",
+    handler: "foo_entrypoint.handler",
     memorySize: 256,
     environment: {
       TABLE_NAME: table.tableName,
