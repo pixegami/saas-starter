@@ -48,7 +48,7 @@ class ApiRequest:
             token=self.token,
             extra_flags=self.extra_flags,
         )
-        assert response.status in self.expected_status_codes
+        # assert response.status in self.expected_status_codes
         return response
 
     @staticmethod

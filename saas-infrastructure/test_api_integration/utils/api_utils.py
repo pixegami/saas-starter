@@ -64,15 +64,15 @@ def sign_up_test_user(user: str, password: str, expected_status: int = 200):
     )
 
 
-def sign_up_test_user_as_member(
-    user: str, password: str, expected_status: Union[int, Set[int], None] = 200
-):
-    response = post_request(
-        operation="create_test_account",
-        payload={"user": user, "password": password},
-        extra_flags=["AUTO_MEMBER"],
+def sign_up_test_user_as_member(user: str, password: str, expected_status: int = 200):
+    return (
+        new_api_call()
+        .with_operation("sign_up_test_user")
+        .with_payload({"email": user, "password": password})
+        .expect_status(expected_status)
+        .with_extra_flags(["AUTO_MEMBER"])
+        .post()
     )
-    return assert_status(response, expected_status)
 
 
 def sign_in_future(

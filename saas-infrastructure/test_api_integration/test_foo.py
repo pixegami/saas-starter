@@ -23,8 +23,9 @@ def test_foo():
 
 def test_foo_signed_in():
     token = create_user_token()
-    foo_request = {"operation": "foo"}
-    response = assert_status(post_request_to_foo(foo_request, token), 200)
+    response = (
+        new_foo_call().with_operation("foo").with_token(token).expect_status(200).post()
+    )
     assert response.from_payload("is_signed_in") is True
     assert response.from_payload("is_premium") is False
     assert response.from_payload("is_account_verified") is True
@@ -32,8 +33,9 @@ def test_foo_signed_in():
 
 def test_foo_member():
     token = create_user_token(is_member=True)
-    foo_request = {"operation": "foo"}
-    response = assert_status(post_request_to_foo(foo_request, token), 200)
+    response = (
+        new_foo_call().with_operation("foo").with_token(token).expect_status(200).post()
+    )
     assert response.from_payload("is_signed_in") is True
     assert response.from_payload("is_premium") is True
     assert response.from_payload("is_account_verified") is True
@@ -42,33 +44,47 @@ def test_foo_member():
 def test_foo_write_and_get_posts():
     token = create_user_token()
     random_content = f"Hello Random Content {uuid.uuid4().hex[:6]}"
-    foo_request = {"operation": "foo_write_post", "content": random_content}
-    write_response = assert_status(post_request_to_foo(foo_request, token), 200)
-    assert write_response.payload["item_key"] is not None
-    item_key = write_response.payload["item_key"]
+
+    write_response = (
+        new_foo_call()
+        .with_operation("foo_write_post")
+        .with_token(token)
+        .with_payload({"content": random_content})
+        .post()
+    )
+
+    assert write_response.from_payload("item_key") is not None
+    item_key = write_response.from_payload("item_key")
 
     # Now try to get the same item.
-    foo_request = {"operation": "foo_get_posts"}
-    item_response = assert_status(post_request_to_foo(foo_request, token), 200)
-    print(item_response.payload)
+    item_response = new_foo_call().with_operation("foo_get_posts").get()
 
     # Check it is returned in the batch.
-    posts = item_response.payload["items"]
+    posts = item_response.from_payload("items")
     latest_post = posts[0]
     assert latest_post["content"] == random_content
 
     # Check that we can get the item directly.
-    foo_request = {"operation": "foo_get_post", "key": item_key}
-    item_response = assert_status(post_request_to_foo(foo_request, token), 200)
-    posts = item_response.payload["items"]
+    item_response = (
+        new_foo_call()
+        .with_operation("foo_get_post")
+        .with_payload({"key": item_key})
+        .get()
+    )
+    posts = item_response.from_payload("items")
     latest_post = posts[0]
     assert latest_post["content"] == random_content
 
 
 def test_foo_non_member_cannot_post():
     random_content = f"Hello Random Content {uuid.uuid4().hex[:6]}"
-    foo_request = {"operation": "foo_write_post", "content": random_content}
-    assert_status(post_request_to_foo(foo_request), 401)
+    (
+        new_foo_call()
+        .with_operation("foo_write_post")
+        .with_payload({"content": random_content})
+        .expect_status(401)
+        .post()
+    )
 
 
 # =================================================
@@ -82,10 +98,10 @@ def create_user_token(is_member: bool = False):
     password = generate_random_password()
 
     if is_member:
-        sign_up_test_user_as_member(user, password, 200)
+        sign_up_test_user_as_member(user, password)
     else:
-        sign_up_test_user(user, password, 200)
+        sign_up_test_user(user, password)
 
-    sign_in_response = sign_in(user, password, 200)
-    token = sign_in_response.data["payload"]["token"]
+    sign_in_response = sign_in(user, password)
+    token = sign_in_response.get_token()
     return token
