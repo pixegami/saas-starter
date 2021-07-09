@@ -3,8 +3,11 @@ import jwt
 import os
 
 from api_utils import ApiHandler, ApiException, ApiDatabase, extract_json
+
 from base.input_validator import InputValidator
 from base.auth_exceptions import AuthExceptions
+from base.email_sender import EmailSender
+
 from model.user import User
 from model.otp_token import VerificationToken
 from model.token import Token
@@ -18,7 +21,11 @@ class AuthHandler(ApiHandler):
         super().__init__()
 
         # Environment load once.
-        self.jwt_hash_key = os.getenv("AUTH_SECRET", "")
+        self.jwt_hash_key: str = os.environ["AUTH_SECRET"]
+        self.email_source: str = os.environ["EMAIL_SOURCE"]
+        self.endpoint: str = os.environ["ENDPOINT"]
+        self.frontend_url: str = os.environ["FRONTEND_URL"]
+        self.service_name: str = os.environ["SERVICE_NAME"]
 
         # Validators.
         self.validator: InputValidator = InputValidator()
@@ -34,6 +41,11 @@ class AuthHandler(ApiHandler):
         self.user_database_stripe_customer_index = self.user_database.from_index(
             "stripe_customer_index", "stripe_customer_id"
         )
+
+    def new_email_sender(self):
+        email_sender = EmailSender()
+        email_sender.source = self.email_source
+        return email_sender
 
     def get_user_by_email(self, email: str) -> User:
         try:

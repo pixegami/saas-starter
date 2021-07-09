@@ -1,8 +1,6 @@
 import secrets
-import os
 
 from base.auth_handler import AuthHandler
-from verification.email_sender import EmailSender, EmailProps
 from api_utils import api_response
 from model.otp_token import AccountResetToken
 
@@ -12,9 +10,6 @@ class RequestAccountResetHandler(AuthHandler):
         super().__init__()
         self.operation_name = "request_account_reset"
         self.schema = {"email"}
-        self.email_source: str = os.getenv("EMAIL_SOURCE", "UNKNOWN")
-        self.endpoint: str = os.getenv("ENDPOINT", "UNKNOWN")
-        self.frontend_url: str = os.getenv("FRONTEND_URL", "UNKNOWN")
 
     def handle_action(self, request_data: dict, event: dict, context: dict):
 
@@ -57,14 +52,13 @@ class RequestAccountResetHandler(AuthHandler):
 
     def send_reset_email(self, email: str, reset_frontend_url: str):
 
-        email_sender = EmailSender()
-        email_props = EmailProps()
-        email_props.subject = "Reset your account password at [SERVICE]"
-        email_props.source = self.email_source
-        email_props.text = (
+        email_sender = self.new_email_sender()
+        email_sender.subject = f"Reset your account password at {self.service_name}"
+        email_sender.source = self.email_source
+        email_sender.text = (
             f"Please click here to reset your account: {reset_frontend_url}"
         )
-        email_props.html = f"<div>Please click here to reset your account: <a href='{reset_frontend_url}'>Reset Account</a></div>"
-        email_props.to_addresses = [email]
-        email_props.reply_to = []
-        email_sender.send_email(email_props)
+        email_sender.html = f"<div>Please click here to reset your account: <a href='{reset_frontend_url}'>Reset Account</a></div>"
+        email_sender.to_addresses = [email]
+        email_sender.reply_to = []
+        email_sender.send()

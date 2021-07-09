@@ -82,7 +82,9 @@ class StripeWebhookHandler(AuthHandler):
         )
 
     def update_user_auto_renew(self, customer_id: str, active: bool):
-        item = self.user_database_stripe_customer_index.get_item(customer_id, True)
+        item = self.user_database_stripe_customer_index.get_item(
+            customer_id, must_exist=True
+        )
         return self.user_database.update_item(
             pk=item["pk"], sk=User().sk, updated_values={"auto_renew": active}
         )

@@ -2,10 +2,10 @@ import boto3
 from typing import List
 
 
-UTF8 = "UTF-8"
+class EmailSender:
 
+    UTF8 = "UTF-8"
 
-class EmailProps:
     def __init__(self):
         self.subject: str = "Untitled Email"
         self.source: str = ""
@@ -14,26 +14,21 @@ class EmailProps:
         self.reply_to: List[str] = []
         self.to_addresses: List[str] = []
 
-
-class EmailSender:
-    def __init__(self):
-        pass
-
-    def send_email(self, props: EmailProps):
+    def send(self):
         client = boto3.client("ses")
         client.send_email(
-            Source=props.source,
+            Source=self.source,
             Destination={
-                "ToAddresses": props.to_addresses,
+                "ToAddresses": self.to_addresses,
                 "CcAddresses": [],
                 "BccAddresses": [],
             },
             Message={
-                "Subject": {"Data": props.subject, "Charset": UTF8},
+                "Subject": {"Data": self.subject, "Charset": self.UTF8},
                 "Body": {
-                    "Text": {"Data": props.text, "Charset": UTF8},
-                    "Html": {"Data": props.html, "Charset": UTF8},
+                    "Text": {"Data": self.text, "Charset": self.UTF8},
+                    "Html": {"Data": self.html, "Charset": self.UTF8},
                 },
             },
-            ReplyToAddresses=props.reply_to,
+            ReplyToAddresses=self.reply_to,
         )

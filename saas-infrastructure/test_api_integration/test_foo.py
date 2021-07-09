@@ -1,13 +1,6 @@
 from utils.api_utils import *
-import os
-import json
-
 
 FOO_ENDPOINT = f"https://api.{DOMAIN}/foo"
-
-
-def setup():
-    pass
 
 
 def new_foo_call():

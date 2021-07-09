@@ -1,39 +1,27 @@
 from base.auth_handler import AuthHandler
-import os
 import secrets
-from verification.email_sender import EmailProps, EmailSender
 
 
 def request_account_verification(
     auth_handler: AuthHandler, email: str, account_key: str
 ):
-
-    # Get the ENDPOINTS.
-    endpoint: str = os.getenv("ENDPOINT", "UNKNOWN")
-    frontend_url: str = os.getenv("FRONTEND_URL", "UNKNOWN")
-
     # Operation
     token = secrets.token_hex()
     auth_handler.put_verification_token(account_key, token)
-    confirm_url: str = f"{endpoint}?operation=verify_account&verification_token={token}"
-    confirm_frontend_url: str = f"{frontend_url}verify_account?key={token}"
+    confirm_url: str = (
+        f"{auth_handler.endpoint}?operation=verify_account&verification_token={token}"
+    )
+    confirm_frontend_url: str = f"{auth_handler.frontend_url}verify_account?key={token}"
 
     # Fire off the email.
-    send_confirmation_email(email, confirm_frontend_url)
-    return token, confirm_url
-
-
-def send_confirmation_email(email: str, confirm_frontend_url: str):
-
-    email_source: str = os.getenv("EMAIL_SOURCE")
-    email_sender = EmailSender()
-    email_props = EmailProps()
-    email_props.subject = "Confirm your account at [SERVICE]"
-    email_props.source = email_source
-    email_props.text = (
+    email_sender = auth_handler.new_email_sender()
+    email_sender.subject = f"Confirm your account at {auth_handler.service_name}"
+    email_sender.text = (
         f"Please click here to confirm your account: {confirm_frontend_url}"
     )
-    email_props.html = f"<div>Please click here to confirm your account: <a href='{confirm_frontend_url}'>Confirm Account</a></div>"
-    email_props.to_addresses = [email]
-    email_props.reply_to = []
-    email_sender.send_email(email_props)
+    email_sender.html = f"<div>Please click here to confirm your account: <a href='{confirm_frontend_url}'>Confirm Account</a></div>"
+    email_sender.to_addresses = [email]
+    email_sender.reply_to = []
+    email_sender.send()
+
+    return token, confirm_url
