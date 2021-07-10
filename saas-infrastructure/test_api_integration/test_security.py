@@ -11,9 +11,7 @@ def test_sign_in_cooldown():
 
     # I can sign in 5 times before it locks.
     # But it MUST lock no later than after 10 times.
-    attempts_before_locking = 3
     max_attempts_until_locking = 7
-    expected_code: Union[int, Set[int]] = 400
 
     for i in range(max_attempts_until_locking):
         time.sleep(0.1)  # We shouldn't really need to sleep, but just in case.

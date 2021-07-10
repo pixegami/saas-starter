@@ -3,7 +3,7 @@ import * as apigateway from "@aws-cdk/aws-apigateway";
 import * as route53 from "@aws-cdk/aws-route53";
 import * as acm from "@aws-cdk/aws-certificatemanager";
 import * as route53targets from "@aws-cdk/aws-route53-targets";
-import ServiceProps from "../utils/service-props";
+import ServiceProps from "./service-props";
 
 const createRestApi = (
   scope: cdk.Construct,

@@ -9,9 +9,9 @@ import ServiceProps from "./service-props";
 
 const createEmailValidator = (
   scope: cdk.Construct,
-  serviceProps: ServiceProps,
   apiEndpoint: string,
-  hostedZone: route53.IHostedZone
+  hostedZone: route53.IHostedZone,
+  serviceProps: ServiceProps
 ) => {
   // Create bucket to store the mail.
   const emailTestBucket = new s3.Bucket(scope, "EmailBucket", {

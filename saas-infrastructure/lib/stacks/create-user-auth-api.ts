@@ -10,10 +10,10 @@ import ServiceProps from "../utils/service-props";
 const createUserAuthApi = (
   scope: cdk.Construct,
   api: RestApi,
-  apiEndpoint: string,
   layer: LayerVersion,
   serviceProps: ServiceProps
 ) => {
+  const apiEndpoint = api.domainName?.domainName;
   const authEmailSource: string = `auth.${serviceProps.servicePrefix}@${serviceProps.serviceRootDomain}`;
   const authEndpoint: string = `https://${apiEndpoint}/auth`;
   const authTable: ddb.Table = createAuthTable(scope, serviceProps);

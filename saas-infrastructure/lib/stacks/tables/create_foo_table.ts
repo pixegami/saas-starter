@@ -5,7 +5,6 @@ import ServiceProps from "../../utils/service-props";
 
 const createFooTable = (scope: cdk.Construct, serviceProps: ServiceProps) => {
   const tableName: string = `${serviceProps.servicePrefix}.foo`;
-
   const table: ddb.Table = new ddb.Table(scope, "ServiceDataTable", {
     partitionKey: {
       name: "pk",

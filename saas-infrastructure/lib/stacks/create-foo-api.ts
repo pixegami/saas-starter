@@ -9,10 +9,10 @@ import createFooTable from "./tables/create_foo_table";
 const createFooApi = (
   scope: cdk.Construct,
   api: RestApi,
-  apiEndpoint: string,
   layer: LayerVersion,
   serviceProps: ServiceProps
 ) => {
+  const apiEndpoint = api.domainName?.domainName;
   const endpoint: string = `https://${apiEndpoint}/foo`;
   const authEndpoint: string = `https://${apiEndpoint}/auth`;
   const fooTable: ddb.Table = createFooTable(scope, serviceProps);
