@@ -7,7 +7,6 @@ class AuthApi extends BaseApi {
   // Configurable fields.
   private static ENDPOINT: string = "https://api.bonestack.com/auth";
 
-  // For testing easily.
   // private static AUTO_TEST: boolean = true;
   public static AUTO_TEST_USER: string = "autotest@auth.bonestack.com";
   public static AUTO_TEST_PASS: string = "Abcd123!";
@@ -17,12 +16,10 @@ class AuthApi extends BaseApi {
   }
 
   public static signIn(email: string, password: string): Promise<AuthResponse> {
-    console.log("Signing in!");
     const signInPromise = this.getRequest("sign_in", {
-      user: email,
-      password: password,
+      email,
+      password,
     });
-
     return this.withResponseTransformer(signInPromise);
   }
 
@@ -32,14 +29,14 @@ class AuthApi extends BaseApi {
     withTestAccount: boolean = false,
     autoMember: boolean = false
   ): Promise<AuthResponse> {
-    const operation = withTestAccount ? "create_test_account" : "sign_up";
+    const operation = withTestAccount ? "sign_up_test_user" : "sign_up";
     const extraFlags = autoMember ? ["AUTO_MEMBER"] : [];
 
     const signUpPromise = this.postRequest(
       operation,
       {
-        user: email,
-        password: password,
+        email,
+        password,
       },
       undefined,
       extraFlags
@@ -49,16 +46,16 @@ class AuthApi extends BaseApi {
   }
 
   public static requestAccountVerification(
-    account_key: string
+    account_id: string
   ): Promise<AuthResponse> {
     return this.postRequest("request_account_verification", {
-      account_key,
+      account_id,
     });
   }
 
-  public static requestAccountReset(user: string): Promise<AuthResponse> {
+  public static requestAccountReset(email: string): Promise<AuthResponse> {
     return this.postRequest("request_account_reset", {
-      user,
+      email,
     });
   }
 
@@ -80,22 +77,22 @@ class AuthApi extends BaseApi {
     });
   }
 
-  public static async validateMembership(token: string): Promise<ApiResponse> {
-    console.log("Validating membership with " + token);
-    return this.getRequest("validate_membership", {}, token);
+  public static async verifyPremiumStatus(token: string): Promise<ApiResponse> {
+    console.log("Validating premium status with " + token);
+    return this.getRequest("verify_premium_status", {}, token);
   }
 
-  public static async getVerificationStatus(
+  public static async getAccountVerificationStatus(
     token: string
   ): Promise<ApiResponse> {
     console.log("Get verification status with " + token);
     return this.getRequest("get_verification_status", {}, token);
   }
 
-  public static async getMembershipStatus(
+  public static async getPremiumStatus(
     token: string
   ): Promise<AuthMembershipStatus> {
-    const validationResponse = await AuthApi.validateMembership(token);
+    const validationResponse = await AuthApi.verifyPremiumStatus(token);
     if (validationResponse.status === 200) {
       console.log("Validate Member Response:");
       console.log(validationResponse);
@@ -109,19 +106,21 @@ class AuthApi extends BaseApi {
     }
   }
 
-  public static async getVerificationStatusAsBoolean(
+  public static async getAccountVerificationStatusAsBoolean(
     token: string
   ): Promise<boolean> {
-    const validationResponse = await AuthApi.getVerificationStatus(token);
+    const validationResponse = await AuthApi.getAccountVerificationStatus(
+      token
+    );
     return (
       validationResponse.status === 200 &&
       validationResponse.payload["verified"]
     );
   }
 
-  public static validate(token: string): Promise<ApiResponse> {
-    console.log(`Validating With Token: ...`);
-    return this.getRequest("validate_token", {}, token);
+  public static verifyToken(token: string): Promise<ApiResponse> {
+    console.log(`Verifying Token: ...`);
+    return this.getRequest("verify_token", {}, token);
   }
 
   private static withResponseTransformer(

@@ -1,15 +1,20 @@
 import AuthApi from "./AuthApi";
-import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
-import * as jwt from "jsonwebtoken";
-import AuthResponse from "./AuthResponse";
+import {
+  createAndSignInToVerifiedAccount,
+  expectResponseOrPrint,
+  newRandomPassword,
+  newRandomUser,
+  signInAndExpect,
+  signUpAndExpect,
+} from "../../util/base_api/ApiTestUtils";
+import { getPayloadFromToken } from "../state/AuthTokenPayload";
 
 beforeEach(async () => {
   // HTTP Adapter required to solve CORS error.
   axios.defaults.adapter = require("axios/lib/adapters/http");
   console.log("Preparing for new test.");
   console.log("Clearing AuthApi state.");
-  AuthApi.clearSession();
 
   // Set the timeout.
   jest.setTimeout(45000);
@@ -20,11 +25,11 @@ test("auth positive login", async () => {
   const user: string = newRandomUser();
   const password: string = newRandomPassword();
   await signUpAndExpect(user, password, 200);
-  await signInAndExpect(user, password, 200);
+  const signInResponse = await signInAndExpect(user, password, 200);
 
-  // Token validation should succeed.
-  const validationResponse = await AuthApi.validate();
-  expect(validationResponse.status).toBe(200);
+  // Token verification should succeed.
+  const verificationResponse = await AuthApi.verifyToken(signInResponse.token);
+  expect(verificationResponse.status).toBe(200);
 });
 
 test("auth login account not verified", async () => {
@@ -34,31 +39,30 @@ test("auth login account not verified", async () => {
   const signInResponse = await signInAndExpect(user, password, 200);
 
   // Token should exist, and have the 'confirmed' status as false.
-  expect(signInResponse.token).not.toBeUndefined();
-  const tokenPayload = jwt.decode(signInResponse.token);
-  expect(tokenPayload).toHaveProperty("verified");
-  expect(tokenPayload["verified"]).toBe(false);
-  console.log(tokenPayload);
+  const isAccountVerified = await AuthApi.getAccountVerificationStatusAsBoolean(
+    signInResponse.token
+  );
+  expect(isAccountVerified).toBe(false);
 });
 
-test("validate with empty session fails", async () => {
-  // // Validation should fail without a session.
-  const validationResponse = await AuthApi.validate();
-  expect(validationResponse.status).toBe(403);
+test("verification with bad token fails", async () => {
+  const response = await AuthApi.verifyToken("badToken");
+  expect(response.status).toBe(401);
 });
 
 test("can verify account", async () => {
   // // Validation should fail without a session.
   const user: string = newRandomUser();
   const password: string = newRandomPassword();
-  await signUpAndExpect(user, password, 200);
+  const signUpResponse = await signUpAndExpect(user, password, 200);
+  console.log(signUpResponse);
 
   // The account key should now exist in our session.
-  expect(AuthApi.getSession().getUserAccountKey()).not.toBeUndefined();
-  const account_key = AuthApi.getSession().getUserAccountKey();
+  const tokenPayload = getPayloadFromToken(signUpResponse.token);
+  const accountId = tokenPayload.accountId;
 
-  // Should be able to request validation email.
-  const response = await requestAccountVerificationAndExpect(account_key, 200);
+  // // Should be able to request validation email.
+  const response = await requestAccountVerificationAndExpect(accountId, 200);
   expect(response.payload).toHaveProperty("verification_token");
   const verificationToken = response.payload["verification_token"];
 
@@ -72,13 +76,13 @@ test("can verify account", async () => {
 
 test("can reset account", async () => {
   // I should be able to reset my password.
-  const user: string = newRandomUser();
+  const email: string = newRandomUser();
   const oldPassword: string = newRandomPassword();
   const newPassword: string = newRandomPassword();
-  await signUpAndExpect(user, oldPassword, 200);
+  await signUpAndExpect(email, oldPassword, 200);
 
   // Request password reset.
-  const resetRequestResponse = await requestAccountResetAndExpect(user, 200);
+  const resetRequestResponse = await requestAccountResetAndExpect(email, 200);
 
   // Reset the password
   console.log(resetRequestResponse.payload);
@@ -87,66 +91,39 @@ test("can reset account", async () => {
   await resetAccountAndExpect(resetToken, newPassword, 200);
 
   // Cannot sign in with old password.
-  await signInAndExpect(user, oldPassword, 403);
+  await signInAndExpect(email, oldPassword, 401);
 
   // Can sign in with new password.
-  await signInAndExpect(user, newPassword, 200);
+  await signInAndExpect(email, newPassword, 200);
 });
 
 test("premium not signed in", async () => {
-  const validationResponse = await AuthApi.validateMembership();
-  expect(validationResponse.status).toBe(403);
+  const response = await AuthApi.verifyPremiumStatus("badToken");
+  expect(response.status).toBe(401);
 });
 
 test("premium not a member", async () => {
-  await createAndSignInToVerifiedAccount();
-  const validationResponse = await AuthApi.validateMembership();
-  expect(validationResponse.status).toBe(402);
+  const signInResponse = await createAndSignInToVerifiedAccount();
+  const response = await AuthApi.verifyPremiumStatus(signInResponse.token);
+  expect(response.status).toBe(402);
 });
 
 test("premium is a member", async () => {
-  await createAndSignInToVerifiedAccount(true);
-  const validationResponse = await AuthApi.validateMembership();
-  expect(validationResponse.status).toBe(200);
+  const signInResponse = await createAndSignInToVerifiedAccount(true);
+  const response = await AuthApi.verifyPremiumStatus(signInResponse.token);
+  expect(response.status).toBe(200);
 });
 
 test("get premium is a member", async () => {
-  await createAndSignInToVerifiedAccount(true);
-  const validationResponse = await AuthApi.getMembershipStatus();
-  expect(validationResponse).toBe(true);
+  const signInResponse = await createAndSignInToVerifiedAccount(true);
+  const response = await AuthApi.getPremiumStatus(signInResponse.token);
+  expect(response.isMember).toBe(true);
 });
 
 test("get premium not a member", async () => {
-  const validationResponse = await AuthApi.getMembershipStatus();
-  expect(validationResponse).toBe(false);
+  const response = await AuthApi.getPremiumStatus("badToken");
+  expect(response.isMember).toBe(false);
 });
-
-const createAndSignInToVerifiedAccount = async (isMember: boolean = false) => {
-  const user: string = newRandomUser();
-  const password: string = newRandomPassword();
-  await signUpAndExpect(user, password, 200, true, isMember);
-  await signInAndExpect(user, password, 200);
-};
-
-const signUpAndExpect = async (
-  user: string,
-  password: string,
-  expectedCode: number,
-  isVerified?: boolean,
-  isMember?: boolean
-) => {
-  const response = await AuthApi.signUp(user, password, isVerified, isMember);
-  return expectResponseOrPrint(response, expectedCode);
-};
-
-const signInAndExpect = async (
-  user: string,
-  password: string,
-  expectedCode: number
-) => {
-  const response = await AuthApi.signIn(user, password);
-  return expectResponseOrPrint(response, expectedCode);
-};
 
 const requestAccountVerificationAndExpect = async (
   accountKey: string,
@@ -173,32 +150,10 @@ const resetAccountAndExpect = async (
   return expectResponseOrPrint(response, expectedCode);
 };
 
-const verifyAccountAndExpect = async (token: string, expectedCode: number) => {
-  const response = await AuthApi.verifyAccount(token);
-  return expectResponseOrPrint(response, expectedCode);
-};
-
-const expectResponseOrPrint = (
-  response: AuthResponse,
+const verifyAccountAndExpect = async (
+  verification_token: string,
   expectedCode: number
 ) => {
-  if (response.status !== expectedCode) {
-    console.log("Response Message", response.message);
-    console.log("Response Payload", response.payload);
-  }
-  expect(response.status).toBe(expectedCode);
-
-  return response;
-};
-
-const randomUUID = () => {
-  return uuidv4().replaceAll("-", "").substr(0, 12);
-};
-
-const newRandomUser = () => {
-  return `test-user-1aA${randomUUID()}@bonestack.com`;
-};
-
-const newRandomPassword = () => {
-  return `password-1aA${randomUUID()}`;
+  const response = await AuthApi.verifyAccount(verification_token);
+  return expectResponseOrPrint(response, expectedCode);
 };

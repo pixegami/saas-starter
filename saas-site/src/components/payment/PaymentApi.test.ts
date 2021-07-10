@@ -7,7 +7,6 @@ import AuthApi from "../auth/api/AuthApi";
 beforeEach(async () => {
   // HTTP Adapter required to solve CORS error.
   axios.defaults.adapter = require("axios/lib/adapters/http");
-  AuthApi.clearSession();
 
   // Set the timeout.
   jest.setTimeout(45000);

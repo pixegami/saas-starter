@@ -9,7 +9,6 @@ beforeEach(async () => {
   axios.defaults.adapter = require("axios/lib/adapters/http");
   console.log("Preparing for new test.");
   console.log("Clearing AuthApi state.");
-  AuthApi.clearSession();
 
   // Set the timeout.
   jest.setTimeout(45000);
