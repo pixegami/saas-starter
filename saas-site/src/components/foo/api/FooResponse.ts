@@ -2,7 +2,7 @@ import ApiResponse from "../../util/base_api/ApiResponse";
 
 export interface FooResponse extends ApiResponse {
   isPremium?: boolean;
-  isVerified?: boolean;
+  isAccountVerified?: boolean;
   isSignedIn?: boolean;
   itemKey?: string;
   items?: FooPost[];
@@ -10,7 +10,7 @@ export interface FooResponse extends ApiResponse {
 
 export interface FooPost {
   content: string;
-  user: string;
+  account_id: string;
   key: string;
 }
 
@@ -22,8 +22,8 @@ export const withFooResponse = (
       .then((apiResponse) => {
         const authResponse: FooResponse = {
           ...apiResponse,
-          isPremium: apiResponse.payload["is_member"],
-          isVerified: apiResponse.payload["is_verified"],
+          isPremium: apiResponse.payload["is_premium"],
+          isAccountVerified: apiResponse.payload["is_account_verified"],
           isSignedIn: apiResponse.payload["is_signed_in"],
           itemKey: apiResponse.payload["item_key"],
         };

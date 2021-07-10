@@ -20,12 +20,6 @@ class PaymentApi extends BaseApi {
 
   public static requestCheckout(token: string): Promise<ApiResponse> {
     const returnEndpoint: string = this.getReturnEndpoint();
-    console.log(
-      "Creating Checkout Session with token " +
-        token +
-        " and return_endpoint: " +
-        returnEndpoint
-    );
     return this.postRequest(
       "create_payment_session",
       { return_endpoint: returnEndpoint },
@@ -35,14 +29,8 @@ class PaymentApi extends BaseApi {
 
   public static requestPaymentPortal(token: string): Promise<ApiResponse> {
     const returnEndpoint: string = this.getReturnEndpoint();
-    console.log(
-      "Creating Payment Portal Session with token " +
-        token +
-        " and return_endpoint: " +
-        returnEndpoint
-    );
     return this.postRequest(
-      "create_payment_portal_session",
+      "create_payment_portal",
       { return_endpoint: returnEndpoint },
       token
     );
@@ -51,7 +39,6 @@ class PaymentApi extends BaseApi {
   public static async requestCheckoutAndRedirect(token: string): Promise<void> {
     try {
       const response = await this.requestCheckout(token);
-      console.log("Payment session created: " + response.payload);
       await this.redirectToCheckout(response.payload["session_id"]);
     } catch (e) {
       console.log(e);
@@ -67,12 +54,9 @@ class PaymentApi extends BaseApi {
     token: string
   ): Promise<void> {
     const response = await this.requestPaymentPortal(token);
-    console.log("Payment portal created: " + response.payload);
     const externalUrl = response.payload["session_url"];
     navigate(externalUrl);
   }
-
-  // TODO: Add response transformer for PaymentResponse.
 }
 
 export default PaymentApi;

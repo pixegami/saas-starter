@@ -1,14 +1,16 @@
 import FooApi from "./FooApi";
-import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
-import AuthApi from "../../auth/api/AuthApi";
-import AuthResponse from "../../auth/api/AuthResponse";
+import {
+  newRandomPassword,
+  newRandomUser,
+  randomUUID,
+  signInAndExpect,
+  signUpAndExpect,
+} from "../../util/base_api/ApiTestUtils";
 
 beforeEach(async () => {
   // HTTP Adapter required to solve CORS error.
   axios.defaults.adapter = require("axios/lib/adapters/http");
-  console.log("Preparing for new test.");
-  console.log("Clearing AuthApi state.");
 
   // Set the timeout.
   jest.setTimeout(45000);
@@ -16,28 +18,33 @@ beforeEach(async () => {
 
 test("foo not signed in", async () => {
   // Token validation should succeed.
-  const response = await FooApi.foo();
+  const response = await FooApi.foo("badToken");
   expect(response.status).toBe(200);
   expect(response.isSignedIn).toBe(false);
   expect(response.isPremium).toBe(false);
-  expect(response.isVerified).toBe(false);
+  expect(response.isAccountVerified).toBe(false);
 });
 
 test("foo signed in but not verified", async () => {
   // Token validation should succeed.
-  await createAndSignUser();
-  const response = await FooApi.foo();
+  const signInResponse = await createAndSignUser();
+  const response = await FooApi.foo(signInResponse.token);
+
   expect(response.status).toBe(200);
   expect(response.isSignedIn).toBe(true);
   expect(response.isPremium).toBe(false);
-  expect(response.isVerified).toBe(false);
+  expect(response.isAccountVerified).toBe(false);
 });
 
 test("foo can write and get post", async () => {
   const randomContent = `My random content ${randomUUID()}`;
 
-  await createAndSignUser();
-  const response = await FooApi.putPost("My Post Title", randomContent);
+  const signInResponse = await createAndSignUser();
+  const response = await FooApi.putPost(
+    "My Post Title",
+    randomContent,
+    signInResponse.token
+  );
   expect(response.status).toBe(200);
   expect(response.itemKey).not.toBeUndefined();
   const postKey = response.itemKey;
@@ -51,7 +58,7 @@ test("foo can write and get post", async () => {
   const mostRecentItem = getPostsResponse.items[0];
   expect(mostRecentItem.content).toEqual(randomContent);
   expect(mostRecentItem.key).not.toBeUndefined();
-  expect(mostRecentItem.user).not.toBeUndefined();
+  expect(mostRecentItem.account_id).not.toBeUndefined();
 
   // Try to get the specific post directly.
   const getPostResponse = await FooApi.getPost(postKey);
@@ -67,49 +74,5 @@ const createAndSignUser = async () => {
   const user: string = newRandomUser();
   const password: string = newRandomPassword();
   await signUpAndExpect(user, password, 200);
-  await signInAndExpect(user, password, 200);
-};
-
-const signUpAndExpect = async (
-  user: string,
-  password: string,
-  expectedCode: number
-) => {
-  const response = await AuthApi.signUp(user, password);
-  console.log("Signing up with user: " + user);
-  return expectResponseOrPrint(response, expectedCode);
-};
-
-const signInAndExpect = async (
-  user: string,
-  password: string,
-  expectedCode: number
-) => {
-  const response = await AuthApi.signIn(user, password);
-  return expectResponseOrPrint(response, expectedCode);
-};
-
-const expectResponseOrPrint = (
-  response: AuthResponse,
-  expectedCode: number
-) => {
-  if (response.status !== expectedCode) {
-    console.log("Response Message", response.message);
-    console.log("Response Payload", response.payload);
-  }
-  expect(response.status).toBe(expectedCode);
-
-  return response;
-};
-
-const randomUUID = () => {
-  return uuidv4().replaceAll("-", "").substr(0, 12);
-};
-
-const newRandomUser = () => {
-  return `test-user-1aA${randomUUID()}@bonestack.com`;
-};
-
-const newRandomPassword = () => {
-  return `password-1aA${randomUUID()}`;
+  return await signInAndExpect(user, password, 200);
 };
