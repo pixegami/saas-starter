@@ -24,9 +24,4 @@ def handler(event, context=None):
         .with_handler(CreatePaymentPortalHandler())
     )
 
-    # "foo": FooHandler(),
-    # "foo_write_post": FooWritePostHandler(),
-    # "foo_get_posts": FooGetPostsHandler(),
-    # "foo_get_post": FooGetPostHandler(),
-
     return entry_point.handle(event, context)

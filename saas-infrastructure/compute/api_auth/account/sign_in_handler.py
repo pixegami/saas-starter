@@ -18,7 +18,7 @@ class SignInHandler(AuthHandler):
     def __init__(self):
         super().__init__()
         self.operation_name = "sign_in"
-        self.schema = {"email", "password", "flags"}
+        self.schema = {"email", "password"}
 
     def handle_action(self, request_data: dict, event: dict, context: dict):
 

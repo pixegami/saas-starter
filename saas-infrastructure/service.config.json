@@ -4,5 +4,7 @@
   "awsRegion": "us-east-1",
   "domain": "bonestack.com",
   "prefix": "bonestack",
-  "frontendUrl": "https://bonestack.com/app/"
+  "frontendUrl": "https://bonestack.com/app/",
+  "stripeKey": "sk_test_dVPxaaBuDLylUmztkCmomO0p00dyqHOvDf",
+  "stripePriceId": "price_1Ipw2ECCoJYujIqgPAGPkuYZ"
 }

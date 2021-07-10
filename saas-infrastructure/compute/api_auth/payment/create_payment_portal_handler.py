@@ -1,5 +1,3 @@
-import stripe
-import os
 from base.auth_handler import AuthHandler
 from api_utils import api_response
 import urllib.parse
@@ -9,9 +7,7 @@ class CreatePaymentPortalHandler(AuthHandler):
     def __init__(self):
         super().__init__()
         self.operation_name = "create_payment_portal"
-        self.schema = {"return_endpoint", "flags"}
-        stripe.api_key = "sk_test_dVPxaaBuDLylUmztkCmomO0p00dyqHOvDf"
-        self.frontend_url: str = os.getenv("FRONTEND_URL", "UNKNOWN")
+        self.schema = {"return_endpoint"}
 
     def handle_action(self, request_data: dict, event: dict, context: dict):
 
@@ -26,16 +22,11 @@ class CreatePaymentPortalHandler(AuthHandler):
 
         profile_url = urllib.parse.urljoin(return_endpoint, "profile")
 
-        session = stripe.billing_portal.Session.create(
+        session = self.get_stripe().billing_portal.Session.create(
             customer=customer_id, return_url=profile_url
         )
 
-        response_payload = {
-            "session_url": session["url"],
-            "token_payload": token.serialize(),
-            "account_id": account_id,
-            "customer_id": customer_id,
-        }
+        response_payload = {"session_url": session["url"]}
 
         return api_response(
             200,

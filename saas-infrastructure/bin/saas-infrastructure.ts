@@ -12,6 +12,8 @@ const serviceProps: ServiceProps = {
   servicePrefix: config.prefix,
   serviceFrontendUrl: config.frontendUrl,
   region: config.awsRegion,
+  stripeKey: config.stripeKey,
+  stripePriceId: config.stripePriceId,
 };
 
 const app = new cdk.App();

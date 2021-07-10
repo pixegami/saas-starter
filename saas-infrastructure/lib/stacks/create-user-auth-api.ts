@@ -26,6 +26,8 @@ const createUserAuthApi = (
     FRONTEND_URL: serviceProps.serviceFrontendUrl,
     SERVICE_NAME: serviceProps.serviceName,
     AUTH_SECRET: secret.secretValue.toString(),
+    STRIPE_API_KEY: serviceProps.stripeKey,
+    STRIPE_PRICE_ID: serviceProps.stripePriceId,
   };
 
   const authApiProps: ApiWithTableProps = {

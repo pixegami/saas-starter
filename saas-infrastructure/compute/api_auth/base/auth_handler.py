@@ -1,6 +1,7 @@
 import time
 import jwt
 import os
+import stripe
 
 from api_utils import ApiHandler, ApiException, ApiDatabase, extract_json
 
@@ -27,6 +28,10 @@ class AuthHandler(ApiHandler):
         self.frontend_url: str = os.environ["FRONTEND_URL"]
         self.service_name: str = os.environ["SERVICE_NAME"]
 
+        # Setup Stripe API Key
+        stripe.api_key = os.environ["STRIPE_API_KEY"]
+        self.stripe_price_id: str = os.environ["STRIPE_PRICE_ID"]
+
         # Validators.
         self.validator: InputValidator = InputValidator()
 
@@ -41,6 +46,9 @@ class AuthHandler(ApiHandler):
         self.user_database_stripe_customer_index = self.user_database.from_index(
             "stripe_customer_index", "stripe_customer_id"
         )
+
+    def get_stripe(self):
+        return stripe
 
     def new_email_sender(self):
         email_sender = EmailSender()

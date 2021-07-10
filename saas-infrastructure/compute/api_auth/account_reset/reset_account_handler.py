@@ -30,10 +30,9 @@ class ResetAccountHandler(AuthHandler):
             account_id, User().sk, {"hashed_password": hashed_password_str}
         )
         self.user_database.delete_item_with_keys(otp_token, AccountResetToken().sk)
-        response_payload = {"reset_token": otp_token, "account_id": account_id}
 
         return api_response(
             200,
             f"Password reset success for [{account_id}]",
-            response_payload,
+            {},
         )
