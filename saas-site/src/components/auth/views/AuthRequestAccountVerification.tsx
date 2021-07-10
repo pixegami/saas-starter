@@ -29,7 +29,7 @@ const AuthRequestAccountVerification: React.FC<SubComponentBaseProps> = (
 
   const onClick = () => {
     props.onApiRequest();
-    AuthApi.requestAccountVerification(auth.stateUtil.payload.accountKey)
+    AuthApi.requestAccountVerification(auth.stateUtil.payload.accountId)
       .then(onSuccess)
       .catch(props.onApiFault);
   };

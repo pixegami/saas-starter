@@ -1,5 +1,5 @@
 import StateUtility from "../../util/state/StateUtility";
-import AuthTokenPayload, { getPayloadFromToken } from "./AuthTokenPayload";
+import { AuthTokenPayload, getPayloadFromToken } from "./AuthTokenPayload";
 
 export interface AuthState {
   hasToken: boolean;

@@ -26,18 +26,18 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
   React.useEffect(() => {
     let isMounted = true;
 
-    AuthApi.getMembershipStatus(auth.state.token).then((memberStatus) => {
+    AuthApi.getPremiumStatus(auth.state.token).then((premiumStatus) => {
       if (isMounted) {
-        setPremiumMember(memberStatus.isMember);
-        setAutoRenew(memberStatus.autoRenew);
-        setExpiryTime(memberStatus.expiryTime);
-        console.log("Set Autorenew to: " + memberStatus.autoRenew);
-        console.log("Set expiryTime Time to: " + memberStatus.expiryTime);
+        setPremiumMember(premiumStatus.isMember);
+        setAutoRenew(premiumStatus.autoRenew);
+        setExpiryTime(premiumStatus.expiryTime);
+        console.log("Set Autorenew to: " + premiumStatus.autoRenew);
+        console.log("Set expiryTime Time to: " + premiumStatus.expiryTime);
         setLoadingPremium(false);
       }
     });
 
-    AuthApi.getVerificationStatusAsBoolean(auth.state.token).then(
+    AuthApi.getAccountVerificationStatusAsBoolean(auth.state.token).then(
       (isVerified) => {
         if (isMounted) {
           setVerified(isVerified);

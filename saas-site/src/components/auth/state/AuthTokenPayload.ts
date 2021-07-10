@@ -3,7 +3,7 @@ import * as jwt from "jsonwebtoken";
 const TOKEN_USER_EMAIL_PROPERTY: string = "email";
 const TOKEN_ACCOUNT_ID_PROPERTY: string = "account_id";
 
-interface AuthTokenPayload {
+export interface AuthTokenPayload {
   userEmail?: string;
   accountId?: string;
 }
@@ -32,5 +32,3 @@ export const getPayloadFromToken = (token: string) => {
 const valueFromPayload = (payload: any, key: string, defaultValue: any) => {
   return payload.hasOwnProperty(key) ? payload[key] : defaultValue;
 };
-
-export default AuthTokenPayload;

@@ -57,7 +57,7 @@ const FooPostGallery: React.FC<FooPostGalleryProps> = (props) => {
         <FooPostCard
           title="Untitled"
           content={rawPost.content}
-          author={rawPost.user.substr(0, 8)}
+          author={rawPost.account_id.substr(0, 8)}
           key={rawPost.key}
           isLoading={false}
         />

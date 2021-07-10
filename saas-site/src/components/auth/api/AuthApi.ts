@@ -1,15 +1,13 @@
 import ApiResponse from "../../util/base_api/ApiResponse";
 import AuthResponse from "./AuthResponse";
-import AuthMembershipStatus from "./AuthMembershipStatus";
+import AuthPremiumStatus from "./AuthPremiumStatus";
 import BaseApi from "../../util/base_api/BaseApi";
 
 class AuthApi extends BaseApi {
   // Configurable fields.
   private static ENDPOINT: string = "https://api.bonestack.com/auth";
-
-  // private static AUTO_TEST: boolean = true;
   public static AUTO_TEST_USER: string = "autotest@auth.bonestack.com";
-  public static AUTO_TEST_PASS: string = "Abcd123!";
+  public static AUTO_TEST_PASS: string = "myAutoResetPasswordAB12!";
 
   protected static getEndpoint(): string {
     return this.ENDPOINT;
@@ -91,7 +89,7 @@ class AuthApi extends BaseApi {
 
   public static async getPremiumStatus(
     token: string
-  ): Promise<AuthMembershipStatus> {
+  ): Promise<AuthPremiumStatus> {
     const validationResponse = await AuthApi.verifyPremiumStatus(token);
     if (validationResponse.status === 200) {
       console.log("Validate Member Response:");

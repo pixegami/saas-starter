@@ -81,7 +81,7 @@ const FooView: React.FC<SubComponentBaseProps> = (props) => {
         if (isMounted) {
           props.onApiResponse(r);
           setFooIsSignedIn(r.isSignedIn);
-          setFooIsVerified(r.isVerified);
+          setFooIsVerified(r.isAccountVerified);
           setFooIsPremium(r.isPremium);
         }
       })
