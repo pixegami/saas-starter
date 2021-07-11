@@ -4,8 +4,8 @@ require("dotenv").config({
 
 module.exports = {
   siteMetadata: {
-    title: process.env.SERVICE_NAME,
-    siteUrl: process.env.SERVICE_URL,
+    title: process.env.GATSBY_SERVICE_NAME,
+    siteUrl: process.env.GATSBY_SERVICE_URL,
   },
   plugins: [
     "gatsby-plugin-postcss",
