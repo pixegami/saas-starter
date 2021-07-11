@@ -7,7 +7,7 @@ interface LandingProps {
   path: string;
 }
 
-const Landing: React.FC<LandingProps> = (props) => {
+const LandingView: React.FC<LandingProps> = (props) => {
   const [postRefreshId, setPostRefreshId] = React.useState("");
 
   return (
@@ -19,4 +19,4 @@ const Landing: React.FC<LandingProps> = (props) => {
   );
 };
 
-export default Landing;
+export default LandingView;

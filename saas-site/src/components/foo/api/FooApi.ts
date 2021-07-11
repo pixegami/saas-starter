@@ -2,11 +2,8 @@ import BaseApi from "../../util/base_api/BaseApi";
 import { FooResponse, withFooResponse } from "./FooResponse";
 
 class FooApi extends BaseApi {
-  // Configurable fields.
-  private static ENDPOINT: string = "https://api.bonestack.com/foo";
-
   protected static getEndpoint(): string {
-    return this.ENDPOINT;
+    return process.env["GATSBY_FOO_API_ENDPOINT"];
   }
 
   public static foo(token: string): Promise<FooResponse> {

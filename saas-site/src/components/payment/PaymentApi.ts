@@ -4,16 +4,16 @@ import BaseApi from "../util/base_api/BaseApi";
 import ApiResponse from "../util/base_api/ApiResponse";
 
 class PaymentApi extends BaseApi {
-  private static ENDPOINT: string = "https://api.bonestack.com/auth";
-  private static STRIPE_PUBLIC_KEY: string =
-    "pk_test_aKOhvFXppSG39jKNDvVi3tYT006IbA5jQL";
-
   protected static getEndpoint(): string {
-    return this.ENDPOINT;
+    return process.env["GATSBY_AUTH_API_ENDPOINT"];
+  }
+
+  protected static getStripeKey(): string {
+    return process.env["GATSBY_STRIPE_PUBLIC_KEY"];
   }
 
   public static async redirectToCheckout(sessionId: string) {
-    const stripe = await loadStripe(PaymentApi.STRIPE_PUBLIC_KEY);
+    const stripe = await loadStripe(this.getStripeKey());
     const { error } = await stripe.redirectToCheckout({ sessionId });
     alert(error.message);
   }

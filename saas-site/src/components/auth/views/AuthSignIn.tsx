@@ -17,11 +17,11 @@ import AuthApi from "../api/AuthApi";
 const AuthSignIn: React.FC<SubComponentBaseProps> = (props) => {
   const auth = useContext(AuthContext);
   const emailField = ApiStringField.emailFromHook(
-    React.useState(AuthApi.AUTO_TEST_USER)
+    React.useState(AuthApi.getDefaultUser())
   );
 
   const passwordField = ApiStringField.passwordFromHook(
-    React.useState(AuthApi.AUTO_TEST_PASS)
+    React.useState(AuthApi.getDefaultPassword())
   );
 
   const onSignInSuccess = (result: AuthResponse) => {

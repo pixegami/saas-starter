@@ -4,13 +4,16 @@ import AuthPremiumStatus from "./AuthPremiumStatus";
 import BaseApi from "../../util/base_api/BaseApi";
 
 class AuthApi extends BaseApi {
-  // Configurable fields.
-  private static ENDPOINT: string = "https://api.bonestack.com/auth";
-  public static AUTO_TEST_USER: string = "autotest@auth.bonestack.com";
-  public static AUTO_TEST_PASS: string = "myAutoResetPasswordAB12!";
+  public static getDefaultUser(): string {
+    return process.env["GATSBY_AUTO_TEST_USER"];
+  }
+
+  public static getDefaultPassword(): string {
+    return process.env["GATSBY_AUTO_TEST_PASS"];
+  }
 
   protected static getEndpoint(): string {
-    return this.ENDPOINT;
+    return process.env["GATSBY_AUTH_API_ENDPOINT"];
   }
 
   public static signIn(email: string, password: string): Promise<AuthResponse> {

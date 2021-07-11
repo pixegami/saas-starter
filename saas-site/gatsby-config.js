@@ -1,7 +1,11 @@
+require("dotenv").config({
+  path: `.env.${process.env.NODE_ENV}`,
+});
+
 module.exports = {
   siteMetadata: {
-    title: "Bonestack",
-    siteUrl: "https://bonestack.com",
+    title: process.env.SERVICE_NAME,
+    siteUrl: process.env.SERVICE_URL,
   },
   plugins: [
     "gatsby-plugin-postcss",

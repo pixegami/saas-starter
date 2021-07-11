@@ -1,5 +1,5 @@
 import React from "react";
-import Landing from "../app/landing";
+import LandingView from "../app/LandingView";
 import AuthRoute from "../components/auth/route/AuthRoute";
 import ProfileView from "../app/ProfileView";
 import PageNotFound from "./404";
@@ -12,7 +12,7 @@ const App = () => {
     <AuthProvider>
       <Layout>
         <AuthRouter>
-          <AuthRoute component={Landing} path="/app" bypassAuth />
+          <AuthRoute component={LandingView} path="/app" bypassAuth />
           {/* <AuthRoute component={Dashboard} path="/app/dashboard" /> */}
           <AuthRoute component={ProfileView} path="/app/profile" />
           {/* <Dashboard path="/app/dashboard2" /> */}
