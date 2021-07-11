@@ -1,6 +1,8 @@
 import AuthApi from "../../auth/api/AuthApi";
 import AuthResponse from "../../auth/api/AuthResponse";
 import { v4 as uuidv4 } from "uuid";
+import * as dotenv from "dotenv";
+dotenv.config({ path: ".env.development" });
 
 export const createAndSignInToVerifiedAccount = async (
   isMember: boolean = false

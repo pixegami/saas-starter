@@ -2,7 +2,7 @@
 
 This repository contains server-side code for a boilerplate SaaS project (including most of the AWS infrastructure). The service has basic authentication, authorisation, CRUD and payment functionality. It is intended to act as a stub for more complex projects.
 
-See the live example here: https://bonestack.com
+See the live example here: https://saas-starter-stack.com
 
 ### Content
 

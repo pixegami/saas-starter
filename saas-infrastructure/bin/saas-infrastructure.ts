@@ -17,6 +17,6 @@ const serviceProps: ServiceProps = {
 };
 
 const app = new cdk.App();
-new SaasInfrastructureStack(app, `${config.name}MasterStack`, serviceProps, {
+new SaasInfrastructureStack(app, `${config.name}`, serviceProps, {
   env: { account: config.awsAccount, region: config.awsRegion },
 });

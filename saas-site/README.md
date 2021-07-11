@@ -57,6 +57,8 @@ To test a particular case:
 jest AuthApi.test.ts -t "can reset account"
 ```
 
+**Note**: You may need to this run these tests from the root (this) directory because it attempts to load environment variables from `.env.development`.
+
 ## Notes
 
 * An issue that puzzled me for a while was due to something called re-hydration. It happens when Gatsby renders a static version of the site, but then the React logic updates something after. The result is a Frankenstein `div` that has mixed styling. To fix this, I used a hook that updates the `key` of `div`s that must change after static loading. See `useRenderKey.ts`.
