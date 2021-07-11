@@ -9,7 +9,7 @@ const IndexPage = () => {
       <div>
         <div className="max-w-4xl m-auto bg-white rounded-md flex p-4">
           <div className="my-4 w-full text-center p-4">
-            <h1 className="text-3xl font-bold">Bonestack</h1>
+            <h1 className="text-3xl font-bold">SaaS Starter App</h1>
             <div>A boilerplate app with authentication and payments.</div>
             <div className="mt-8 flex">
               <Link
