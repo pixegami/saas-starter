@@ -121,6 +121,11 @@ class AuthApi extends BaseApi {
     return this.getRequest("verify_token", {}, token);
   }
 
+  public static async verifyTokenAsBoolean(token: string): Promise<boolean> {
+    const response = await AuthApi.verifyToken(token);
+    return response.status === 200;
+  }
+
   private static withResponseTransformer(
     promise: Promise<ApiResponse>
   ): Promise<AuthResponse> {

@@ -48,4 +48,8 @@ export class AuthStateUtility extends StateUtility<AuthState> {
     };
     return new AuthStateUtility(newRawState);
   }
+
+  public withoutToken(): AuthStateUtility {
+    return this.withToken(undefined);
+  }
 }

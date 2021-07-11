@@ -1,4 +1,5 @@
 import React from "react";
+import AuthApi from "../api/AuthApi";
 import AuthContext, { AuthApiContext } from "../api/AuthContext";
 import { AuthStateUtility } from "../state/AuthState";
 
@@ -20,10 +21,19 @@ const AuthProvider: React.FunctionComponent<AuthProviderProps> = (props) => {
   console.log(authState);
 
   React.useEffect(() => {
-    if (!authState.hasToken) {
+    if (!authState.hasToken && authState.firstLoad) {
       console.log("Loading state from browser.");
       const loadedAuthState = authApiContext.stateUtil.load();
-      setAuthState({ ...loadedAuthState, firstLoad: false });
+
+      console.log("Checking if token is still valid.");
+      const isTokenValid = AuthApi.verifyTokenAsBoolean(authState.token);
+      if (isTokenValid) {
+        console.log("Token is valid. Keeping.");
+        setAuthState({ ...loadedAuthState, firstLoad: false });
+      } else {
+        console.log("Token is invalid. Voiding.");
+        setAuthState(new AuthStateUtility(authState).withoutToken().state);
+      }
     }
   }, []);
 
