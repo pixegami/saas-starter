@@ -1,58 +1,62 @@
-<p align="center">
-  <a href="https://www.gatsbyjs.com/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter">
-    <img alt="Gatsby" src="https://www.gatsbyjs.com/Gatsby-Monogram.svg" width="60" />
-  </a>
-</p>
-<h1 align="center">
-  Gatsby minimal starter
-</h1>
+# SaaS Starter: Front End
 
-## TODO
+This repository holds the front-end code for the SaaS-starter site. It relies on the API in the infrastructure stack being deployed already. The site is serverless, using a Gatsby to statically render some pages, but React to also provide auth-gated interaction.
 
-* Centralize front-end config: tests, npm build targets, and API.
+View the live example at: www.saas-starter-stack.com
 
+## Development
 
-* Frontend transfers fields between pages.
-* Field meta-data and saving the info.
-* Password lock
-* Consolidate the configuration.
+```bash
+# Run the site on a development server locally.
+gatsby develop
 
-## 🚀 Quick start
+# Visit http://127.0.0.1:8000 (localhost and 0.0.0.0 will have some problems with navigation)
+```
 
-1.  **Create a Gatsby site.**
+### Configuration
 
-    Use the Gatsby CLI to create a new site, specifying the minimal starter.
+1. Configure the`.env.development` and `.env.production` with the endpoints and meta-data. Make sure that secret keys and configuration aren't committed to the git!
+2. Configure the S3 bucket and CloudFront `distribution_id` in `package.json`.
 
-    ```shell
-    # create a new Gatsby site using the minimal starter
-    npm init gatsby
-    ```
+### Tech Stack
 
-2.  **Start developing.**
+* **[React](https://reactjs.org/)**: Front-end framework
+* **[Gatsby](https://www.gatsbyjs.com/)**: Static rendering framework
+* **[Tailwind CSS](https://tailwindcss.com/)**: Styling framework
+* **[FontAwesome](https://fontawesome.com/)**: Icon fonts
 
-    Navigate into your new site’s directory and start it up.
+## Deployment
 
-    ```shell
-    cd my-gatsby-site/
-    npm run develop
-    ```
+The site must be built and deployed to S3. We then have to invalidate the CloudFront caches so the CDN gets the latest version of the site. This assumes that the infrastructure has already been deployed to your AWS account.
 
-3.  **Open the code and start customizing!**
+The full deployment commands are:
 
-    Your site is now running at http://localhost:8000!
+```bash
+npm run build
+aws s3 sync public s3://<your-domain>.com/ --acl public-read
+aws cloudfront create-invalidation --distribution-id XXXXXXXX --paths \"/*\""
+```
 
-    Edit `src/pages/index.js` to see your site update in real-time!
+But you can also use the `full-deploy` command that does all three:
 
-4.  **Learn more**
+```bash
+npm run full-deploy
+```
 
-    - [Documentation](https://www.gatsbyjs.com/docs/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter)
+## Testing
 
-    - [Tutorials](https://www.gatsbyjs.com/tutorial/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter)
+I've only written tests for the API integration (for each of the API files). To run it for a particular file:
 
-    - [Guides](https://www.gatsbyjs.com/tutorial/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter)
+```bash
+jest AuthApi.test.ts
+```
 
-    - [API Reference](https://www.gatsbyjs.com/docs/api-reference/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter)
+To test a particular case:
 
-    - [Plugin Library](https://www.gatsbyjs.com/plugins?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter)
+```bash
+jest AuthApi.test.ts -t "can reset account"
+```
 
-    - [Cheat Sheet](https://www.gatsbyjs.com/docs/cheat-sheet/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter)
+## Notes
+
+* An issue that puzzled me for a while was due to something called re-hydration. It happens when Gatsby renders a static version of the site, but then the React logic updates something after. The result is a Frankenstein `div` that has mixed styling. To fix this, I used a hook that updates the `key` of `div`s that must change after static loading. See `useRenderKey.ts`.
