@@ -7,5 +7,5 @@ A mono-repo containing front-end, back-end and infrastructure code for a boilerp
 * Stripe payment integration.
 * Basic integration tests
 
-See the individual `README`s in `saas-infrastructure` and `saas-site` for more instructions. Check out a live demo at www.saas-starter-stack.com.
+See the individual `README`s in `saas-infrastructure` and `saas-site` for more instructions. Check out a live demo at [SaaS Starter Stack](https://saas-starter-stack.com/).
 

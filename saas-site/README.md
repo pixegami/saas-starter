@@ -2,7 +2,7 @@
 
 This repository holds the front-end code for the SaaS-starter site. It relies on the API in the infrastructure stack being deployed already. The site is serverless, using a Gatsby to statically render some pages, but React to also provide auth-gated interaction.
 
-View the live example at: www.saas-starter-stack.com
+View the live example at: [SaaS Starter Stack](https://saas-starter-stack.com/)
 
 ## Development
 
