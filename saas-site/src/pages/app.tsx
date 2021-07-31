@@ -13,9 +13,7 @@ const App = () => {
       <Layout>
         <AuthRouter>
           <AuthRoute component={LandingView} path="/app" bypassAuth />
-          {/* <AuthRoute component={Dashboard} path="/app/dashboard" /> */}
           <AuthRoute component={ProfileView} path="/app/profile" />
-          {/* <Dashboard path="/app/dashboard2" /> */}
           <PageNotFound default />
         </AuthRouter>
       </Layout>
